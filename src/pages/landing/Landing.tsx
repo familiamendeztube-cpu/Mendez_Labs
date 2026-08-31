@@ -6,6 +6,7 @@ import { registerMotion, useLenis, prefersReducedMotion } from './motion';
 import { LP } from './theme';
 import { PillCta } from './PillCta';
 import { Preloader } from './Preloader';
+import { Hero } from './Hero';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -66,7 +67,7 @@ export function Landing() {
       style={{ backgroundColor: LP.carbon, overflowX: 'clip' }}
     >
       <Preloader reduced={reduced} />
-      <Placeholder theme="dark" label="Hero" />
+      <Hero reduced={reduced} />
       <Placeholder theme="dark" label="Manifesto" />
       <Placeholder theme="light" label="The Terminal" />
       <Placeholder theme="dark" label="Markets Never Sleep" />
