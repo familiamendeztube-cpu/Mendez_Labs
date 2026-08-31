@@ -1,0 +1,20 @@
+[functions.sports-odds]
+verify_jwt = false
+
+[functions.sports-data]
+verify_jwt = false
+
+[functions.sports-feed]
+verify_jwt = false
+
+[functions.settle-picks]
+verify_jwt = false
+
+[functions.analysis-engine]
+verify_jwt = false
+
+[functions.alpaca-connector]
+verify_jwt = true
+
+[functions.ai-analysis]
+verify_jwt = true
