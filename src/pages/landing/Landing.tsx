@@ -5,6 +5,7 @@ import { useStore } from '@/store/StoreContext';
 import { registerMotion, useLenis, prefersReducedMotion } from './motion';
 import { LP } from './theme';
 import { PillCta } from './PillCta';
+import { Preloader } from './Preloader';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -64,6 +65,7 @@ export function Landing() {
       className="relative"
       style={{ backgroundColor: LP.carbon, overflowX: 'clip' }}
     >
+      <Preloader reduced={reduced} />
       <Placeholder theme="dark" label="Hero" />
       <Placeholder theme="dark" label="Manifesto" />
       <Placeholder theme="light" label="The Terminal" />
