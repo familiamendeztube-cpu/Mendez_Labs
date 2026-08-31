@@ -135,14 +135,14 @@ export function Hero({ reduced }: { reduced: boolean }) {
         <h1
           data-hero-upper
           className="absolute left-[5vw] top-[14vh] z-20 font-bold"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.8rem, 8.5vw, 8.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
+          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 9.2vw, 9.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
         >
           We are<br />discipline
         </h1>
         <h1
           data-hero-lower
           className="absolute bottom-[16vh] right-[5vw] z-20 text-right font-bold"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.8rem, 8.5vw, 8.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
+          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 9.2vw, 9.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
         >
           We are<br />edge
         </h1>

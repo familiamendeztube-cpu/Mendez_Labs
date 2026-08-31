@@ -43,6 +43,8 @@ interface StoreContextValue {
   signIn: (email: string, password: string) => Promise<unknown>;
   signOut: () => Promise<void>;
   userEmail: string | null;
+  masterMode: boolean;
+  unlockWithCode: (code: string) => boolean;
 
   bets: BetRecord[];
   addBet: (legs: BetLeg[], type: BetType, stake: number) => { ok: boolean; reason?: string; bet?: BetRecord };
@@ -138,9 +140,32 @@ function generateTodayPickFive(): PickFiveSet {
   };
 }
 
+// Owner quick-access gate. NOTE: this is a UI unlock only — it grants no
+// Supabase session, so Alpaca/AI features still require a real sign-in.
+// Anyone reading the shipped JS can find this code; it protects the shell,
+// not the data (data is protected by Supabase auth + RLS).
+const MASTER_KEY = 'mlabs-master';
+const MASTER_CODE = '312593';
+
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const persisted = useRef(loadState()).current;
   const auth = useAuth();
+  const [masterMode, setMasterMode] = useState<boolean>(() => {
+    try { return localStorage.getItem(MASTER_KEY) === '1'; } catch { return false; }
+  });
+
+  const unlockWithCode = useCallback((code: string): boolean => {
+    if (code.trim() !== MASTER_CODE) return false;
+    try { localStorage.setItem(MASTER_KEY, '1'); } catch { /* ignore */ }
+    setMasterMode(true);
+    return true;
+  }, []);
+
+  const signOutAll = useCallback(async () => {
+    try { localStorage.removeItem(MASTER_KEY); } catch { /* ignore */ }
+    setMasterMode(false);
+    if (auth.authenticated) await auth.signOut();
+  }, [auth]);
 
   useEffect(() => {
     if (persisted && 'demoHistory' in persisted) {
@@ -221,10 +246,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (auth.authenticated) {
+    if (auth.authenticated || masterMode) {
       refreshFeed();
     }
-  }, [auth.authenticated, refreshFeed]);
+  }, [auth.authenticated, masterMode, refreshFeed]);
 
   const addLog = useCallback((entry: Omit<SystemLogEntry, 'id' | 'timestamp'>) => {
     setLogs((prev) => [
@@ -470,11 +495,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [pickFiveToday]);
 
   useEffect(() => {
-    if (!auth.authenticated) return;
+    if (!auth.authenticated && !masterMode) return;
     settlePendingPicks();
     const interval = setInterval(settlePendingPicks, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [auth.authenticated, settlePendingPicks]);
+  }, [auth.authenticated, masterMode, settlePendingPicks]);
 
   const addBetSlipLeg = useCallback((pick: RankedPick) => {
     setBetSlipLegs((prev) => {
@@ -532,14 +557,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [bets, balance, riskSettings, rankedPicks]);
 
   const value: StoreContextValue = {
-    authenticated: auth.authenticated,
+    authenticated: auth.authenticated || masterMode,
     authLoading: auth.loading,
     authError: auth.error,
     clearAuthError: auth.clearError,
     signUp: auth.signUp,
     signIn: auth.signIn,
-    signOut: auth.signOut,
-    userEmail: auth.user?.email ?? null,
+    signOut: signOutAll,
+    userEmail: auth.user?.email ?? (masterMode ? 'admin (master code)' : null),
+    masterMode,
+    unlockWithCode,
     bets,
     addBet,
     resetSimulation,

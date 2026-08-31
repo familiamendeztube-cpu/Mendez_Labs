@@ -73,7 +73,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           className="relative z-10 font-bold"
           style={{
             color: LP.inkOnIvory, fontFamily: LP.display,
-            fontSize: 'clamp(3rem, 10vw, 10rem)', lineHeight: 0.95, letterSpacing: '-0.03em',
+            fontSize: 'clamp(3.2rem, 11vw, 11.5rem)', lineHeight: 0.94, letterSpacing: '-0.03em',
           }}
         >
           Trade in<br />

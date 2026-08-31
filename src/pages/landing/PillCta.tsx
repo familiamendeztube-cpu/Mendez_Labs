@@ -4,13 +4,23 @@ import { useStore } from '@/store/StoreContext';
 import { LP } from './theme';
 
 export function PillCta() {
-  const { signIn, signUp, clearAuthError } = useStore();
+  const { signIn, signUp, clearAuthError, unlockWithCode } = useStore();
   const [open, setOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showCode, setShowCode] = useState(false);
+  const [code, setCode] = useState('');
+
+  function handleCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (!unlockWithCode(code)) {
+      setError('Invalid access code');
+      setCode('');
+    }
+  }
 
   // The fixed header's menu chip opens the same auth panel.
   useEffect(() => {
@@ -115,6 +125,40 @@ export function PillCta() {
             >
               {isSignUp ? 'Have an account? Sign in' : 'New? Create account'}
             </button>
+
+            {/* Owner quick access */}
+            {showCode ? (
+              <div className="mt-4 border-t pt-4" style={{ borderColor: LP.borderDark }}>
+                <input
+                  type="password"
+                  value={code}
+                  inputMode="numeric"
+                  placeholder="Access code"
+                  aria-label="Master access code"
+                  onChange={(e) => { setCode(e.target.value); setError(''); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleCode(e); }}
+                  className="mb-2 w-full rounded-lg px-3 py-2.5 text-center text-sm tracking-[0.5em] outline-none"
+                  style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${LP.borderDark}`, color: LP.gold, fontFamily: LP.mono }}
+                />
+                <button
+                  type="button"
+                  onClick={handleCode}
+                  className="w-full rounded-lg py-2 text-xs font-bold tracking-widest"
+                  style={{ background: 'rgba(181,138,58,0.15)', color: LP.gold, border: '1px solid rgba(181,138,58,0.3)' }}
+                >
+                  UNLOCK TERMINAL
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowCode(true)}
+                className="mt-3 w-full text-center text-[10px] tracking-[0.3em]"
+                style={{ color: 'rgba(138,143,138,0.5)', fontFamily: LP.mono }}
+              >
+                ADMIN ACCESS
+              </button>
+            )}
           </form>
         </div>
       )}
