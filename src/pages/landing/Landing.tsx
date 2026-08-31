@@ -10,25 +10,8 @@ import { Hero } from './Hero';
 import { Manifesto } from './Manifesto';
 import { TerminalShowcase } from './TerminalShowcase';
 import { MarketSessions } from './MarketSessions';
-
-function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
-  return (
-    <section
-      data-lp-theme={theme}
-      className="flex min-h-screen items-center justify-center"
-    >
-      <h2
-        className="text-5xl font-bold"
-        style={{
-          color: theme === 'dark' ? LP.textOnDark : LP.inkOnIvory,
-          fontFamily: LP.display,
-        }}
-      >
-        {label}
-      </h2>
-    </section>
-  );
-}
+import { SportsLab } from './SportsLab';
+import { LandingFooter } from './LandingFooter';
 
 export function Landing() {
   const { settings } = useStore();
@@ -74,8 +57,8 @@ export function Landing() {
       <Manifesto reduced={reduced} />
       <TerminalShowcase reduced={reduced} />
       <MarketSessions reduced={reduced} />
-      <Placeholder theme="light" label="The Sports Lab" />
-      <Placeholder theme="dark" label="Footer" />
+      <SportsLab reduced={reduced} />
+      <LandingFooter reduced={reduced} />
       <PillCta />
     </div>
   );
