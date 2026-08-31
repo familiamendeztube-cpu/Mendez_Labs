@@ -8,6 +8,7 @@ import { PillCta } from './PillCta';
 import { Preloader } from './Preloader';
 import { Hero } from './Hero';
 import { Manifesto } from './Manifesto';
+import { TerminalShowcase } from './TerminalShowcase';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -70,7 +71,7 @@ export function Landing() {
       <Preloader reduced={reduced} />
       <Hero reduced={reduced} />
       <Manifesto reduced={reduced} />
-      <Placeholder theme="light" label="The Terminal" />
+      <TerminalShowcase reduced={reduced} />
       <Placeholder theme="dark" label="Markets Never Sleep" />
       <Placeholder theme="light" label="The Sports Lab" />
       <Placeholder theme="dark" label="Footer" />
