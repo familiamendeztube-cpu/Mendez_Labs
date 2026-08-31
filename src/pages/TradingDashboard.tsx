@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Lock, Shield, AlertTriangle, Activity, Radio, XCircle,
-  ArrowRight, RefreshCw, Zap, Wifi, WifiOff, CheckCircle2, Minus, Clock,
+  ArrowRight, RefreshCw, Zap, Wifi, WifiOff, CheckCircle2, Minus, Clock, X,
 } from 'lucide-react';
+import { getTradingEnv, setTradingEnv, type TradingEnv } from '@/services/alpaca';
+import { OrderTicket } from '@/components/OrderTicket';
 import { fmtCurrency } from '@/utils/format';
 import {
   connectionStatusLabel,
@@ -20,6 +23,15 @@ import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVa
 
 export function TradingDashboard() {
   const live = useLiveTrading();
+  const [env, setEnvState] = useState<TradingEnv>(getTradingEnv());
+  const [confirmLive, setConfirmLive] = useState(false);
+
+  function switchEnv(next: TradingEnv) {
+    setTradingEnv(next);
+    setEnvState(next);
+    setConfirmLive(false);
+    live.refresh();
+  }
 
   const acct = live.account;
   const equity = acct ? parseFloat(acct.equity) : null;
@@ -84,11 +96,58 @@ export function TradingDashboard() {
 
       {/* Paper / Live toggle */}
       <div className="flex items-center gap-2">
-        <button className="rounded-full px-4 py-1.5 text-sm font-semibold" style={{ background: accentAlpha(0.12), color: tv.accent, border: `1px solid ${accentAlpha(0.2)}`, minHeight: '44px' }}>PAPER</button>
-        <button disabled className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold opacity-50 cursor-not-allowed" style={{ background: mutedAlpha(0.06), color: tv.textMuted, border: `1px solid ${tv.borderBase}`, minHeight: '44px' }}>
-          <Lock className="h-3.5 w-3.5" /> LIVE
+        <button
+          onClick={() => switchEnv('paper')}
+          className="rounded-full px-4 py-1.5 text-sm font-semibold"
+          style={env === 'paper'
+            ? { background: accentAlpha(0.12), color: tv.accent, border: `1px solid ${accentAlpha(0.2)}`, minHeight: '44px' }
+            : { background: mutedAlpha(0.06), color: tv.textMuted, border: `1px solid ${tv.borderBase}`, minHeight: '44px' }}
+        >
+          PAPER
         </button>
+        <button
+          onClick={() => (env === 'live' ? undefined : setConfirmLive(true))}
+          className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold"
+          style={env === 'live'
+            ? { background: amberAlpha(0.15), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.35)}`, minHeight: '44px' }
+            : { background: mutedAlpha(0.06), color: tv.textMuted, border: `1px solid ${tv.borderBase}`, minHeight: '44px' }}
+        >
+          {env === 'live' ? <Zap className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />} LIVE
+        </button>
+        {env === 'live' && (
+          <span className="text-xs font-semibold" style={{ color: tv.statusAmber }}>
+            Real money — your live Alpaca account
+          </span>
+        )}
       </div>
+
+      {/* Live switch confirmation */}
+      {confirmLive && (
+        <div className="fixed inset-0 z-[95] flex items-center justify-center p-4" style={{ background: 'rgba(3,6,5,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setConfirmLive(false)}>
+          <div className="w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.4)}` }} onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-sm font-bold" style={{ color: tv.statusAmber }}>Switch to LIVE trading?</h4>
+              <button onClick={() => setConfirmLive(false)} aria-label="Cancel"><X className="h-4 w-4" style={{ color: tv.textMuted }} /></button>
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: tv.textMuted }}>
+              The dashboard will read your LIVE Alpaca account and the order
+              ticket will place REAL-MONEY orders. Orders additionally require
+              the ALPACA_LIVE_ORDERS_ENABLED server secret — without it the
+              server refuses live orders even in this mode.
+            </p>
+            <button
+              onClick={() => switchEnv('live')}
+              className="mt-4 w-full rounded-lg py-2.5 text-sm font-bold"
+              style={{ background: amberAlpha(0.2), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.4)}` }}
+            >
+              Switch to LIVE
+            </button>
+            <button onClick={() => setConfirmLive(false)} className="mt-2 w-full rounded-lg py-2 text-xs" style={{ color: tv.textMuted, background: mutedAlpha(0.06) }}>
+              Stay on paper
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Connection banners */}
       {live.error && (
@@ -105,11 +164,20 @@ export function TradingDashboard() {
         <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: accentAlpha(0.06), border: `1px solid ${accentAlpha(0.15)}` }}>
           <Wifi className="h-5 w-5 shrink-0" style={{ color: tv.accent }} />
           <div>
-            <p className="text-sm font-semibold" style={{ color: tv.accent }}>Alpaca paper account connected</p>
-            <p className="text-xs" style={{ color: tv.textMuted }}>Live data flowing. Paper mode only -- no real orders placed.</p>
+            <p className="text-sm font-semibold" style={{ color: tv.accent }}>
+              Alpaca {env} account connected
+            </p>
+            <p className="text-xs" style={{ color: tv.textMuted }}>
+              {env === 'live'
+                ? 'Real account data. Orders placed from the ticket use real money.'
+                : 'Live data flowing. Paper mode — no real money at risk.'}
+            </p>
           </div>
         </div>
       )}
+
+      {/* ORDER TICKET */}
+      <OrderTicket env={env} connected={live.connected} onPlaced={live.refresh} />
 
       {/* TICKER STRIP */}
       <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin', scrollbarColor: `${mutedAlpha(0.2)} transparent` }}>

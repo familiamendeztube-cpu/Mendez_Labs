@@ -138,10 +138,13 @@ Deno.serve(async (req: Request) => {
     }
 
     // ── Route: POST orders ──────────────────────────────────────────
+    // Live orders require the owner to explicitly set the
+    // ALPACA_LIVE_ORDERS_ENABLED secret — defense in depth on top of the
+    // client-side environment switch and confirmation dialog.
     if (path === "orders" && req.method === "POST") {
-      if (env !== "paper")
+      if (env !== "paper" && Deno.env.get("ALPACA_LIVE_ORDERS_ENABLED") !== "true")
         return jsonResponse(
-          { error: "Live orders disabled — paper only" },
+          { error: "Live orders disabled. Set the ALPACA_LIVE_ORDERS_ENABLED secret to 'true' (with ALPACA_LIVE_KEY_ID / ALPACA_LIVE_SECRET) to enable real-money orders." },
           403
         );
       const body = await req.json();
@@ -193,9 +196,9 @@ Deno.serve(async (req: Request) => {
 
     // ── Route: DELETE orders (cancel all open orders) ───────────────
     if (path === "orders" && req.method === "DELETE") {
-      if (env !== "paper")
+      if (env !== "paper" && Deno.env.get("ALPACA_LIVE_ORDERS_ENABLED") !== "true")
         return jsonResponse(
-          { error: "Live order cancellation disabled — paper only" },
+          { error: "Live order cancellation disabled. Set the ALPACA_LIVE_ORDERS_ENABLED secret to enable." },
           403
         );
       const res = await fetch(`${base}/v2/orders`, {

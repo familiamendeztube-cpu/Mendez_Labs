@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { alpaca, type AlpacaAccount, type AlpacaPosition, type AlpacaOrder, type AlpacaBar } from '@/services/alpaca';
+import { alpaca, getTradingEnv, type AlpacaAccount, type AlpacaPosition, type AlpacaOrder, type AlpacaBar } from '@/services/alpaca';
 import type { EquityPoint, DailyPnlPoint } from '@/types/models';
 import { supabase } from '@/lib/supabase';
 
@@ -24,7 +24,7 @@ export interface PortfolioHistoryPoint {
 
 async function fetchPortfolioHistory(period = '1M', timeframe = '1D'): Promise<PortfolioHistoryPoint[]> {
   const headers = await getAuthHeaders();
-  const qs = new URLSearchParams({ env: 'paper', period, timeframe });
+  const qs = new URLSearchParams({ env: getTradingEnv(), period, timeframe });
   const res = await fetch(`${FUNC_URL}/portfolio-history?${qs}`, { headers });
   if (!res.ok) return [];
   const data = await res.json();
@@ -39,7 +39,7 @@ async function fetchPortfolioHistory(period = '1M', timeframe = '1D'): Promise<P
 
 async function cancelAllOrders(): Promise<{ cancelled: number }> {
   const headers = await getAuthHeaders();
-  const qs = new URLSearchParams({ env: 'paper' });
+  const qs = new URLSearchParams({ env: getTradingEnv() });
   const res = await fetch(`${FUNC_URL}/orders?${qs}`, { method: 'DELETE', headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));

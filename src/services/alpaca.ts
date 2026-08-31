@@ -2,6 +2,20 @@ import { supabase } from '@/lib/supabase';
 
 const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alpaca-connector`;
 
+// ── Trading environment (paper | live) ──────────────────────────────────────
+// Owner-selected, persisted per browser. The server refuses live ORDERS unless
+// the ALPACA_LIVE_ORDERS_ENABLED secret is also set — defense in depth.
+const ENV_KEY = 'mlabs-trading-env';
+export type TradingEnv = 'paper' | 'live';
+
+export function getTradingEnv(): TradingEnv {
+  try { return localStorage.getItem(ENV_KEY) === 'live' ? 'live' : 'paper'; } catch { return 'paper'; }
+}
+
+export function setTradingEnv(env: TradingEnv) {
+  try { localStorage.setItem(ENV_KEY, env); } catch { /* ignore */ }
+}
+
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
@@ -14,7 +28,7 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 async function alpacaFetch<T>(path: string, params?: Record<string, string>, method = 'GET', body?: unknown): Promise<T> {
   const headers = await getAuthHeaders();
-  const qs = new URLSearchParams({ env: 'paper', ...params });
+  const qs = new URLSearchParams({ env: getTradingEnv(), ...params });
   const url = `${FUNC_URL}/${path}?${qs}`;
   const res = await fetch(url, {
     method,
@@ -123,5 +137,5 @@ export const alpaca = {
     time_in_force: 'day' | 'gtc' | 'ioc' | 'fok';
     limit_price?: number;
     stop_price?: number;
-  }) => alpacaFetch<AlpacaOrder>('orders', { env: 'paper' }, 'POST', order),
+  }) => alpacaFetch<AlpacaOrder>('orders', {}, 'POST', order),
 };
