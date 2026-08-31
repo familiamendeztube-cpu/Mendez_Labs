@@ -155,7 +155,21 @@ export async function fetchLiveFeed(): Promise<FeedResult> {
     };
   }
 
-  // Try the analysis-engine first (server-side independent model predictions).
+  // Warm the odds cache first: sports-feed pulls from The Odds API only when
+  // its 1-hour cache is stale, then the analysis engine reads that cache.
+  // Best-effort — a failure here just means the engine uses whatever is cached.
+  try {
+    await fetch(`${SUPABASE_URL}/functions/v1/sports-feed`, {
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch {
+    // cache warm-up is best-effort
+  }
+
+  // Then the analysis-engine (server-side independent model predictions).
   try {
     const engineResponse = await fetch(`${SUPABASE_URL}/functions/v1/analysis-engine`, {
       headers: {
