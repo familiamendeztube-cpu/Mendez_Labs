@@ -168,8 +168,45 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 <filter id="jp-softer" x="-60%" y="-60%" width="220%" height="220%">
                   <feGaussianBlur stdDeviation="13" />
                 </filter>
+                {/* Computed 3D lighting: golden-hour sun from the upper-left.
+                    Diffuse shading multiplies the base paint; a specular pass
+                    adds the metallic hot highlights — real rounded surfaces
+                    derived from each shape's silhouette, not hand-painted. */}
+                <filter id="jp-3d" x="-15%" y="-8%" width="130%" height="116%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="relief" />
+                  <feDiffuseLighting in="relief" surfaceScale="8" diffuseConstant="1.05" lightingColor="#FFF3E2" result="diff">
+                    <feDistantLight azimuth="230" elevation="58" />
+                  </feDiffuseLighting>
+                  <feComposite in="SourceGraphic" in2="diff" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lit" />
+                  <feSpecularLighting in="relief" surfaceScale="8" specularConstant="0.65" specularExponent="16" lightingColor="#FFFDF6" result="spec">
+                    <feDistantLight azimuth="230" elevation="58" />
+                  </feSpecularLighting>
+                  <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn" />
+                  <feComposite in="lit" in2="specIn" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
+                </filter>
+                {/* Photographic grain — kills vector flatness */}
+                <filter id="jp-grain">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n" />
+                  <feColorMatrix in="n" type="matrix"
+                    values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0.9 0.9 0.9 0 0" />
+                </filter>
+                <linearGradient id="jp-fin-gold" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#F0D49A" />
+                  <stop offset="50%" stopColor="#D6B77A" />
+                  <stop offset="100%" stopColor="#8F6D2C" />
+                </linearGradient>
+                <clipPath id="jp-clip">
+                  <path d="M316,455 C328,585 362,715 428,830 C482,925 534,1005 554,1052 Q561,1072 559,1094 L548,1112 L522,1116 L318,1152 Z" />
+                  <path d="M284,455 C272,585 238,715 172,830 C118,925 66,1005 46,1052 Q39,1072 41,1094 L52,1112 L78,1116 L282,1152 Z" />
+                  <path d="M300,26 C304,26 307,38 308.5,62 L311,150 C313,240 315,330 316,440 L316,1000 C316,1090 312,1180 308,1250 C305,1300 302,1340 300,1352 C298,1340 295,1300 292,1250 C288,1180 284,1090 284,1000 L284,440 C285,330 287,240 289,150 L291.5,62 C293,38 296,26 300,26 Z" />
+                  <rect x="348" y="1078" width="92" height="76" rx="5" />
+                  <rect x="160" y="1078" width="92" height="76" rx="5" />
+                  <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" />
+                </clipPath>
               </defs>
 
+              {/* ── Airframe under the computed-lighting pass ── */}
+              <g filter="url(#jp-3d)">
               {/* ── Ogival delta wings ── */}
               <path
                 d="M316,455
@@ -218,8 +255,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
               <line x1="230" y1="1098" x2="230" y2="1148" stroke="rgba(255,255,255,0.16)" strokeWidth="1.4" />
 
               {/* ── Tail fin (top-view spine) ── */}
-              <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" fill="#A6A9AA" />
-              <path d="M300,1128 L303.5,1298 L300,1312 Z" fill="#CFD1D0" />
+              <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" fill="url(#jp-fin-gold)" />
+              <path d="M300,1128 L303.5,1298 L300,1312 Z" fill="#F4E2B6" opacity="0.8" />
 
               {/* ── Needle fuselage with pointed tail cone ── */}
               <path
@@ -233,6 +270,16 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                    C285,330 287,240 289,150 L291.5,62
                    C293,38 296,26 300,26 Z"
                 fill="url(#jp-fuse)"
+              />
+              </g>
+
+              {/* Photographic grain across the whole airframe */}
+              <rect
+                x="0" y="0" width="600" height="1400"
+                filter="url(#jp-grain)"
+                clipPath="url(#jp-clip)"
+                opacity="0.45"
+                style={{ mixBlendMode: 'overlay' }}
               />
               {/* Nose probe */}
               <rect x="299" y="6" width="2" height="22" rx="1" fill="#7E8082" />
