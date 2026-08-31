@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { getTradingEnv, setTradingEnv, type TradingEnv } from '@/services/alpaca';
 import { OrderTicket } from '@/components/OrderTicket';
+import { useStore } from '@/store/StoreContext';
 import { fmtCurrency } from '@/utils/format';
 import {
   connectionStatusLabel,
@@ -23,6 +24,7 @@ import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVa
 
 export function TradingDashboard() {
   const live = useLiveTrading();
+  const { masterMode } = useStore();
   const [env, setEnvState] = useState<TradingEnv>(getTradingEnv());
   const [confirmLive, setConfirmLive] = useState(false);
 
@@ -150,13 +152,29 @@ export function TradingDashboard() {
       )}
 
       {/* Connection banners */}
-      {live.error && (
+      {live.error && masterMode && (
+        <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: amberAlpha(0.06), border: `1px solid ${amberAlpha(0.2)}` }}>
+          <Lock className="h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
+          <div>
+            <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>Master mode — trading data locked</p>
+            <p className="text-xs" style={{ color: tv.textMuted }}>
+              The access code opens the terminal in view-only mode. To connect your Alpaca
+              account (balances, positions, orders), log out and sign in with your email account.
+            </p>
+          </div>
+        </div>
+      )}
+      {live.error && !masterMode && (
         <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: redAlpha(0.06), border: `1px solid ${redAlpha(0.15)}` }}>
           <WifiOff className="h-5 w-5 shrink-0" style={{ color: tv.statusRed }} />
           <div>
             <p className="text-sm font-semibold" style={{ color: tv.statusRed }}>Alpaca connection failed</p>
             <p className="text-xs" style={{ color: tv.textMuted }}>{live.error}</p>
-            <p className="mt-1 text-xs" style={{ color: tv.textMuted }}>Make sure your Alpaca API keys are configured. The dashboard will retry automatically.</p>
+            <p className="mt-1 text-xs" style={{ color: tv.textMuted }}>
+              {env === 'live'
+                ? 'LIVE mode needs ALPACA_LIVE_KEY_ID and ALPACA_LIVE_SECRET set as Supabase edge-function secrets. Switch to PAPER to use the paper account.'
+                : 'Make sure your Alpaca API keys are configured. The dashboard will retry automatically.'}
+            </p>
           </div>
         </div>
       )}
