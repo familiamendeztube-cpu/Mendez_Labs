@@ -88,7 +88,7 @@ export function Hero({ reduced }: { reduced: boolean }) {
         </h1>
         <p
           data-hero-sub
-          className="absolute bottom-[8vh] left-1/2 z-20 -translate-x-1/2 text-center text-xs tracking-[0.35em]"
+          className="absolute bottom-[16vh] left-1/2 z-20 w-full -translate-x-1/2 px-8 text-center text-xs tracking-[0.35em] lg:bottom-[8vh] lg:w-auto lg:px-0"
           style={{ color: LP.mutedOnDark, fontFamily: LP.mono }}
         >
           A PRIVATE TRADING TERMINAL · BUILT LIKE A FIGHTER
