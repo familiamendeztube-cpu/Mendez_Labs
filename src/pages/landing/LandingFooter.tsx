@@ -17,13 +17,28 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
         yPercent: 110, stagger: 0.03, duration: 0.9, ease: 'lux',
         scrollTrigger: { trigger: ref.current, start: 'top 70%' },
       });
+      // Championship belt drifts up behind the wordmark as the footer scrolls in.
+      gsap.fromTo('[data-foot-belt]',
+        { yPercent: 30, rotation: -6, opacity: 0 },
+        {
+          yPercent: -10, rotation: 4, opacity: 0.22, ease: 'none',
+          scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
+        });
     }, ref);
     return () => ctx.revert();
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="dark" className="flex min-h-[70vh] flex-col justify-end px-[6vw] pb-28 pt-[14vh]">
-      <p className="mb-4 text-xs tracking-[0.4em]" style={{ color: LP.mutedOnDark, fontFamily: LP.mono }}>
+    <section ref={ref} data-lp-theme="dark" className="relative flex min-h-[70vh] flex-col justify-end overflow-hidden px-[6vw] pb-28 pt-[14vh]">
+      <img
+        data-foot-belt
+        src="/assets/boxing/belt-cinematic-v2.webp"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-6%] top-0 w-[46vw] max-w-[560px] select-none"
+        draggable={false}
+      />
+      <p className="relative z-10 mb-4 text-xs tracking-[0.4em]" style={{ color: LP.mutedOnDark, fontFamily: LP.mono }}>
         PRIVATE INTELLIGENCE TERMINAL — TRADING FIRST, SPORTS LAB SECOND
       </p>
       <h2

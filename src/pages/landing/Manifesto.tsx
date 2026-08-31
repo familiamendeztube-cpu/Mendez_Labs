@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { registerMotion } from './motion';
+import { FloatingChips } from './FloatingChips';
 import { LP } from './theme';
 
 const COPY =
@@ -35,8 +36,16 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="dark" className="flex min-h-screen items-center px-[6vw] py-[20vh]">
-      <div className="mx-auto max-w-5xl">
+    <section ref={ref} data-lp-theme="dark" className="relative flex min-h-screen items-center px-[6vw] py-[20vh]">
+      <FloatingChips
+        chips={[
+          { label: 'SPY · NYSE', top: '12%', right: '8%', speed: 55 },
+          { label: 'QQQ · NASDAQ', top: '70%', left: '4%', speed: 35, blur: true },
+          { label: 'ES · CME', top: '30%', left: '10%', speed: 70, blur: true },
+          { label: 'GC · COMEX', top: '82%', right: '14%', speed: 45 },
+        ]}
+      />
+      <div className="relative z-10 mx-auto max-w-5xl">
         <p data-manifesto-tag className="mb-8 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
           01 — THE PHILOSOPHY
         </p>

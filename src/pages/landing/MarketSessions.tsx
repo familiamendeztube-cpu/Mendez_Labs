@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { registerMotion } from './motion';
+import { FloatingChips } from './FloatingChips';
 import { LP } from './theme';
 
 interface Market { city: string; tz: string; open: number; close: number }
@@ -66,6 +67,13 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
         GLOBAL
       </div>
 
+      <FloatingChips
+        chips={[
+          { label: 'NIKKEI · TYO', top: '8%', right: '6%', speed: 50, blur: true },
+          { label: 'FTSE · LDN', top: '20%', left: '6%', speed: 65 },
+          { label: 'DAX · FRA', top: '58%', right: '10%', speed: 38, blur: true },
+        ]}
+      />
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         03 — MARKETS NEVER SLEEP
       </p>
