@@ -9,6 +9,7 @@ import { Preloader } from './Preloader';
 import { Hero } from './Hero';
 import { Manifesto } from './Manifesto';
 import { TerminalShowcase } from './TerminalShowcase';
+import { MarketSessions } from './MarketSessions';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -72,7 +73,7 @@ export function Landing() {
       <Hero reduced={reduced} />
       <Manifesto reduced={reduced} />
       <TerminalShowcase reduced={reduced} />
-      <Placeholder theme="dark" label="Markets Never Sleep" />
+      <MarketSessions reduced={reduced} />
       <Placeholder theme="light" label="The Sports Lab" />
       <Placeholder theme="dark" label="Footer" />
       <PillCta />
