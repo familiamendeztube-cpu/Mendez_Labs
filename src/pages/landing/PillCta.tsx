@@ -22,10 +22,17 @@ export function PillCta() {
     }
   }
 
-  // The fixed header's menu chip opens the same auth panel.
+  // The fixed header's menu chip opens the same auth panel; the in-app
+  // "Sign in with email" button sets a flag so the panel opens on arrival.
   useEffect(() => {
     const openHandler = () => setOpen(true);
     window.addEventListener('lp:open-auth', openHandler);
+    try {
+      if (sessionStorage.getItem('lp-open-auth') === '1') {
+        sessionStorage.removeItem('lp-open-auth');
+        setOpen(true);
+      }
+    } catch { /* ignore */ }
     return () => window.removeEventListener('lp:open-auth', openHandler);
   }, []);
 

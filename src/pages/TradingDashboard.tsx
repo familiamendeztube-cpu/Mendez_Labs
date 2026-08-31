@@ -22,9 +22,26 @@ import { useLiveTrading, type LiveTicker } from '@/services/tradingLive';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
 
+// Real market-session clocks (view-only data that needs no brokerage auth).
+const SESSIONS = [
+  { city: 'NEW YORK', tz: 'America/New_York', open: 570, close: 960 },
+  { city: 'LONDON', tz: 'Europe/London', open: 480, close: 990 },
+  { city: 'TOKYO', tz: 'Asia/Tokyo', open: 540, close: 900 },
+];
+
+function sessionNow(s: typeof SESSIONS[number]) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: s.tz, hour: '2-digit', minute: '2-digit', hour12: false, weekday: 'short',
+  }).formatToParts(new Date());
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+  const mins = parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10);
+  const weekend = get('weekday') === 'Sat' || get('weekday') === 'Sun';
+  return { time: `${get('hour')}:${get('minute')}`, isOpen: !weekend && mins >= s.open && mins < s.close };
+}
+
 export function TradingDashboard() {
   const live = useLiveTrading();
-  const { masterMode } = useStore();
+  const { masterMode, signOut } = useStore();
   const [env, setEnvState] = useState<TradingEnv>(getTradingEnv());
   const [confirmLive, setConfirmLive] = useState(false);
 
@@ -85,7 +102,9 @@ export function TradingDashboard() {
             Trading Command Center
           </h1>
           <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-            {live.connected ? 'Connected to Alpaca paper trading. Live market data active.' : 'Connecting to Alpaca...'}
+            {masterMode && !live.connected
+              ? 'View-only preview — sign in with email for live trading data.'
+              : live.connected ? 'Connected to Alpaca. Live market data active.' : 'Connecting to Alpaca...'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -153,14 +172,49 @@ export function TradingDashboard() {
 
       {/* Connection banners */}
       {live.error && masterMode && (
-        <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: amberAlpha(0.06), border: `1px solid ${amberAlpha(0.2)}` }}>
-          <Lock className="h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
-          <div>
-            <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>Master mode — trading data locked</p>
-            <p className="text-xs" style={{ color: tv.textMuted }}>
-              The access code opens the terminal in view-only mode. To connect your Alpaca
-              account (balances, positions, orders), log out and sign in with your email account.
-            </p>
+        <div className="rounded-2xl p-5" style={{ background: amberAlpha(0.05), border: `1px solid ${amberAlpha(0.22)}` }}>
+          <div className="flex items-start gap-3">
+            <Lock className="mt-0.5 h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>View-only preview</p>
+              <p className="mt-1 text-xs leading-relaxed" style={{ color: tv.textMuted }}>
+                The access code opens the terminal without a brokerage session — balances,
+                positions, charts and orders stay locked for your protection. One click below
+                takes you to the email sign-in that unlocks live account data.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                try { sessionStorage.setItem('lp-open-auth', '1'); } catch { /* ignore */ }
+                signOut();
+              }}
+              className="shrink-0 rounded-lg px-4 py-2 text-xs font-bold tracking-wide"
+              style={{ background: accentAlpha(0.15), color: tv.accent, border: `1px solid ${accentAlpha(0.3)}` }}
+            >
+              Sign in with email
+            </button>
+          </div>
+          {/* Live market sessions — real data, no auth needed */}
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {SESSIONS.map((s) => {
+              const { time, isOpen } = sessionNow(s);
+              return (
+                <div key={s.city} className="flex items-center justify-between rounded-xl px-4 py-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+                  <div>
+                    <p className="text-[10px] tracking-[0.25em]" style={{ color: tv.textMuted }}>{s.city}</p>
+                    <p className="serif text-xl" style={{ color: tv.textPrimary }}>{time}</p>
+                  </div>
+                  <span
+                    className="rounded-full px-2.5 py-1 text-[10px] font-bold tracking-widest"
+                    style={isOpen
+                      ? { background: accentAlpha(0.15), color: tv.accent }
+                      : { background: mutedAlpha(0.1), color: tv.textMuted }}
+                  >
+                    {isOpen ? 'OPEN' : 'CLOSED'}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
