@@ -25,16 +25,6 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
       revealWords(ref.current!.querySelector('[data-sl-head]')!, {
         scrollTrigger: { trigger: ref.current, start: 'top 65%' },
       });
-      gsap.from('[data-sl-gloves]', {
-        x: 160, opacity: 0, duration: 1.3, ease: 'lux',
-        scrollTrigger: { trigger: ref.current, start: 'top 70%' },
-      });
-      gsap.fromTo('[data-sl-gloves]',
-        { yPercent: 12, rotation: -4 },
-        {
-          yPercent: -12, rotation: 3, ease: 'none',
-          scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
-        });
       gsap.from('[data-sl-row]', {
         opacity: 0, x: -60, stagger: 0.08, duration: 0.8, ease: 'lux',
         scrollTrigger: { trigger: '[data-sl-grid]', start: 'top 78%' },
@@ -53,41 +43,30 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         04 — THE SPORTS LAB
       </p>
-      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-        <div>
-          <h2
-            data-sl-head
-            className="mb-10 font-bold"
-            style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 5.5vw, 5rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
-          >
-            The second discipline
-          </h2>
-          <div data-sl-grid>
-            {SPECS.map(([label, value]) => (
-              <div
-                key={label}
-                data-sl-row
-                className="flex items-baseline justify-between py-4"
-                style={{ borderTop: `1px solid ${LP.borderLight}` }}
-              >
-                <span className="text-xs tracking-[0.25em]" style={{ color: LP.mutedOnIvory, fontFamily: LP.mono }}>
-                  {label}
-                </span>
-                <span className="text-right text-base font-bold" style={{ color: LP.inkOnIvory, fontFamily: LP.display }}>
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="relative flex items-center justify-center">
-          <img
-            data-sl-gloves
-            src="/assets/boxing/gloves-cinematic.webp"
-            alt="Boxing gloves"
-            className="max-h-[60vh] w-auto object-contain drop-shadow-2xl"
-            draggable={false}
-          />
+      <div className="mx-auto max-w-4xl">
+        <h2
+          data-sl-head
+          className="mb-12 font-semibold"
+          style={{ color: LP.inkOnIvory, fontFamily: LP.displayHero, fontSize: 'clamp(2.2rem, 5.5vw, 5.5rem)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
+        >
+          The second discipline
+        </h2>
+        <div data-sl-grid>
+          {SPECS.map(([label, value]) => (
+            <div
+              key={label}
+              data-sl-row
+              className="flex items-baseline justify-between py-5"
+              style={{ borderTop: `1px solid ${LP.borderLight}` }}
+            >
+              <span className="text-xs tracking-[0.25em]" style={{ color: LP.mutedOnIvory, fontFamily: LP.mono }}>
+                {label}
+              </span>
+              <span className="text-right text-base font-bold" style={{ color: LP.inkOnIvory, fontFamily: LP.display }}>
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

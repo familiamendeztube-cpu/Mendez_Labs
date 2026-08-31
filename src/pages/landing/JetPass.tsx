@@ -30,17 +30,12 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           scrub: 1,
         },
       });
+      // Pure vertical rise — no lateral sway. Enter timing computed so the
+      // nose crosses the bottom edge at track start and the tail clears the
+      // top at track end (jet is ~2.15x its own width tall).
       tl.fromTo(jetRef.current,
-        { yPercent: 62 },
-        { yPercent: -105, ease: 'none', duration: 1 }, 0)
-        .to(jetRef.current, {
-          keyframes: {
-            x: [0, 8, -6, 4, 0],
-            rotation: [0, 0.6, -0.8, 0.4, 0],
-          },
-          ease: 'none',
-          duration: 1,
-        }, 0);
+        { yPercent: 30 },
+        { yPercent: -102, ease: 'none', duration: 1 }, 0);
 
       // Side entrances — sub-copy from the left, wing labels from each side
       gsap.from('[data-jet-sub]', {
@@ -101,7 +96,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         {/* ── The jet (original artwork, top-down, Gulfstream proportions) ── */}
         <div
           ref={jetRef}
-          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[min(94vw,980px)] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[92vw] max-w-none -translate-x-1/2"
           aria-hidden="true"
           style={{ filter: 'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34))' }}
         >

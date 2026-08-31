@@ -82,8 +82,8 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
       </p>
       <h2
         data-ms-head
-        className="mb-16 max-w-3xl font-bold"
-        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 6.5vw, 6rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
+        className="mb-16 max-w-4xl font-semibold"
+        style={{ color: LP.bone, fontFamily: LP.displayHero, fontSize: 'clamp(2.2rem, 5.8vw, 5.8rem)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
       >
         Three sessions. One fighter in the corner.
       </h2>
