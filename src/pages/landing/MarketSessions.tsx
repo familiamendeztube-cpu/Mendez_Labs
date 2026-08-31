@@ -96,7 +96,7 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
             data-ms-arc
             d={`M${60 + i * 40},190 Q450,${30 + i * 35} ${840 - i * 40},190`}
             fill="none"
-            stroke={i === 1 ? LP.emerald : 'rgba(232,226,214,0.35)'}
+            stroke={i === 1 ? LP.champagne : 'rgba(232,226,214,0.35)'}
             strokeWidth="1.5"
             strokeDasharray="900"
           />

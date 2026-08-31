@@ -84,7 +84,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
               data-term-curve
               d={CURVE}
               fill="none"
-              stroke={LP.emerald}
+              stroke={LP.champagne}
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeDasharray="700"

@@ -35,8 +35,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         { yPercent: -105, ease: 'none', duration: 1 }, 0)
         .to(jetRef.current, {
           keyframes: {
-            x: [0, 22, -16, 12, -6, 0],
-            rotation: [0, 1.8, -2.2, 1.4, -0.8, 0],
+            x: [0, 8, -6, 4, 0],
+            rotation: [0, 0.6, -0.8, 0.4, 0],
           },
           ease: 'none',
           duration: 1,
@@ -72,8 +72,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           data-jet-head
           className="relative z-10 font-bold"
           style={{
-            color: LP.inkOnIvory, fontFamily: LP.display,
-            fontSize: 'clamp(3.2rem, 11vw, 11.5rem)', lineHeight: 0.94, letterSpacing: '-0.03em',
+            color: LP.inkOnIvory, fontFamily: LP.displayHero, fontWeight: 600,
+            fontSize: 'clamp(2.6rem, 8.5vw, 9rem)', lineHeight: 1.02, letterSpacing: '-0.01em',
           }}
         >
           Trade in<br />
@@ -101,9 +101,9 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         {/* ── The jet (original artwork, top-down, Gulfstream proportions) ── */}
         <div
           ref={jetRef}
-          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[min(78vw,700px)] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[min(94vw,980px)] -translate-x-1/2"
           aria-hidden="true"
-          style={{ filter: 'drop-shadow(-42px 56px 34px rgba(16,19,18,0.32))' }}
+          style={{ filter: 'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34))' }}
         >
           <svg viewBox="0 0 600 1400" className="h-auto w-full" preserveAspectRatio="xMidYMin meet">
             <defs>

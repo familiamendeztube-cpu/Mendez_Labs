@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { registerMotion, revealWords } from './motion';
 import { introAlreadySeen } from './Preloader';
+import { HeroBackdrop } from './HeroBackdrop';
 import { LP } from './theme';
 
 export function Hero({ reduced }: { reduced: boolean }) {
@@ -70,12 +71,13 @@ export function Hero({ reduced }: { reduced: boolean }) {
   return (
     <section ref={trackRef} data-lp-theme="dark" style={{ height: '300vh' }}>
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        <HeroBackdrop reduced={reduced} />
         {/* Ambient glow */}
         <div
           data-hero-glow
           className="absolute left-1/2 top-1/2 h-[95vmin] w-[95vmin] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(32,200,120,0.12) 0%, rgba(32,200,120,0.04) 40%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(214,183,122,0.10) 0%, rgba(214,183,122,0.03) 40%, transparent 68%)',
           }}
         />
 
@@ -93,10 +95,10 @@ export function Hero({ reduced }: { reduced: boolean }) {
                 stroke="rgba(232,226,214,0.35)" strokeWidth="12"
                 strokeDasharray="1.5 23.5" />
             </g>
-            {/* Counter-rotating emerald arc */}
+            {/* Counter-rotating champagne arc */}
             <g data-hero-arc>
               <circle cx="300" cy="300" r="218" fill="none"
-                stroke={LP.emerald} strokeWidth="2.5" strokeLinecap="round"
+                stroke={LP.champagne} strokeWidth="2.5" strokeLinecap="round"
                 strokeDasharray="240 1130" opacity="0.9" />
             </g>
             {/* Gold accent arc */}
@@ -135,14 +137,14 @@ export function Hero({ reduced }: { reduced: boolean }) {
         <h1
           data-hero-upper
           className="absolute left-[5vw] top-[14vh] z-20 font-bold"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 9.2vw, 9.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
+          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 600, fontSize: 'clamp(2.4rem, 7vw, 7.5rem)', lineHeight: 1.02, letterSpacing: '-0.01em' }}
         >
           We are<br />discipline
         </h1>
         <h1
           data-hero-lower
           className="absolute bottom-[16vh] right-[5vw] z-20 text-right font-bold"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 9.2vw, 9.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
+          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 600, fontSize: 'clamp(2.4rem, 7vw, 7.5rem)', lineHeight: 1.02, letterSpacing: '-0.01em' }}
         >
           We are<br />edge
         </h1>

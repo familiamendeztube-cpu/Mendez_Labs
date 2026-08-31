@@ -44,7 +44,7 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
       <h2
         data-foot-mark
         className="relative z-10 font-bold"
-        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 12.5vw, 12rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
+        style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 600, fontSize: 'clamp(2.6rem, 9.5vw, 9.5rem)', lineHeight: 1, letterSpacing: '-0.01em' }}
       >
         MENDEZ LABS
       </h2>
@@ -53,7 +53,7 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
         style={{ borderTop: `1px solid ${LP.borderDark}`, color: LP.mutedOnDark, fontFamily: LP.mono }}
       >
         <span>© 2026 MENDEZ LABS. BUILT FOR ONE.</span>
-        <span style={{ color: LP.emerald }}>PAPER → LIVE</span>
+        <span style={{ color: LP.champagne }}>PAPER → LIVE</span>
       </div>
     </section>
   );

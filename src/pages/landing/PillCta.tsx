@@ -65,7 +65,7 @@ export function PillCta() {
             className="flex h-10 w-10 items-center justify-center rounded-full"
             style={{ background: LP.carbon }}
           >
-            <ArrowRight className="h-4 w-4" style={{ color: LP.emerald }} />
+            <ArrowRight className="h-4 w-4" style={{ color: LP.champagne }} />
           </span>
         </button>
       </div>
@@ -85,7 +85,7 @@ export function PillCta() {
           >
             <div className="mb-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <LockKeyhole className="h-4 w-4" style={{ color: LP.emerald }} />
+                <LockKeyhole className="h-4 w-4" style={{ color: LP.champagne }} />
                 <span className="text-sm font-bold tracking-widest" style={{ color: LP.textOnDark, fontFamily: LP.display }}>
                   {isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'}
                 </span>
@@ -111,7 +111,7 @@ export function PillCta() {
               type="submit" disabled={submitting}
               className="w-full rounded-lg py-2.5 text-sm font-bold"
               style={{
-                background: `linear-gradient(135deg, ${LP.emerald}, ${LP.emeraldDeep})`,
+                background: `linear-gradient(135deg, ${LP.champagne}, ${LP.gold})`,
                 color: LP.carbon, opacity: submitting ? 0.7 : 1,
               }}
             >

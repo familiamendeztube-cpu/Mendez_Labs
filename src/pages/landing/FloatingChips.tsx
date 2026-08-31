@@ -73,7 +73,7 @@ export function FloatingChips({ chips, tone = 'dark' }: { chips: Chip[]; tone?: 
         >
           <span
             className="h-1.5 w-1.5 rounded-full"
-            style={{ background: LP.emerald }}
+            style={{ background: LP.champagne }}
           />
           {c.label}
         </span>

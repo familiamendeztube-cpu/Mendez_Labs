@@ -18,5 +18,7 @@ export const LP = {
   skyMid: '#8FB0CC',
   textOnSky: '#FAFCFE',
   display: "'Archivo', 'Sora', 'Inter', sans-serif",
+  displayHero: "'Unbounded', 'Archivo', 'Sora', sans-serif",
+  champagne: '#D6B77A',
   mono: "'JetBrains Mono', monospace",
 } as const;

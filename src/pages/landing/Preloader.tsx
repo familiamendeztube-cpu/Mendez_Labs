@@ -44,8 +44,8 @@ export function Preloader({ reduced }: { reduced: boolean }) {
     >
       <div className="overflow-hidden">
         <h1
-          className="text-4xl font-bold tracking-[0.3em] sm:text-6xl"
-          style={{ color: LP.bone, fontFamily: LP.display }}
+          className="text-3xl font-semibold tracking-[0.25em] sm:text-5xl"
+          style={{ color: LP.bone, fontFamily: LP.displayHero }}
         >
           {word.split('').map((ch, i) => (
             <span key={i} data-pre-letter className="inline-block whitespace-pre">{ch}</span>
