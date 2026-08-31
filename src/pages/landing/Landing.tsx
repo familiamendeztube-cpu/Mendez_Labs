@@ -9,6 +9,7 @@ import { Preloader } from './Preloader';
 import { LandingHeader } from './LandingHeader';
 import { Hero } from './Hero';
 import { Manifesto } from './Manifesto';
+import { JetPass } from './JetPass';
 import { TerminalShowcase } from './TerminalShowcase';
 import { MarketSessions } from './MarketSessions';
 import { SportsLab } from './SportsLab';
@@ -57,6 +58,7 @@ export function Landing() {
       <LandingHeader reduced={reduced} />
       <Hero reduced={reduced} />
       <Manifesto reduced={reduced} />
+      <JetPass reduced={reduced} />
       <TerminalShowcase reduced={reduced} />
       <MarketSessions reduced={reduced} />
       <SportsLab reduced={reduced} />

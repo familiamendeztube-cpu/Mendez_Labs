@@ -25,6 +25,10 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
       revealWords(ref.current!.querySelector('[data-sl-head]')!, {
         scrollTrigger: { trigger: ref.current, start: 'top 65%' },
       });
+      gsap.from('[data-sl-gloves]', {
+        x: 160, opacity: 0, duration: 1.3, ease: 'lux',
+        scrollTrigger: { trigger: ref.current, start: 'top 70%' },
+      });
       gsap.fromTo('[data-sl-gloves]',
         { yPercent: 12, rotation: -4 },
         {
@@ -32,7 +36,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
           scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
         });
       gsap.from('[data-sl-row]', {
-        opacity: 0, y: 24, stagger: 0.08, duration: 0.7, ease: 'lux',
+        opacity: 0, x: -60, stagger: 0.08, duration: 0.8, ease: 'lux',
         scrollTrigger: { trigger: '[data-sl-grid]', start: 'top 78%' },
       });
     }, ref);

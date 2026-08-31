@@ -30,8 +30,8 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         scrollTrigger: { trigger: ref.current, start: 'top 65%' },
       });
       gsap.from('[data-term-frame]', {
-        y: 80, opacity: 0, duration: 1.2, ease: 'lux',
-        scrollTrigger: { trigger: '[data-term-frame]', start: 'top 80%' },
+        x: 140, opacity: 0, duration: 1.3, ease: 'lux',
+        scrollTrigger: { trigger: '[data-term-frame]', start: 'top 82%' },
       });
       gsap.from('[data-term-curve]', {
         strokeDashoffset: 700, duration: 1,
@@ -39,7 +39,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         scrollTrigger: { trigger: '[data-term-frame]', start: 'top 75%', end: 'top 30%', scrub: true },
       });
       gsap.from('[data-spec-row]', {
-        opacity: 0, y: 24, stagger: 0.08, duration: 0.7, ease: 'lux',
+        opacity: 0, x: -60, stagger: 0.08, duration: 0.8, ease: 'lux',
         scrollTrigger: { trigger: '[data-spec-grid]', start: 'top 78%' },
       });
     }, ref);
