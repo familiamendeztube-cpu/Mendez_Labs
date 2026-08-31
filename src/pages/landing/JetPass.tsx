@@ -34,8 +34,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       // nose crosses the bottom edge at track start and the tail clears the
       // top at track end (jet is ~2.15x its own width tall).
       tl.fromTo(jetRef.current,
-        { yPercent: 30 },
-        { yPercent: -102, ease: 'none', duration: 1 }, 0);
+        { yPercent: 10 },
+        { yPercent: -101, ease: 'none', duration: 1 }, 0);
 
       // Side entrances — sub-copy from the left, wing labels from each side
       gsap.from('[data-jet-sub]', {
@@ -59,7 +59,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       ref={trackRef}
       data-lp-theme="light"
       className="relative mx-2 rounded-[2.5rem] lg:mx-4 lg:rounded-[3rem]"
-      style={{ background: LP.ivory, height: '360vh' }}
+      style={{ background: LP.ivory, height: '420vh' }}
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden rounded-[2.5rem] px-[6vw] lg:rounded-[3rem]">
         {/* Headline — the jet passes in front of it */}
@@ -96,7 +96,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         {/* ── The jet (original artwork, top-down, Gulfstream proportions) ── */}
         <div
           ref={jetRef}
-          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[92vw] max-w-none -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[280vw] max-w-none -translate-x-1/2"
           aria-hidden="true"
           style={{ filter: 'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34))' }}
         >
