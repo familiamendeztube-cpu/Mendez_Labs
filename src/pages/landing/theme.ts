@@ -1,0 +1,18 @@
+// Landing-page palette and type constants. "LP" = Landing Page.
+export const LP = {
+  carbon: '#030605',
+  surface: '#0A0E0C',
+  ivory: '#F2EDE4',
+  bone: '#E8E2D6',
+  inkOnIvory: '#101312',
+  mutedOnIvory: '#6B6558',
+  textOnDark: '#E8E2D6',
+  mutedOnDark: '#8A8F8A',
+  emerald: '#20C878',
+  emeraldDeep: '#0E8A4E',
+  gold: '#B58A3A',
+  borderDark: 'rgba(232,226,214,0.10)',
+  borderLight: 'rgba(16,19,18,0.12)',
+  display: "'Sora', 'Inter', sans-serif",
+  mono: "'JetBrains Mono', monospace",
+} as const;

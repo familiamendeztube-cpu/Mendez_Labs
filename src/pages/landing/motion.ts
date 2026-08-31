@@ -1,0 +1,56 @@
+import { useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { CustomEase } from 'gsap/CustomEase';
+import Lenis from 'lenis';
+
+let registered = false;
+
+/** Register GSAP plugins and the shared luxury easing curves. Idempotent. */
+export function registerMotion() {
+  if (registered) return;
+  registered = true;
+  gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
+  // Jesko-style curves: fast start, long soft settle.
+  CustomEase.create('lux', '0.625, 0.05, 0, 1');
+  CustomEase.create('luxIn', '0.55, 0, 1, 0.45');
+}
+
+export function prefersReducedMotion(settingsReduced: boolean): boolean {
+  return (
+    settingsReduced ||
+    (typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  );
+}
+
+/** Weighted smooth scroll for the landing page only. Synced to ScrollTrigger. */
+export function useLenis(enabled: boolean) {
+  useEffect(() => {
+    if (!enabled) return;
+    registerMotion();
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    lenis.on('scroll', ScrollTrigger.update);
+    const raf = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(raf);
+    gsap.ticker.lagSmoothing(0);
+    return () => {
+      gsap.ticker.remove(raf);
+      lenis.destroy();
+      gsap.ticker.lagSmoothing(500, 33); // restore default
+    };
+  }, [enabled]);
+}
+
+/** Masked line reveal (SplitText `mask: 'lines'`). Call inside a gsap.context. */
+export function revealLines(el: Element, vars: gsap.TweenVars = {}) {
+  const split = SplitText.create(el, { type: 'lines', mask: 'lines' });
+  return gsap.from(split.lines, {
+    yPercent: 110,
+    duration: 1.1,
+    stagger: 0.09,
+    ease: 'lux',
+    ...vars,
+  });
+}

@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-d
 import { useState, useEffect } from 'react';
 import { StoreProvider, useStore } from '@/store/StoreContext';
 import { Entrance } from '@/pages/Entrance';
+import { Landing } from '@/pages/landing/Landing';
 import { Sidebar } from '@/components/Sidebar';
 import { TopBar } from '@/components/TopBar';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
@@ -88,7 +89,11 @@ function AppContent() {
       </div>
     );
   }
-  if (!authenticated) return <Entrance />;
+  if (!authenticated) {
+    // TEMP: preview route for the new landing page (removed in final cutover task)
+    if (window.location.hash.includes('landing-preview')) return <Landing />;
+    return <Entrance />;
+  }
   return <AppLayout />;
 }
 
