@@ -1,0 +1,116 @@
+import { useState } from 'react';
+import { ArrowRight, LockKeyhole, X } from 'lucide-react';
+import { useStore } from '@/store/StoreContext';
+import { LP } from './theme';
+
+export function PillCta() {
+  const { signIn, signUp, clearAuthError } = useStore();
+  const [open, setOpen] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    clearAuthError();
+    if (!email || !password) { setError('Email and password required'); return; }
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    setSubmitting(true);
+    try {
+      if (isSignUp) await signUp(email, password);
+      else await signIn(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      {/* Persistent pill — Jesko's "Book the Flight" */}
+      <div className="fixed bottom-6 left-1/2 z-[80] -translate-x-1/2" data-lp-pill>
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-3 rounded-full py-3 pl-7 pr-3 text-sm font-bold tracking-wide transition-transform hover:scale-[1.03]"
+          style={{
+            background: LP.bone,
+            color: LP.carbon,
+            fontFamily: LP.display,
+            boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
+          }}
+        >
+          Enter the Terminal
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ background: LP.carbon }}
+          >
+            <ArrowRight className="h-4 w-4" style={{ color: LP.emerald }} />
+          </span>
+        </button>
+      </div>
+
+      {/* Sign-in panel */}
+      {open && (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+          style={{ background: 'rgba(3,6,5,0.72)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setOpen(false)}
+        >
+          <form
+            onSubmit={handleSubmit}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl p-6"
+            style={{ background: LP.surface, border: `1px solid ${LP.borderDark}` }}
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <LockKeyhole className="h-4 w-4" style={{ color: LP.emerald }} />
+                <span className="text-sm font-bold tracking-widest" style={{ color: LP.textOnDark, fontFamily: LP.display }}>
+                  {isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'}
+                </span>
+              </div>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close">
+                <X className="h-4 w-4" style={{ color: LP.mutedOnDark }} />
+              </button>
+            </div>
+            <input
+              type="email" value={email} autoFocus placeholder="Email" aria-label="Email"
+              onChange={(e) => { setEmail(e.target.value); setError(''); }}
+              className="mb-3 w-full rounded-lg px-3 py-2.5 text-sm outline-none"
+              style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${LP.borderDark}`, color: LP.textOnDark }}
+            />
+            <input
+              type="password" value={password} placeholder="Password" minLength={6} aria-label="Password"
+              onChange={(e) => { setPassword(e.target.value); setError(''); }}
+              className="mb-3 w-full rounded-lg px-3 py-2.5 text-sm outline-none"
+              style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${LP.borderDark}`, color: LP.textOnDark }}
+            />
+            {error && <p className="mb-3 text-xs" style={{ color: '#D94550', fontFamily: LP.mono }}>{error}</p>}
+            <button
+              type="submit" disabled={submitting}
+              className="w-full rounded-lg py-2.5 text-sm font-bold"
+              style={{
+                background: `linear-gradient(135deg, ${LP.emerald}, ${LP.emeraldDeep})`,
+                color: LP.carbon, opacity: submitting ? 0.7 : 1,
+              }}
+            >
+              {submitting ? 'Please wait…' : isSignUp ? 'CREATE ACCOUNT' : 'ENTER'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setIsSignUp((v) => !v); setError(''); }}
+              className="mt-3 w-full text-center text-xs underline"
+              style={{ color: LP.mutedOnDark }}
+            >
+              {isSignUp ? 'Have an account? Sign in' : 'New? Create account'}
+            </button>
+          </form>
+        </div>
+      )}
+    </>
+  );
+}

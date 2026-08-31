@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/store/StoreContext';
 import { registerMotion, useLenis, prefersReducedMotion } from './motion';
 import { LP } from './theme';
+import { PillCta } from './PillCta';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -69,6 +70,7 @@ export function Landing() {
       <Placeholder theme="dark" label="Markets Never Sleep" />
       <Placeholder theme="light" label="The Sports Lab" />
       <Placeholder theme="dark" label="Footer" />
+      <PillCta />
     </div>
   );
 }
