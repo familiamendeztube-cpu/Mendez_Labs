@@ -278,7 +278,7 @@ assert(k3.capped === true, 'Kelly: large bankroll is capped');
 // fullKelly = (0.4*2.0 - 1) / (2.0 - 1) = -0.2/1.0 = -0.2 → 0
 const k4 = quarterKellyStake(0.4, 2.0, 100);
 assert(k4.stake === 0, 'Kelly: negative kelly → $0 stake');
-assert(k4.capReason?.includes('Negative'), 'Kelly: negative kelly reason');
+assert(k4.capReason?.includes('Negative') === true, 'Kelly: negative kelly reason');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SECTION 8: 2% absolute cap

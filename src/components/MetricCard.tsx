@@ -55,8 +55,8 @@ function useFlash(value: string) {
 
   useEffect(() => {
     if (prev.current !== value && prev.current !== '') {
-      const numPrev = parseFloat(prev.current.replace(/[^0-9.\-]/g, ''));
-      const numCur = parseFloat(value.replace(/[^0-9.\-]/g, ''));
+      const numPrev = parseFloat(prev.current.replace(/[^0-9.-]/g, ''));
+      const numCur = parseFloat(value.replace(/[^0-9.-]/g, ''));
       if (!isNaN(numPrev) && !isNaN(numCur) && numPrev !== numCur) {
         setFlash(numCur > numPrev ? 'green' : 'red');
         clearTimeout(timeout.current);

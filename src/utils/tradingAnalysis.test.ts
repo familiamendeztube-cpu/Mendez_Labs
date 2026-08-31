@@ -46,7 +46,7 @@ function makeQuote(overrides: Partial<Quote> = {}): Quote {
 function makeOutcomes(n: number, winRatio = 0.6, strategy: string = 'trend_continuation'): HistoricalOutcome[] {
   return Array.from({ length: n }, (_, i) => ({
     date: `2024-01-${String((i % 28) + 1).padStart(2, '0')}`,
-    strategyFamily: strategy as any,
+    strategyFamily: strategy as import('./tradingAnalysis').StrategyFamily,
     symbol: 'SPY',
     entryPrice: 450,
     exitPrice: i < n * winRatio ? 455 : 445,
@@ -127,7 +127,7 @@ function makeOutcomes(n: number, winRatio = 0.6, strategy: string = 'trend_conti
   ok(atr14(makeBars(14)) === null, 'atr14: 14 bars → null');
   const a = atr14(makeBars(20));
   ok(a !== null && a > 0, 'atr14: 20 bars → positive');
-  const flat = Array.from({ length: 20 }, (_, i) => ({
+  const flat = Array.from({ length: 20 }, () => ({
     timestamp: '', open: 100, high: 100, low: 100, close: 100, volume: 1000,
   }));
   ok(atr14(flat) === 0, 'atr14: flat bars → 0');

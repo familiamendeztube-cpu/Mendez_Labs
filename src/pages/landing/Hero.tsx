@@ -28,9 +28,12 @@ export function Hero({ reduced }: { reduced: boolean }) {
       gsap.from('[data-hero-sub]', {
         opacity: 0, y: 14, duration: 0.8, ease: 'lux', delay: delay + 0.6,
       });
-      gsap.from('[data-lp-pill]', {
-        y: 90, duration: 1, ease: 'lux', delay: delay + 0.8,
-      });
+      // The pill lives outside this section — query the document, not the
+      // scoped context, and pass the element so gsap.context doesn't rescope it.
+      const pill = document.querySelector('[data-lp-pill]');
+      if (pill) {
+        gsap.from(pill, { y: 90, duration: 1, ease: 'lux', delay: delay + 0.8 });
+      }
 
       // ── Continuous instrument motion (idle, not scroll-bound) ──
       gsap.to('[data-hero-ticks]', {

@@ -164,13 +164,20 @@ function assertSeedBetStakes() {
     check(bet.confidence !== bet.edge, `Seed bet ${bet.id} confidence ${bet.confidence} equals edge ${bet.edge}`);
   }
 
-  // Verify realistic mixed record: 3W/3L/2P
+  // Verify the seed record follows the generator's fixed result pattern for
+  // however many candidates qualified (generateSeedBets selects UP TO 8 —
+  // the count is data-dependent, so expectations derive from the pattern).
+  const RESULT_PATTERN: ('won' | 'lost' | 'pending')[] = [
+    'won', 'lost', 'won', 'lost', 'lost', 'won', 'pending', 'pending',
+  ];
+  const expectedSlice = RESULT_PATTERN.slice(0, seedBets.length);
   const wins = seedBets.filter((b) => b.result === 'won').length;
   const losses = seedBets.filter((b) => b.result === 'lost').length;
   const pending = seedBets.filter((b) => b.result === 'pending').length;
-  check(wins === 3, `Expected 3 wins, got ${wins}`);
-  check(losses === 3, `Expected 3 losses, got ${losses}`);
-  check(pending === 2, `Expected 2 pending, got ${pending}`);
+  check(seedBets.length > 0 && seedBets.length <= 8, `Expected 1-8 seed bets, got ${seedBets.length}`);
+  check(wins === expectedSlice.filter((r) => r === 'won').length, `Expected ${expectedSlice.filter((r) => r === 'won').length} wins, got ${wins}`);
+  check(losses === expectedSlice.filter((r) => r === 'lost').length, `Expected ${expectedSlice.filter((r) => r === 'lost').length} losses, got ${losses}`);
+  check(pending === expectedSlice.filter((r) => r === 'pending').length, `Expected ${expectedSlice.filter((r) => r === 'pending').length} pending, got ${pending}`);
 
   // Verify bankroll reconciliation
   const resetBankroll = computeResetBankroll(seedBets, bankroll);

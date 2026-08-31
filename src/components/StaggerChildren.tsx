@@ -13,8 +13,10 @@ export function StaggerChildren({
   stagger = 60,
   className,
   style,
-  as: Tag = 'div',
+  as = 'div',
 }: StaggerChildrenProps) {
+  // Widening to ElementType avoids TS2590 (union too complex) on the JSX below.
+  const Tag = as as React.ElementType;
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -38,7 +40,6 @@ export function StaggerChildren({
   }, []);
 
   return (
-    // @ts-expect-error dynamic tag
     <Tag
       ref={ref}
       className={className}

@@ -5,7 +5,7 @@ import { LogoutModal } from '@/components/LogoutModal';
 import { tv, mutedAlpha, redAlpha } from '@/lib/themeVars';
 
 export function TopBar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
-  const { feedProvider, refreshFeed, feedLoading, lastFeedFetch, logout } = useStore();
+  const { feedProvider, refreshFeed, feedLoading, lastFeedFetch, signOut } = useStore();
   const [showLogout, setShowLogout] = useState(false);
 
   return (
@@ -79,7 +79,7 @@ export function TopBar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
       <LogoutModal
         open={showLogout}
         onCancel={() => setShowLogout(false)}
-        onConfirm={() => { setShowLogout(false); logout(); }}
+        onConfirm={() => { setShowLogout(false); signOut(); }}
       />
     </>
   );

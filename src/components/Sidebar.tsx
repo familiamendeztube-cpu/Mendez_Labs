@@ -58,7 +58,6 @@ export function Sidebar({
             const { path, label, icon: Icon, children } = item;
 
             if (children) {
-              const isChildActive = children.some((c) => location.pathname === c.path);
               const isParentActive = location.pathname.startsWith(path);
               const open = sportsOpen || isParentActive;
 

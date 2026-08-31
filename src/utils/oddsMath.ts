@@ -259,7 +259,8 @@ export function fairDecimalPrice(p: number): number | null {
   return 1 / p;
 }
 
-export function expectedValue(p: number, decimalOdds: number): number | null {
+export function expectedValue(p: number | null, decimalOdds: number | null): number | null {
+  if (p === null || decimalOdds === null) return null;
   if (!Number.isFinite(p) || !Number.isFinite(decimalOdds)) return null;
   if (p <= 0 || p >= 1 || decimalOdds <= 1) return null;
   return p * decimalOdds - 1;

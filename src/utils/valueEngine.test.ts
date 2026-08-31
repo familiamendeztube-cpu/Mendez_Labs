@@ -124,7 +124,7 @@ assert(blendProbability(null, null, 0) === null, 'Both null → null');
   ], 3);
   assert(mc.valid, 'Consensus N-way: valid');
   assert(mc.probs.length === 3, 'Consensus N-way: 3 outcomes');
-  const sum = mc.probs.reduce((s, p) => s + (p ?? 0), 0);
+  const sum = mc.probs.reduce((s: number, p) => s + (p ?? 0), 0);
   assert(approx(sum, 1.0), 'Consensus N-way: sums to 1');
 }
 

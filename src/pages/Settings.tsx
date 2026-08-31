@@ -14,7 +14,7 @@ import { useTheme } from '@/lib/useTheme';
 import { THEMES } from '@/lib/themes';
 
 export function Settings() {
-  const { feedProvider, modelHealth, refreshFeed, feedLoading, settings, setSettings, lastFeedFetch, logout } = useStore();
+  const { feedProvider, modelHealth, refreshFeed, feedLoading, settings, setSettings, lastFeedFetch, signOut } = useStore();
   const [showLogout, setShowLogout] = useState(false);
   const { themeId, setTheme } = useTheme();
 
@@ -274,7 +274,7 @@ export function Settings() {
         </button>
       </div>
 
-      <LogoutModal open={showLogout} onCancel={() => setShowLogout(false)} onConfirm={() => { setShowLogout(false); logout(); }} />
+      <LogoutModal open={showLogout} onCancel={() => setShowLogout(false)} onConfirm={() => { setShowLogout(false); signOut(); }} />
     </div>
   );
 }

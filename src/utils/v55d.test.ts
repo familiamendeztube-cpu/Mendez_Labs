@@ -105,7 +105,7 @@ console.log('── Defect 2: Server pMarket rejection ──');
 // Without raw quotes, pMarket must be null regardless of server value
 {
   const serverPMarket = 0.538;
-  const rawPairs: Array<{ bookmaker: string; sideAOdds: number; sideBOdds: number }> | undefined = undefined;
+  const rawPairs = undefined as Array<{ bookmaker: string; sideAOdds: number; sideBOdds: number }> | undefined;
   let pMarket: number | null = null;
   if (rawPairs && Array.isArray(rawPairs) && rawPairs.length > 0) {
     pMarket = 0.5; // Would be set from recomputation

@@ -5,8 +5,6 @@ import {
 } from 'lucide-react';
 import { fmtCurrency } from '@/utils/format';
 import {
-  isLiveReady,
-  defaultChecklist,
   connectionStatusLabel,
   TRADING_PLANNED_LIVE,
   TRADING_DEFAULT_RISK_PCT,
@@ -22,7 +20,6 @@ import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVa
 
 export function TradingDashboard() {
   const live = useLiveTrading();
-  const checklist = defaultChecklist();
 
   const acct = live.account;
   const equity = acct ? parseFloat(acct.equity) : null;

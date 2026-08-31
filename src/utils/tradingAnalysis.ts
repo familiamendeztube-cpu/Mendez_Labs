@@ -201,7 +201,7 @@ export function extractFeatures(
 
 // ─── STRATEGY ELIGIBILITY ────────────────────────────────────────────────────
 
-function allNotNull(...vals: (number | null)[]): vals is number[] {
+function allNotNull(...vals: (number | null)[]): boolean {
   return vals.every(v => v !== null);
 }
 

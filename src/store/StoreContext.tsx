@@ -479,6 +479,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const addBetSlipLeg = useCallback((pick: RankedPick) => {
     setBetSlipLegs((prev) => {
       if (prev.some((l) => l.opportunityId === pick.eventId)) return prev;
+      // When no verified consensus exists, fall back to the market-implied
+      // probability from the offered odds (derived, never fabricated).
+      const implied = americanToImpliedProb(pick.bestOdds);
       return [
         ...prev,
         {
@@ -487,9 +490,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           market: pick.market,
           side: pick.side,
           odds: pick.bestOdds,
-          modelProbability: pick.consensusProbability,
-          edge: pick.marketValueEdge,
-          confidenceScore: pick.consensusProbability,
+          modelProbability: pick.consensusProbability ?? implied,
+          edge: pick.marketValueEdge ?? 0,
+          confidenceScore: pick.consensusProbability ?? implied,
         },
       ];
     });

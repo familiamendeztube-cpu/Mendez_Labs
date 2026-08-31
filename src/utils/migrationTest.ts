@@ -102,7 +102,9 @@ export function runMigrationTest(): MigrationTestResult {
     check(migrated.balance === expectedBalance, `Migrated balance ${migrated.balance} != expected ${expectedBalance}`);
     check(migrated.balance !== 633.46, 'Migrated balance should not be legacy $633.46');
 
-    check(migrated.bets.length === 8, `Expected 8 seed bets, got ${migrated.bets.length}`);
+    // generateSeedBets selects UP TO 8 qualifying candidates — the count is
+    // data-dependent, so expectations derive from the generator's own output.
+    check(migrated.bets.length === seedBets.length, `Expected ${seedBets.length} seed bets, got ${migrated.bets.length}`);
 
     for (const bet of migrated.bets) {
       check(bet.id.startsWith('seed-bet-v2-'), `Seed bet ID "${bet.id}" should start with seed-bet-v2-`);
@@ -114,8 +116,9 @@ export function runMigrationTest(): MigrationTestResult {
       }
     }
 
+    const expectedPending = seedBets.filter((b) => b.result === 'pending').length;
     const pending = migrated.bets.filter((b) => b.result === 'pending');
-    check(pending.length === 2, `Expected 2 pending bets, got ${pending.length}`);
+    check(pending.length === expectedPending, `Expected ${expectedPending} pending bets, got ${pending.length}`);
 
     for (const bet of migrated.bets) {
       check(bet.edge > 0, `Seed bet ${bet.id} has non-positive edge ${bet.edge}`);

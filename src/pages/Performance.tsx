@@ -3,7 +3,6 @@ import { HelpCircle, BarChart3, Activity } from 'lucide-react';
 import { ChartContainer } from '@/components/ChartContainer';
 import { EquityCurveChart, DailyPnlChart, DrawdownChart } from '@/components/Charts';
 import { useLiveTrading } from '@/services/tradingLive';
-import type { EquityPoint } from '@/types/models';
 import { tv, accentAlpha, amberAlpha, mutedAlpha } from '@/lib/themeVars';
 
 type Period = 'today' | '7d' | '30d' | 'all';

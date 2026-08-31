@@ -4,7 +4,7 @@ import { useStore, type SettledPickRecord } from '@/store/StoreContext';
 import { fmtOdds, fmtCurrency, fmtSignedCurrency } from '@/utils/format';
 import { fmtCostaRicaDateTime } from '@/services/liveData';
 import { plainEnglishBet } from '@/utils/pickFive';
-import { tv, accentAlpha, redAlpha, mutedAlpha, amberAlpha } from '@/lib/themeVars';
+import { tv, accentAlpha, mutedAlpha } from '@/lib/themeVars';
 import {
   countByResult,
   winPercent,
