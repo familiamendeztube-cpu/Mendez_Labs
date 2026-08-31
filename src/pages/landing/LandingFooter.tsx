@@ -43,8 +43,8 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
       </p>
       <h2
         data-foot-mark
-        className="font-bold leading-[0.95]"
-        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 12vw, 11rem)' }}
+        className="relative z-10 font-bold"
+        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(3rem, 12.5vw, 12rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
       >
         MENDEZ LABS
       </h2>

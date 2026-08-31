@@ -51,8 +51,8 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
         </p>
         <p
           data-manifesto
-          className="font-semibold leading-[1.25]"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(1.5rem, 3.4vw, 3.2rem)' }}
+          className="font-semibold"
+          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(1.6rem, 3.8vw, 3.6rem)', lineHeight: 1.18, letterSpacing: '-0.02em' }}
         >
           {COPY}
         </p>

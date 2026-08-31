@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { registerMotion, revealLines } from './motion';
+import { registerMotion, revealWords } from './motion';
 import { introAlreadySeen } from './Preloader';
 import { LP } from './theme';
 
@@ -16,8 +16,8 @@ export function Hero({ reduced }: { reduced: boolean }) {
       // ── Entrance (plays once after preloader) ──
       const upper = trackRef.current!.querySelector('[data-hero-upper]')!;
       const lower = trackRef.current!.querySelector('[data-hero-lower]')!;
-      revealLines(upper, { delay });
-      revealLines(lower, { delay: delay + 0.15 });
+      revealWords(upper, { delay });
+      revealWords(lower, { delay: delay + 0.2 });
       gsap.from(dialRef.current, {
         opacity: 0, scale: 0.88, duration: 1.8, ease: 'lux', delay: delay - 0.3,
       });
@@ -131,15 +131,15 @@ export function Hero({ reduced }: { reduced: boolean }) {
         {/* Split headline */}
         <h1
           data-hero-upper
-          className="absolute left-[6vw] top-[16vh] z-20 font-bold leading-[0.95]"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 7vw, 7rem)' }}
+          className="absolute left-[5vw] top-[14vh] z-20 font-bold"
+          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.8rem, 8.5vw, 8.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
         >
           We are<br />discipline
         </h1>
         <h1
           data-hero-lower
-          className="absolute bottom-[18vh] right-[6vw] z-20 text-right font-bold leading-[0.95]"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 7vw, 7rem)' }}
+          className="absolute bottom-[16vh] right-[5vw] z-20 text-right font-bold"
+          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.8rem, 8.5vw, 8.5rem)', lineHeight: 0.92, letterSpacing: '-0.03em' }}
         >
           We are<br />edge
         </h1>

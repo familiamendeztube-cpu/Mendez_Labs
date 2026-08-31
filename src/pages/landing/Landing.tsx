@@ -6,6 +6,7 @@ import { registerMotion, useLenis, prefersReducedMotion } from './motion';
 import { LP } from './theme';
 import { PillCta } from './PillCta';
 import { Preloader } from './Preloader';
+import { LandingHeader } from './LandingHeader';
 import { Hero } from './Hero';
 import { Manifesto } from './Manifesto';
 import { TerminalShowcase } from './TerminalShowcase';
@@ -53,6 +54,7 @@ export function Landing() {
       style={{ backgroundColor: LP.carbon, overflowX: 'clip' }}
     >
       <Preloader reduced={reduced} />
+      <LandingHeader reduced={reduced} />
       <Hero reduced={reduced} />
       <Manifesto reduced={reduced} />
       <TerminalShowcase reduced={reduced} />

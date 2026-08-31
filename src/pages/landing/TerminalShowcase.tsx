@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { registerMotion, revealLines } from './motion';
+import { registerMotion, revealWords } from './motion';
 import { LP } from './theme';
 
 const SPECS: Array<[string, string]> = [
@@ -22,7 +22,11 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
     if (reduced) return;
     registerMotion();
     const ctx = gsap.context(() => {
-      revealLines(ref.current!.querySelector('[data-term-head]')!, {
+      gsap.from(ref.current, {
+        y: 110, duration: 1.3, ease: 'lux',
+        scrollTrigger: { trigger: ref.current, start: 'top 92%' },
+      });
+      revealWords(ref.current!.querySelector('[data-term-head]')!, {
         scrollTrigger: { trigger: ref.current, start: 'top 65%' },
       });
       gsap.from('[data-term-frame]', {
@@ -43,14 +47,19 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="light" className="px-[6vw] py-[16vh]">
+    <section
+      ref={ref}
+      data-lp-theme="light"
+      className="relative mx-2 rounded-[2.5rem] px-[6vw] py-[14vh] lg:mx-4 lg:rounded-[3rem]"
+      style={{ background: LP.ivory }}
+    >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         02 — THE TERMINAL
       </p>
       <h2
         data-term-head
-        className="mb-14 max-w-4xl font-bold leading-[1.02]"
-        style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(2.2rem, 5.5vw, 5rem)' }}
+        className="mb-14 max-w-4xl font-bold"
+        style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 6.5vw, 6rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
       >
         One cockpit for every position you hold
       </h2>

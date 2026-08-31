@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { registerMotion, revealLines } from './motion';
+import { registerMotion, revealWords } from './motion';
 import { LP } from './theme';
 
 const SPECS: Array<[string, string]> = [
@@ -18,7 +18,11 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
     if (reduced) return;
     registerMotion();
     const ctx = gsap.context(() => {
-      revealLines(ref.current!.querySelector('[data-sl-head]')!, {
+      gsap.from(ref.current, {
+        y: 110, duration: 1.3, ease: 'lux',
+        scrollTrigger: { trigger: ref.current, start: 'top 92%' },
+      });
+      revealWords(ref.current!.querySelector('[data-sl-head]')!, {
         scrollTrigger: { trigger: ref.current, start: 'top 65%' },
       });
       gsap.fromTo('[data-sl-gloves]',
@@ -36,7 +40,12 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="light" className="px-[6vw] py-[16vh]">
+    <section
+      ref={ref}
+      data-lp-theme="light"
+      className="relative mx-2 rounded-[2.5rem] px-[6vw] py-[14vh] lg:mx-4 lg:rounded-[3rem]"
+      style={{ background: LP.ivory }}
+    >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         04 — THE SPORTS LAB
       </p>
@@ -44,8 +53,8 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
         <div>
           <h2
             data-sl-head
-            className="mb-10 font-bold leading-[1.02]"
-            style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(2.2rem, 5vw, 4.5rem)' }}
+            className="mb-10 font-bold"
+            style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 5.5vw, 5rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
           >
             The second discipline
           </h2>

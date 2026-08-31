@@ -15,6 +15,8 @@ export function registerMotion() {
   // Jesko-style curves: fast start, long soft settle.
   CustomEase.create('lux', '0.625, 0.05, 0, 1');
   CustomEase.create('luxIn', '0.55, 0, 1, 0.45');
+  // Heavier pull-up: near-vertical launch, long decelerating glide.
+  CustomEase.create('pull', '0.16, 1, 0.3, 1');
 }
 
 export function prefersReducedMotion(settingsReduced: boolean): boolean {
@@ -47,10 +49,22 @@ export function useLenis(enabled: boolean) {
 export function revealLines(el: Element, vars: gsap.TweenVars = {}) {
   const split = SplitText.create(el, { type: 'lines', mask: 'lines' });
   return gsap.from(split.lines, {
-    yPercent: 110,
-    duration: 1.1,
-    stagger: 0.09,
-    ease: 'lux',
+    yPercent: 120,
+    duration: 1.3,
+    stagger: 0.11,
+    ease: 'pull',
+    ...vars,
+  });
+}
+
+/** Masked word pull-up — Jesko's chunky per-word headline reveal. */
+export function revealWords(el: Element, vars: gsap.TweenVars = {}) {
+  const split = SplitText.create(el, { type: 'words,lines', mask: 'lines' });
+  return gsap.from(split.words, {
+    yPercent: 130,
+    duration: 1.15,
+    stagger: 0.055,
+    ease: 'pull',
     ...vars,
   });
 }

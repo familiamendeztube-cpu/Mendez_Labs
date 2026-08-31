@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, LockKeyhole, X } from 'lucide-react';
 import { useStore } from '@/store/StoreContext';
 import { LP } from './theme';
@@ -11,6 +11,13 @@ export function PillCta() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // The fixed header's menu chip opens the same auth panel.
+  useEffect(() => {
+    const openHandler = () => setOpen(true);
+    window.addEventListener('lp:open-auth', openHandler);
+    return () => window.removeEventListener('lp:open-auth', openHandler);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

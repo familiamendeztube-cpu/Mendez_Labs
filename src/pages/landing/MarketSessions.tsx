@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { registerMotion } from './motion';
+import { registerMotion, revealWords } from './motion';
 import { FloatingChips } from './FloatingChips';
 import { LP } from './theme';
 
@@ -39,6 +39,9 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
     if (reduced) return;
     registerMotion();
     const ctx = gsap.context(() => {
+      revealWords(ref.current!.querySelector('[data-ms-head]')!, {
+        scrollTrigger: { trigger: ref.current, start: 'top 65%' },
+      });
       gsap.from('[data-ms-ghost]', {
         yPercent: 30, ease: 'none',
         scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
@@ -78,8 +81,9 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
         03 — MARKETS NEVER SLEEP
       </p>
       <h2
-        className="mb-16 max-w-3xl font-bold leading-[1.02]"
-        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.2rem, 5.5vw, 5rem)' }}
+        data-ms-head
+        className="mb-16 max-w-3xl font-bold"
+        style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(2.4rem, 6.5vw, 6rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
       >
         Three sessions. One fighter in the corner.
       </h2>
