@@ -88,6 +88,8 @@ function AppContent() {
       </div>
     );
   }
+  // DEV-only: preview the authenticated shell without signing in (stripped from prod builds)
+  if (import.meta.env.DEV && window.location.hash.includes('app-preview')) return <AppLayout />;
   if (!authenticated) return <Landing />;
   return <AppLayout />;
 }

@@ -279,22 +279,28 @@
 .skeleton-shimmer { animation: skeleton-shimmer 1.8s ease-in-out infinite; }
 
 /* ── Stagger fade-up children ────────────────────────────────────────────────── */
+/* The attribute marks a revealed group: children start hidden and ANIMATE in.
+   (A transition can't fire here because pages set the attribute statically —
+   the previous transition-based rules left children stuck at opacity 0.) */
+@keyframes stagger-in {
+  to { opacity: 1; transform: none; }
+}
 [data-stagger-visible] > * {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  animation: stagger-in 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
 }
-[data-stagger-visible] > *:nth-child(1) { transition-delay: calc(var(--stagger, 60ms) * 0); }
-[data-stagger-visible] > *:nth-child(2) { transition-delay: calc(var(--stagger, 60ms) * 1); }
-[data-stagger-visible] > *:nth-child(3) { transition-delay: calc(var(--stagger, 60ms) * 2); }
-[data-stagger-visible] > *:nth-child(4) { transition-delay: calc(var(--stagger, 60ms) * 3); }
-[data-stagger-visible] > *:nth-child(5) { transition-delay: calc(var(--stagger, 60ms) * 4); }
-[data-stagger-visible] > *:nth-child(6) { transition-delay: calc(var(--stagger, 60ms) * 5); }
-[data-stagger-visible] > *:nth-child(7) { transition-delay: calc(var(--stagger, 60ms) * 6); }
-[data-stagger-visible] > *:nth-child(8) { transition-delay: calc(var(--stagger, 60ms) * 7); }
-[data-stagger-visible] > *:nth-child(9) { transition-delay: calc(var(--stagger, 60ms) * 8); }
-[data-stagger-visible] > *:nth-child(10) { transition-delay: calc(var(--stagger, 60ms) * 9); }
-[data-stagger-visible] > *:nth-child(n+11) { transition-delay: calc(var(--stagger, 60ms) * 10); }
+[data-stagger-visible] > *:nth-child(1) { animation-delay: calc(var(--stagger, 60ms) * 0); }
+[data-stagger-visible] > *:nth-child(2) { animation-delay: calc(var(--stagger, 60ms) * 1); }
+[data-stagger-visible] > *:nth-child(3) { animation-delay: calc(var(--stagger, 60ms) * 2); }
+[data-stagger-visible] > *:nth-child(4) { animation-delay: calc(var(--stagger, 60ms) * 3); }
+[data-stagger-visible] > *:nth-child(5) { animation-delay: calc(var(--stagger, 60ms) * 4); }
+[data-stagger-visible] > *:nth-child(6) { animation-delay: calc(var(--stagger, 60ms) * 5); }
+[data-stagger-visible] > *:nth-child(7) { animation-delay: calc(var(--stagger, 60ms) * 6); }
+[data-stagger-visible] > *:nth-child(8) { animation-delay: calc(var(--stagger, 60ms) * 7); }
+[data-stagger-visible] > *:nth-child(9) { animation-delay: calc(var(--stagger, 60ms) * 8); }
+[data-stagger-visible] > *:nth-child(10) { animation-delay: calc(var(--stagger, 60ms) * 9); }
+[data-stagger-visible] > *:nth-child(n+11) { animation-delay: calc(var(--stagger, 60ms) * 10); }
 
 /* ── Hover lift for cards ────────────────────────────────────────────────────── */
 .card-lift {
