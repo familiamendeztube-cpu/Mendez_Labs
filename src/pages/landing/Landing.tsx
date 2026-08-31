@@ -7,6 +7,7 @@ import { LP } from './theme';
 import { PillCta } from './PillCta';
 import { Preloader } from './Preloader';
 import { Hero } from './Hero';
+import { Manifesto } from './Manifesto';
 
 function Placeholder({ theme, label }: { theme: 'dark' | 'light'; label: string }) {
   return (
@@ -42,8 +43,8 @@ export function Landing() {
         const dark = sec.dataset.lpTheme === 'dark';
         ScrollTrigger.create({
           trigger: sec,
-          start: 'top 55%',
-          end: 'bottom 45%',
+          start: 'top 35%',
+          end: 'bottom 65%',
           onToggle: (self) => {
             if (self.isActive) {
               gsap.to(rootRef.current, {
@@ -68,7 +69,7 @@ export function Landing() {
     >
       <Preloader reduced={reduced} />
       <Hero reduced={reduced} />
-      <Placeholder theme="dark" label="Manifesto" />
+      <Manifesto reduced={reduced} />
       <Placeholder theme="light" label="The Terminal" />
       <Placeholder theme="dark" label="Markets Never Sleep" />
       <Placeholder theme="light" label="The Sports Lab" />
