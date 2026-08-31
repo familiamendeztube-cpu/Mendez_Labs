@@ -12,13 +12,21 @@ interface Chip {
   blur?: boolean; // depth-of-field for background chips
 }
 
+type Tone = 'dark' | 'light' | 'sky';
+
+const TONE_STYLES: Record<Tone, { color: string; border: string; bg: string }> = {
+  dark: { color: 'rgba(232,226,214,0.55)', border: 'rgba(232,226,214,0.14)', bg: 'rgba(10,14,12,0.6)' },
+  light: { color: 'rgba(16,19,18,0.55)', border: 'rgba(16,19,18,0.14)', bg: 'rgba(242,237,228,0.6)' },
+  sky: { color: 'rgba(250,252,254,0.9)', border: 'rgba(250,252,254,0.35)', bg: 'rgba(250,252,254,0.14)' },
+};
+
 /**
  * Decorative market chips that drift vertically at different speeds while the
- * host section scrolls past — the Jesko "objects floating through the page"
- * layer. Symbols only, no prices: nothing here fabricates market data.
+ * host section scrolls past — objects floating through the page. Symbols
+ * only, no prices: nothing here fabricates market data.
  * Render inside a `relative` section; chips are absolutely positioned.
  */
-export function FloatingChips({ chips, dark = true }: { chips: Chip[]; dark?: boolean }) {
+export function FloatingChips({ chips, tone = 'dark' }: { chips: Chip[]; tone?: Tone }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -55,9 +63,9 @@ export function FloatingChips({ chips, dark = true }: { chips: Chip[]; dark?: bo
             left: c.left,
             right: c.right,
             fontFamily: LP.mono,
-            color: dark ? 'rgba(232,226,214,0.55)' : 'rgba(16,19,18,0.55)',
-            border: `1px solid ${dark ? 'rgba(232,226,214,0.14)' : 'rgba(16,19,18,0.14)'}`,
-            background: dark ? 'rgba(10,14,12,0.6)' : 'rgba(242,237,228,0.6)',
+            color: TONE_STYLES[tone].color,
+            border: `1px solid ${TONE_STYLES[tone].border}`,
+            background: TONE_STYLES[tone].bg,
             backdropFilter: 'blur(4px)',
             filter: c.blur ? 'blur(2px)' : 'none',
             opacity: c.blur ? 0.55 : 0.9,

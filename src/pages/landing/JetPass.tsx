@@ -31,8 +31,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         },
       });
       tl.fromTo(jetRef.current,
-        { yPercent: 115 },
-        { yPercent: -135, ease: 'none', duration: 1 }, 0)
+        { yPercent: 62 },
+        { yPercent: -105, ease: 'none', duration: 1 }, 0)
         .to(jetRef.current, {
           keyframes: {
             x: [0, 22, -16, 12, -6, 0],
@@ -64,7 +64,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       ref={trackRef}
       data-lp-theme="light"
       className="relative mx-2 rounded-[2.5rem] lg:mx-4 lg:rounded-[3rem]"
-      style={{ background: LP.ivory, height: '320vh' }}
+      style={{ background: LP.ivory, height: '360vh' }}
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden rounded-[2.5rem] px-[6vw] lg:rounded-[3rem]">
         {/* Headline — the jet passes in front of it */}
@@ -98,70 +98,110 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           </span>
         </div>
 
-        {/* ── The jet (original SVG, top-down) ── */}
+        {/* ── The jet (original artwork, top-down, Gulfstream proportions) ── */}
         <div
           ref={jetRef}
-          className="pointer-events-none absolute left-1/2 top-0 z-20 h-[160vh] w-[min(58vw,520px)] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-0 z-20 w-[min(78vw,700px)] -translate-x-1/2"
           aria-hidden="true"
-          style={{ filter: 'drop-shadow(-28px 38px 22px rgba(16,19,18,0.30))' }}
+          style={{ filter: 'drop-shadow(-42px 56px 34px rgba(16,19,18,0.32))' }}
         >
-          <svg viewBox="0 0 400 900" className="h-full w-full" preserveAspectRatio="xMidYMin meet">
+          <svg viewBox="0 0 600 1400" className="h-auto w-full" preserveAspectRatio="xMidYMin meet">
             <defs>
               <linearGradient id="jet-body" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#D9D1C0" />
-                <stop offset="45%" stopColor="#F6F2E9" />
-                <stop offset="55%" stopColor="#F6F2E9" />
-                <stop offset="100%" stopColor="#CFC6B2" />
+                <stop offset="0%" stopColor="#BFB49B" />
+                <stop offset="30%" stopColor="#EDE6D5" />
+                <stop offset="50%" stopColor="#F8F4EA" />
+                <stop offset="70%" stopColor="#EDE6D5" />
+                <stop offset="100%" stopColor="#B8AC92" />
               </linearGradient>
               <linearGradient id="jet-wing" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E6DFCE" />
-                <stop offset="100%" stopColor="#C2B9A3" />
+                <stop offset="0%" stopColor="#EAE3D1" />
+                <stop offset="60%" stopColor="#CFC5AD" />
+                <stop offset="100%" stopColor="#B2A78D" />
               </linearGradient>
               <linearGradient id="jet-engine" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#B9B09A" />
-                <stop offset="50%" stopColor="#DDD5C3" />
-                <stop offset="100%" stopColor="#ABA28C" />
+                <stop offset="0%" stopColor="#A99F87" />
+                <stop offset="45%" stopColor="#E2DAC7" />
+                <stop offset="100%" stopColor="#9C9279" />
+              </linearGradient>
+              <linearGradient id="jet-stab" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#DDD5C2" />
+                <stop offset="100%" stopColor="#ABA189" />
               </linearGradient>
             </defs>
 
-            {/* Wings (behind fuselage) */}
-            <path d="M214,382 L384,556 Q394,566 390,580 L358,590 L214,514 Z" fill="url(#jet-wing)" />
-            <path d="M186,382 L16,556 Q6,566 10,580 L42,590 L186,514 Z" fill="url(#jet-wing)" />
-            {/* Wing accent tips */}
-            <path d="M384,556 Q394,566 390,580 L370,586 L358,562 Z" fill={LP.gold} opacity="0.55" />
-            <path d="M16,556 Q6,566 10,580 L30,586 L42,562 Z" fill={LP.gold} opacity="0.55" />
+            {/* ── Wings (behind fuselage): long, swept, raked tips ── */}
+            <path d="M334,560 L548,868 Q560,886 556,906 L544,922 L522,918 L336,752 Z" fill="url(#jet-wing)" />
+            <path d="M266,560 L52,868 Q40,886 44,906 L56,922 L78,918 L264,752 Z" fill="url(#jet-wing)" />
+            {/* Leading-edge highlights */}
+            <path d="M334,560 L548,868 L541,872 L332,572 Z" fill="#FFFDF6" opacity="0.5" />
+            <path d="M266,560 L52,868 L59,872 L268,572 Z" fill="#FFFDF6" opacity="0.5" />
+            {/* Raked winglets */}
+            <path d="M548,868 Q560,886 556,906 L544,922 L536,898 Z" fill="#8F8570" />
+            <path d="M52,868 Q40,886 44,906 L56,922 L64,898 Z" fill="#8F8570" />
 
-            {/* Tailplane */}
-            <path d="M210,742 L288,812 Q294,818 291,828 L268,834 L210,792 Z" fill="url(#jet-wing)" />
-            <path d="M190,742 L112,812 Q106,818 109,828 L132,834 L190,792 Z" fill="url(#jet-wing)" />
-            {/* Vertical fin spine (top-down) */}
-            <rect x="196" y="700" width="8" height="112" rx="4" fill="#B9B09A" />
-            <ellipse cx="200" cy="810" rx="12" ry="7" fill="#CFC6B2" />
+            {/* ── T-tail horizontal stabilizers ── */}
+            <path d="M312,1148 L448,1266 Q456,1274 453,1286 L442,1294 L424,1290 L310,1200 Z" fill="url(#jet-stab)" />
+            <path d="M288,1148 L152,1266 Q144,1274 147,1286 L158,1294 L176,1290 L290,1200 Z" fill="url(#jet-stab)" />
+            {/* Vertical fin spine + fin tip fairing */}
+            <rect x="291" y="1078" width="18" height="196" rx="9" fill="#B0A68D" />
+            <ellipse cx="300" cy="1272" rx="20" ry="10" fill="#D6CDBA" />
 
-            {/* Engine nacelles */}
-            <rect x="222" y="648" width="32" height="78" rx="15" fill="url(#jet-engine)" />
-            <rect x="146" y="648" width="32" height="78" rx="15" fill="url(#jet-engine)" />
-            <ellipse cx="238" cy="652" rx="14" ry="6" fill="#8F8672" />
-            <ellipse cx="162" cy="652" rx="14" ry="6" fill="#8F8672" />
+            {/* ── Rear-mounted engines with pylons ── */}
+            <rect x="330" y="962" width="16" height="70" fill="#C4BAA1" />
+            <rect x="254" y="962" width="16" height="70" fill="#C4BAA1" />
+            <rect x="342" y="944" width="54" height="132" rx="27" fill="url(#jet-engine)" />
+            <rect x="204" y="944" width="54" height="132" rx="27" fill="url(#jet-engine)" />
+            <ellipse cx="369" cy="950" rx="25" ry="9" fill="#736A56" />
+            <ellipse cx="231" cy="950" rx="25" ry="9" fill="#736A56" />
+            <ellipse cx="369" cy="1072" rx="20" ry="7" fill="#867D66" />
+            <ellipse cx="231" cy="1072" rx="20" ry="7" fill="#867D66" />
 
-            {/* Fuselage */}
+            {/* ── Fuselage: slender, long-cabin business jet ── */}
             <path
-              d="M200,14 C207,14 213,27 215,46 L219,142 C220,300 220,470 217,620 L213,762 C211,804 207,832 200,840 C193,832 189,804 187,762 L183,620 C180,470 180,300 181,142 L185,46 C187,27 193,14 200,14 Z"
+              d="M300,22
+                 C312,22 322,42 326,78 L332,170
+                 C335,240 336,420 336,560 L336,860
+                 C336,980 332,1090 326,1170
+                 C322,1224 312,1256 300,1262
+                 C288,1256 278,1224 274,1170
+                 C268,1090 264,980 264,860 L264,560
+                 C264,420 265,240 268,170 L274,78
+                 C278,42 288,22 300,22 Z"
               fill="url(#jet-body)"
             />
-            {/* Center pinstripe */}
-            <rect x="199" y="44" width="2" height="656" fill={LP.gold} opacity="0.5" />
-            {/* Cockpit windshield */}
-            <path d="M200,56 C209,56 214,66 215,86 L213,106 C205,99 195,99 187,106 L185,86 C186,66 191,56 200,56 Z" fill="#14171A" opacity="0.85" />
-            <line x1="200" y1="58" x2="200" y2="102" stroke="#F6F2E9" strokeWidth="1.4" opacity="0.6" />
+            {/* Radome seam + nose highlight */}
+            <path d="M300,22 C312,22 322,42 326,78 L274,78 C278,42 288,22 300,22 Z" fill="#F8F4EA" opacity="0.65" />
+            <line x1="274" y1="80" x2="326" y2="80" stroke="rgba(0,0,0,0.10)" strokeWidth="1.5" />
 
-            {/* Cabin windows */}
-            {Array.from({ length: 11 }).map((_, i) => (
+            {/* Gold coachlines along both sides */}
+            <path d="M271,150 L266,560 L266,860 C266,980 270,1090 276,1166" fill="none" stroke={LP.gold} strokeWidth="2.2" opacity="0.65" />
+            <path d="M329,150 L334,560 L334,860 C334,980 330,1090 324,1166" fill="none" stroke={LP.gold} strokeWidth="2.2" opacity="0.65" />
+
+            {/* Panel lines */}
+            <line x1="266" y1="330" x2="334" y2="330" stroke="rgba(0,0,0,0.07)" strokeWidth="1.5" />
+            <line x1="265" y1="640" x2="335" y2="640" stroke="rgba(0,0,0,0.07)" strokeWidth="1.5" />
+            <line x1="266" y1="930" x2="334" y2="930" stroke="rgba(0,0,0,0.07)" strokeWidth="1.5" />
+
+            {/* Cockpit windshield (four-pane) */}
+            <path d="M300,92 C315,92 323,106 325,132 L322,158 C308,148 292,148 278,158 L275,132 C277,106 285,92 300,92 Z" fill="#12151A" opacity="0.9" />
+            <line x1="300" y1="94" x2="300" y2="152" stroke="#F8F4EA" strokeWidth="2" opacity="0.7" />
+            <line x1="288" y1="98" x2="284" y2="150" stroke="#F8F4EA" strokeWidth="1.4" opacity="0.5" />
+            <line x1="312" y1="98" x2="316" y2="150" stroke="#F8F4EA" strokeWidth="1.4" opacity="0.5" />
+
+            {/* Main cabin door outline */}
+            <rect x="269" y="196" width="17" height="52" rx="6" fill="none" stroke="rgba(0,0,0,0.14)" strokeWidth="1.5" />
+
+            {/* Cabin windows — two long rows */}
+            {Array.from({ length: 16 }).map((_, i) => (
               <g key={i}>
-                <circle cx="212" cy={172 + i * 42} r="3.2" fill="#14171A" opacity="0.5" />
-                <circle cx="188" cy={172 + i * 42} r="3.2" fill="#14171A" opacity="0.5" />
+                <ellipse cx="277" cy={286 + i * 40} rx="4" ry="5.5" fill="#14171A" opacity="0.55" />
+                <ellipse cx="323" cy={286 + i * 40} rx="4" ry="5.5" fill="#14171A" opacity="0.55" />
               </g>
             ))}
+
+            {/* Center spine highlight */}
+            <rect x="297" y="90" width="6" height="1080" rx="3" fill="#FFFDF6" opacity="0.35" />
           </svg>
         </div>
 

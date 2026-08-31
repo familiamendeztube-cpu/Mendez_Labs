@@ -26,8 +26,13 @@ export function Landing() {
     if (reduced) return;
     registerMotion();
     const ctx = gsap.context(() => {
+      const THEME_BG: Record<string, string> = {
+        dark: LP.carbon,
+        light: LP.ivory,
+        sky: LP.skyMid,
+      };
       gsap.utils.toArray<HTMLElement>('[data-lp-theme]').forEach((sec) => {
-        const dark = sec.dataset.lpTheme === 'dark';
+        const bg = THEME_BG[sec.dataset.lpTheme ?? 'dark'] ?? LP.carbon;
         ScrollTrigger.create({
           trigger: sec,
           start: 'top 35%',
@@ -35,7 +40,7 @@ export function Landing() {
           onToggle: (self) => {
             if (self.isActive) {
               gsap.to(rootRef.current, {
-                backgroundColor: dark ? LP.carbon : LP.ivory,
+                backgroundColor: bg,
                 duration: 0.8,
                 ease: 'power2.out',
                 overwrite: 'auto',

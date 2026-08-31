@@ -13,6 +13,10 @@ export const LP = {
   gold: '#B58A3A',
   borderDark: 'rgba(232,226,214,0.10)',
   borderLight: 'rgba(16,19,18,0.12)',
-  display: "'Sora', 'Inter', sans-serif",
+  skyTop: '#9DBBD6',
+  skyBottom: '#7E9FBE',
+  skyMid: '#8FB0CC',
+  textOnSky: '#FAFCFE',
+  display: "'Archivo', 'Sora', 'Inter', sans-serif",
   mono: "'JetBrains Mono', monospace",
 } as const;

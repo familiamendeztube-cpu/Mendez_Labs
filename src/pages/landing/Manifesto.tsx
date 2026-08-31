@@ -20,9 +20,9 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
       // Each line brightens from muted to full as it crosses the viewport center.
       split.lines.forEach((line) => {
         gsap.fromTo(line,
-          { color: 'rgba(232,226,214,0.18)' },
+          { color: 'rgba(250,252,254,0.30)' },
           {
-            color: LP.bone,
+            color: LP.textOnSky,
             ease: 'none',
             scrollTrigger: { trigger: line, start: 'top 75%', end: 'top 45%', scrub: true },
           });
@@ -36,8 +36,14 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="dark" className="relative flex min-h-screen items-center px-[6vw] py-[20vh]">
+    <section
+      ref={ref}
+      data-lp-theme="sky"
+      className="relative mx-2 flex min-h-screen items-center overflow-hidden rounded-[2.5rem] px-[6vw] py-[20vh] lg:mx-4 lg:rounded-[3rem]"
+      style={{ background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 100%)` }}
+    >
       <FloatingChips
+        tone="sky"
         chips={[
           { label: 'SPY · NYSE', top: '12%', right: '8%', speed: 55 },
           { label: 'QQQ · NASDAQ', top: '70%', left: '4%', speed: 35, blur: true },
@@ -45,18 +51,18 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
           { label: 'GC · COMEX', top: '82%', right: '14%', speed: 45 },
         ]}
       />
-      <div className="relative z-10 mx-auto max-w-5xl">
-        <p data-manifesto-tag className="mb-8 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <p data-manifesto-tag className="mb-8 text-xs font-bold tracking-[0.4em]" style={{ color: 'rgba(250,252,254,0.75)', fontFamily: LP.mono }}>
           01 — THE PHILOSOPHY
         </p>
         <p
           data-manifesto
           className="font-semibold"
-          style={{ color: LP.bone, fontFamily: LP.display, fontSize: 'clamp(1.6rem, 3.8vw, 3.6rem)', lineHeight: 1.18, letterSpacing: '-0.02em' }}
+          style={{ color: LP.textOnSky, fontFamily: LP.display, fontSize: 'clamp(1.9rem, 4.6vw, 4.4rem)', lineHeight: 1.12, letterSpacing: '-0.025em' }}
         >
           {COPY}
         </p>
-        <p className="mt-10 text-sm tracking-widest" style={{ color: LP.emerald, fontFamily: LP.mono }}>
+        <p className="mt-10 text-sm font-bold tracking-widest" style={{ color: LP.textOnSky, fontFamily: LP.mono }}>
           STUDY. SIZE THE RISK. STRIKE ONCE.
         </p>
       </div>
