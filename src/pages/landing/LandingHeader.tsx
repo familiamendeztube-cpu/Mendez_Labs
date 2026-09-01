@@ -32,7 +32,7 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
       ref={ref}
       className="pointer-events-none fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-4 py-4 lg:px-8 lg:py-5"
       style={{
-        background: 'linear-gradient(180deg, rgba(15,11,8,0.55) 0%, rgba(15,11,8,0.28) 55%, transparent 100%)',
+        background: 'linear-gradient(180deg, rgba(8,12,17,0.55) 0%, rgba(8,12,17,0.28) 55%, transparent 100%)',
         backdropFilter: 'blur(2px)',
       }}
     >
@@ -64,7 +64,7 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
         className="pointer-events-auto mr-3 hidden rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.3em] sm:inline-block"
         style={{
           color: LP.gold,
-          border: '1px solid rgba(181,138,58,0.35)',
+          border: '1px solid rgba(143,182,218,0.35)',
           background: 'rgba(27,21,17,0.35)',
           backdropFilter: 'blur(8px)',
           fontFamily: LP.mono,

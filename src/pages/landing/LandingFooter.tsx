@@ -33,7 +33,7 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
       ref={ref}
       data-lp-theme="dark"
       className="relative flex min-h-[70vh] flex-col justify-end overflow-hidden px-[6vw] pb-28 pt-[14vh]"
-      style={{ background: `linear-gradient(180deg, ${LP.carbon} 0%, #191410 60%, #120E0A 100%)` }}
+      style={{ background: `linear-gradient(180deg, ${LP.carbon} 0%, #101820 60%, #0A0F15 100%)` }}
     >
       <img
         data-foot-belt

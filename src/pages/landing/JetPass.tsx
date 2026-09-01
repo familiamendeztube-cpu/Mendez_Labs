@@ -93,8 +93,8 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       data-lp-theme="light"
       className="relative"
       style={{
-        // Continues seamlessly from the manifesto's warming sky (#E9E2D0).
-        background: `linear-gradient(180deg, #E9E2D0 0%, #EFE8D8 40%, #F8F3E8 75%, ${LP.ivory} 100%)`,
+        // Continues seamlessly from the manifesto's warming sky (#E8EDF2).
+        background: `linear-gradient(180deg, #E8EDF2 0%, #EFF3F7 40%, #F7F9FB 75%, ${LP.ivory} 100%)`,
         height: '420vh',
       }}
     >
@@ -121,7 +121,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
 
         <div className="relative z-30 mt-10 flex items-center justify-between border-t pt-5" style={{ borderColor: LP.borderLight }}>
           <span data-jet-label-l className="text-xs font-bold tracking-[0.3em]" style={{ color: LP.inkOnIvory, fontFamily: LP.mono }}>
-            ALPACA MARKETS
+            ALPACA · KRAKEN
           </span>
           <span data-jet-label-r className="text-xs font-bold tracking-[0.3em]" style={{ color: LP.inkOnIvory, fontFamily: LP.mono }}>
             LIVE EXECUTION
@@ -213,7 +213,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 </filter>
                 <linearGradient id="jp-fin-gold" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#F0D49A" />
-                  <stop offset="50%" stopColor="#D6B77A" />
+                  <stop offset="50%" stopColor="#A9C6E2" />
                   <stop offset="100%" stopColor="#8F6D2C" />
                 </linearGradient>
                 <clipPath id="jp-clip">

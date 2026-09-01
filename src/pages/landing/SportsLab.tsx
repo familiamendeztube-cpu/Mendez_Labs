@@ -39,7 +39,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
       id="sports-lab"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
-      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #F1E8D6 60%, #ECE2CC 100%)` }}
+      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #E9EEF4 60%, #E2E9F1 100%)` }}
     >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         04 — THE SPORTS LAB
@@ -77,7 +77,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
         aria-hidden="true"
         className="-mx-[6vw] mt-[12vh] h-[62vh]"
         style={{
-          background: `linear-gradient(180deg, #ECE2CC 0%, #DFCFA9 26%, #C9B592 44%, #9C8560 60%, #6E5A41 76%, #3E3223 90%, ${LP.carbon} 100%)`,
+          background: `linear-gradient(180deg, #E2E9F1 0%, #CBD8E6 26%, #AEC2D6 44%, #7E97AF 60%, #4E657C 76%, #26313C 90%, ${LP.carbon} 100%)`,
         }}
       />
     </section>

@@ -47,7 +47,7 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
         // across the top padding zone, then warms all the way to the cream
         // the jet chapter opens with — the color never stops moving.
         background:
-          `linear-gradient(180deg, ${LP.carbon} 0%, #2E3138 7%, #4E5D6E 13%, #6E8BA6 20%, ${LP.skyTop} 30%, ${LP.skyBottom} 50%, #9FAEB8 68%, #C3BCAC 84%, #E9E2D0 100%)`,
+          `linear-gradient(180deg, ${LP.carbon} 0%, #2E3138 7%, #4E5D6E 13%, #6E8BA6 20%, ${LP.skyTop} 30%, ${LP.skyBottom} 50%, #9FAEBE 68%, #BECBD9 84%, #E8EDF2 100%)`,
       }}
     >
       <FloatingChips

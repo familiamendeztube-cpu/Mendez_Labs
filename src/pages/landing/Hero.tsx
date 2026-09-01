@@ -85,7 +85,7 @@ export function Hero({ reduced }: { reduced: boolean }) {
             className="absolute inset-0"
             style={{
               borderRadius: '28vmin',
-              background: `linear-gradient(145deg, ${LP.bone} 0%, #CFC8B8 55%, #A79F8D 100%)`,
+              background: `linear-gradient(145deg, ${LP.bone} 0%, #C6CDD6 55%, #98A2AE 100%)`,
               boxShadow: '0 0 120px rgba(232,226,214,0.08), inset 0 6px 24px rgba(255,255,255,0.5), inset 0 -14px 34px rgba(16,19,18,0.35)',
             }}
           />
@@ -95,7 +95,7 @@ export function Hero({ reduced }: { reduced: boolean }) {
             style={{
               inset: '5.5%',
               borderRadius: '24vmin',
-              background: 'linear-gradient(160deg, #8F8875 0%, #C8C1B0 45%, #EFEADD 100%)',
+              background: 'linear-gradient(160deg, #7E8894 0%, #B6BEC8 45%, #E8ECF1 100%)',
               boxShadow: 'inset 0 4px 14px rgba(16,19,18,0.4)',
             }}
           />

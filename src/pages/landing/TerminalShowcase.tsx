@@ -4,10 +4,10 @@ import { registerMotion, revealWords } from './motion';
 import { LP } from './theme';
 
 const SPECS: Array<[string, string]> = [
-  ['EXECUTION', 'Alpaca Markets'],
-  ['MARKETS', 'US Equities & ETFs'],
-  ['DATA FEED', 'IEX real-time quotes'],
-  ['MODE', 'Paper today · Live next'],
+  ['EXECUTION', 'Alpaca · Kraken'],
+  ['MARKETS', 'US equities, ETFs & crypto'],
+  ['DATA FEED', 'Real-time quotes'],
+  ['MODE', 'Simulated or funded'],
   ['RISK ENGINE', 'Position-sized, drawdown-aware'],
   ['SESSIONS', 'New York · London · Tokyo'],
 ];
@@ -87,7 +87,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
       id="terminal"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
-      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #F1E8D6 55%, #ECE2CC 100%)` }}
+      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #E9EEF4 55%, #E2E9F1 100%)` }}
     >
       {/* Editorial split header — small brand word, huge model name left;
           category + intro paragraph right */}
@@ -147,7 +147,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
                 key={t}
                 className="rounded-md px-2 py-0.5 text-[10px] font-bold"
                 style={t === '1M'
-                  ? { background: 'rgba(214,183,122,0.18)', color: LP.champagne, fontFamily: LP.mono }
+                  ? { background: 'rgba(143,182,218,0.18)', color: LP.champagne, fontFamily: LP.mono }
                   : { color: LP.mutedOnDark, fontFamily: LP.mono }}
               >
                 {t}
@@ -157,12 +157,12 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         </div>
         <div className="relative p-6 pb-4">
           {/* Top inner light on the panel */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{ background: 'linear-gradient(180deg, rgba(237,229,213,0.05), transparent)' }} />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.05), transparent)' }} />
           <svg viewBox="0 0 480 210" className="w-full" aria-hidden="true">
             <defs>
               <linearGradient id="term-stroke" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#B58A3A" />
-                <stop offset="55%" stopColor="#D6B77A" />
+                <stop offset="0%" stopColor="#5C89B4" />
+                <stop offset="55%" stopColor="#A9C6E2" />
                 <stop offset="100%" stopColor="#F1DDAE" />
               </linearGradient>
               <linearGradient id="term-area" x1="0" y1="0" x2="0" y2="1">
@@ -182,13 +182,13 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
 
             {/* Grid */}
             {[36, 76, 116, 156].map((y) => (
-              <line key={y} x1="0" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.055)" strokeWidth="1" />
+              <line key={y} x1="0" y1={y} x2="480" y2={y} stroke="rgba(255,255,255,0.055)" strokeWidth="1" />
             ))}
             {[80, 160, 240, 320, 400].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="176" stroke="rgba(237,229,213,0.04)" strokeWidth="1" />
+              <line key={x} x1={x} y1="0" x2={x} y2="176" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
             ))}
             {[36, 76, 116, 156].map((y) => (
-              <line key={y} x1="472" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.22)" strokeWidth="1.4" />
+              <line key={y} x1="472" y1={y} x2="480" y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth="1.4" />
             ))}
 
             {/* Volume bars */}
@@ -201,13 +201,13 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
                   width="8"
                   height={h}
                   rx="1.5"
-                  fill={up ? 'rgba(214,183,122,0.38)' : 'rgba(156,144,131,0.20)'}
+                  fill={up ? 'rgba(143,182,218,0.42)' : 'rgba(140,154,168,0.22)'}
                 />
               ))}
             </g>
 
             {/* Benchmark line beneath */}
-            <path d={BENCH_PATH} fill="none" stroke="rgba(237,229,213,0.20)" strokeWidth="1.5" strokeDasharray="2 6" strokeLinecap="round" />
+            <path d={BENCH_PATH} fill="none" stroke="rgba(255,255,255,0.20)" strokeWidth="1.5" strokeDasharray="2 6" strokeLinecap="round" />
 
             {/* Area fill */}
             <path data-term-area d={AREA_PATH} fill="url(#term-area)" />
@@ -228,8 +228,8 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
             />
 
             {/* Crosshair — vertical guide + level, with a tag pill (no digits) */}
-            <line data-term-cross x1="360" y1="0" x2="360" y2="176" stroke="rgba(237,229,213,0.22)" strokeWidth="1" strokeDasharray="3 4" />
-            <line x1="0" y1="44" x2="472" y2="44" stroke="rgba(214,183,122,0.3)" strokeWidth="1" strokeDasharray="4 5" />
+            <line data-term-cross x1="360" y1="0" x2="360" y2="176" stroke="rgba(255,255,255,0.22)" strokeWidth="1" strokeDasharray="3 4" />
+            <line x1="0" y1="44" x2="472" y2="44" stroke="rgba(143,182,218,0.32)" strokeWidth="1" strokeDasharray="4 5" />
             <rect x="452" y="37" width="28" height="14" rx="3" fill={LP.champagne} opacity="0.9" />
             <rect x="457" y="42" width="18" height="4" rx="2" fill={LP.carbon} opacity="0.55" />
 
@@ -266,7 +266,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         aria-hidden="true"
         className="-mx-[6vw] mt-[12vh] h-[64vh]"
         style={{
-          background: `linear-gradient(180deg, #ECE2CC 0%, #DFCFA9 28%, #C9B592 46%, #9C8560 62%, #6E5A41 78%, #3E3223 90%, #241D17 100%)`,
+          background: `linear-gradient(180deg, #E2E9F1 0%, #CBD8E6 28%, #AEC2D6 46%, #7E97AF 62%, #4E657C 78%, #26313C 90%, #16202B 100%)`,
         }}
       />
     </section>
