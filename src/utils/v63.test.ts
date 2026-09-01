@@ -39,25 +39,20 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(src.includes('path="/"') && src.includes('Navigate to="/dashboard"'), 'default route → /dashboard');
   ok(src.includes('path="*"') && src.includes('Navigate to="/dashboard"'), 'catch-all → /dashboard');
 
-  // Auth gate preserved
-  ok(src.includes('if (!authenticated) return <Entrance />'), 'auth gate: if (!authenticated) return <Entrance />');
+  // Auth gate preserved (unauthenticated → landing page)
+  ok(src.includes('if (!authenticated) return <Landing />'), 'auth gate: unauthenticated → <Landing />');
 
   // SportsSubNav conditional on /sports prefix
   ok(src.includes("isSportsRoute") && src.includes('location.pathname.startsWith(\'/sports\')'), 'isSportsRoute checks /sports prefix');
   ok(src.includes('{isSportsRoute && <SportsSubNav />}'), 'SportsSubNav rendered conditionally');
 
-  // Imports for all page components
-  ok(src.includes("import { TradingDashboard }"), 'imports TradingDashboard');
-  ok(src.includes("import { Signals }"), 'imports Signals');
-  ok(src.includes("import { PaperPortfolio }"), 'imports PaperPortfolio');
-  ok(src.includes("import { Performance }"), 'imports Performance');
-  ok(src.includes("import { Today }"), 'imports Today');
-  ok(src.includes("import { PickFive }"), 'imports PickFive');
-  ok(src.includes("import { Results }"), 'imports Results');
-  ok(src.includes("import { Bankroll }"), 'imports Bankroll');
-  ok(src.includes("import { Settings }"), 'imports Settings');
+  // Page components wired in (route-split via React.lazy)
+  for (const page of ['TradingDashboard', 'Signals', 'PaperPortfolio', 'Performance', 'Today', 'PickFive', 'Results', 'Bankroll', 'Settings']) {
+    ok(src.includes(`import('@/pages/${page}')`), `lazy-loads ${page}`);
+  }
   ok(src.includes("import { SportsSubNav }"), 'imports SportsSubNav');
-  ok(src.includes("import { Entrance }"), 'imports Entrance');
+  ok(src.includes("import { Landing }"), 'imports Landing');
+  ok(src.includes('lazy(') && src.includes('Suspense'), 'routes are code-split with Suspense');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -205,23 +200,15 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SECTION 7: Landing page update (src/pages/Entrance.tsx)
+// SECTION 7: Landing page (src/pages/landing/)
 // ═══════════════════════════════════════════════════════════════════════════════
 {
-  const src = read('src/pages/Entrance.tsx');
+  const src = read('src/pages/landing/Landing.tsx');
 
-  // No longer says "Sports Intelligence" in the hero headline area
-  // Check lines ~1128-1150 for headlines
-  const lines = src.split('\n');
-  const heroArea = lines.slice(1127, 1150).join('\n');
-  ok(!heroArea.includes('Sports Intelligence'), 'hero area no longer says "Sports Intelligence"');
-
-  // Contains "Trade Smarter" trading-first headline
-  ok(src.includes('Trade Smarter.'), 'Entrance has "Trade Smarter." headline');
-  ok(src.includes('Research First.'), 'Entrance has "Research First." headline');
-
-  // Subtitle mentions trading signals or markets
-  ok(src.includes('trading signals'), 'Entrance subtitle mentions trading signals');
+  // Trading-first narrative and the cinematic chapter structure
+  ok(src.includes('Hero') && src.includes('Manifesto') && src.includes('JetPass'), 'Landing assembles the cinematic chapters');
+  ok(src.includes('useLenis') || src.includes('Lenis'), 'Landing uses Lenis smooth scroll');
+  ok(src.includes('data-lp-theme'), 'chapters carry theme markers for the animated background');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

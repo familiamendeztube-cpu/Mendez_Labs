@@ -1,0 +1,17 @@
+# Netlify deploy config. Connect this repo at app.netlify.com → "Add new site"
+# → "Import an existing project" → pick familiamendeztube-cpu/Mendez_Labs.
+# Set the two build env vars in Site settings → Environment variables:
+#   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY   (values from your local .env)
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# HashRouter is used, but this keeps deep links and refreshes working anyway.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
