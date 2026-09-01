@@ -1,57 +1,53 @@
-import { terminalHeaders } from '@/lib/terminalConfig';
+import { brokerFetch, getActiveBrokerId, setActiveBrokerId, type BrokerId } from '@/services/brokers';
 
-const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alpaca-connector`;
+// ── Trading venue ───────────────────────────────────────────────────────────
+// The terminal can trade through more than one venue (Alpaca paper, Alpaca
+// live, Kraken). Selection lives in brokers.ts; these helpers keep the older
+// paper/live vocabulary working for callers that only care about that.
 
-// ── Trading environment (paper | live) ──────────────────────────────────────
-// Owner-selected, persisted per browser. The server refuses live ORDERS unless
-// the ALPACA_LIVE_ORDERS_ENABLED secret is also set — defense in depth.
-const ENV_KEY = 'mlabs-trading-env';
 export type TradingEnv = 'paper' | 'live';
 
 export function getTradingEnv(): TradingEnv {
-  try { return localStorage.getItem(ENV_KEY) === 'live' ? 'live' : 'paper'; } catch { return 'paper'; }
+  return getActiveBrokerId() === 'alpaca-paper' ? 'paper' : 'live';
 }
 
 export function setTradingEnv(env: TradingEnv) {
-  try { localStorage.setItem(ENV_KEY, env); } catch { /* ignore */ }
+  setActiveBrokerId(env === 'live' ? 'alpaca-live' : 'alpaca-paper');
 }
 
-async function alpacaFetch<T>(path: string, params?: Record<string, string>, method = 'GET', body?: unknown): Promise<T> {
-  const headers = terminalHeaders();
-  const qs = new URLSearchParams({ env: getTradingEnv(), ...params });
-  const url = `${FUNC_URL}/${path}?${qs}`;
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(err.error || `Alpaca request failed (${res.status})`);
-  }
-  return res.json();
+export { getActiveBrokerId, setActiveBrokerId, type BrokerId };
+
+/** Route a request to whichever venue is currently selected. */
+function venueFetch<T>(path: string, params?: Record<string, string>, method = 'GET', body?: unknown): Promise<T> {
+  return brokerFetch<T>(getActiveBrokerId(), path, params, method, body);
 }
+
+// ── Shared shapes ───────────────────────────────────────────────────────────
+// Both connectors normalize into these, so the UI is venue-agnostic.
 
 export interface AlpacaAccount {
-  id: string;
-  account_number: string;
-  status: string;
+  id?: string;
+  account_number?: string;
+  status?: string;
   currency: string;
   buying_power: string;
   cash: string;
   portfolio_value: string;
   equity: string;
-  last_equity: string;
-  long_market_value: string;
-  short_market_value: string;
-  initial_margin: string;
-  maintenance_margin: string;
-  daytrade_count: number;
-  pattern_day_trader: boolean;
+  last_equity?: string;
+  long_market_value?: string;
+  short_market_value?: string;
+  initial_margin?: string;
+  maintenance_margin?: string;
+  daytrade_count?: number;
+  pattern_day_trader?: boolean;
+  /** Present on crypto venues: raw per-asset balances. */
+  balances?: Record<string, string>;
+  broker?: string;
 }
 
 export interface AlpacaPosition {
-  asset_id: string;
+  asset_id?: string;
   symbol: string;
   qty: string;
   avg_entry_price: string;
@@ -102,22 +98,26 @@ export interface AlpacaOrder {
 }
 
 export const alpaca = {
-  getAccount: () => alpacaFetch<AlpacaAccount>('account'),
+  getAccount: () => venueFetch<AlpacaAccount>('account'),
 
-  getPositions: () => alpacaFetch<AlpacaPosition[]>('positions'),
+  getPositions: () => venueFetch<AlpacaPosition[]>('positions'),
 
   getQuotes: (symbols: string[]) =>
-    alpacaFetch<{ quotes: Record<string, AlpacaQuote> }>('quotes', { symbols: symbols.join(',') }),
+    venueFetch<{ quotes: Record<string, AlpacaQuote> }>('quotes', { symbols: symbols.join(',') }),
 
   getBars: (symbols: string[], timeframe = '1Day', start?: string, end?: string) => {
     const params: Record<string, string> = { symbols: symbols.join(','), timeframe };
+    // Kraken takes minutes as an integer interval; map the common timeframes.
+    if (getActiveBrokerId() === 'kraken') {
+      params.interval = timeframe.startsWith('5') ? '5' : timeframe.startsWith('1Day') ? '1440' : '60';
+    }
     if (start) params.start = start;
     if (end) params.end = end;
-    return alpacaFetch<{ bars: Record<string, AlpacaBar[]> }>('bars', params);
+    return venueFetch<{ bars: Record<string, AlpacaBar[]> }>('bars', params);
   },
 
   getOrders: (status = 'all', limit = 50) =>
-    alpacaFetch<AlpacaOrder[]>('orders', { status, limit: String(limit) }),
+    venueFetch<AlpacaOrder[]>('orders', { status, limit: String(limit) }),
 
   submitOrder: (order: {
     symbol: string;
@@ -127,5 +127,5 @@ export const alpaca = {
     time_in_force: 'day' | 'gtc' | 'ioc' | 'fok';
     limit_price?: number;
     stop_price?: number;
-  }) => alpacaFetch<AlpacaOrder>('orders', {}, 'POST', order),
+  }) => venueFetch<AlpacaOrder>('orders', {}, 'POST', order),
 };

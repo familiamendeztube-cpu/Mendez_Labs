@@ -136,4 +136,45 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(pf.includes('MatchupBadges') && pf.includes('SPORTS_IMAGES'), 'Top Five shows crests + a hero image');
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 7: Kraken venue + multi-broker abstraction
+// ═══════════════════════════════════════════════════════════════════════════════
+{
+  const fn = 'supabase/functions/kraken-connector/index.ts';
+  ok(fs.existsSync(path.join(ROOT, fn)), 'kraken-connector/index.ts exists');
+  const src = read(fn);
+
+  ok(src.includes('terminalAuthorized') && src.includes('rateLimited'), 'kraken-connector uses the shared gate + rate limit');
+  ok(src.includes('HMAC') && src.includes('SHA-512'), 'kraken-connector signs private calls with HMAC-SHA512');
+  ok(src.includes('SHA-256'), 'kraken signature hashes nonce+postdata with SHA-256');
+  ok(src.includes('KRAKEN_API_KEY') && src.includes('KRAKEN_API_SECRET'), 'kraken-connector reads its API secrets');
+  ok(src.includes('KRAKEN_ORDERS_ENABLED'), 'kraken orders are gated by a server flag');
+  // Same route vocabulary as the Alpaca connector, so the app stays venue-agnostic.
+  for (const route of ['account', 'positions', 'quotes', 'bars', 'orders', 'portfolio-history']) {
+    ok(src.includes(`path === "${route}"`), `kraken-connector serves the ${route} route`);
+  }
+  ok(!src.match(/API-Key["']?\s*:\s*["'][A-Za-z0-9+/]{20,}/), 'no hardcoded Kraken key in source');
+
+  const cfg = read('supabase/config.toml');
+  ok(cfg.includes('[functions.kraken-connector]'), 'config has kraken-connector');
+  const sec = cfg.slice(cfg.indexOf('[functions.kraken-connector]'));
+  ok(sec.slice(sec.indexOf('verify_jwt')).startsWith('verify_jwt = false'), 'kraken-connector verify_jwt is false');
+
+  const brokers = read('src/services/brokers.ts');
+  ok(brokers.includes("'alpaca-paper'") && brokers.includes("'alpaca-live'") && brokers.includes("'kraken'"), 'three venues registered');
+  ok(brokers.includes('depositUrl') && brokers.includes('withdrawal') && brokers.includes('funding'), 'each venue documents funding + withdrawal rails');
+  ok(brokers.includes('brokerFetch'), 'brokers.ts exposes a unified fetch');
+  ok(brokers.includes('getActiveBrokerId') && brokers.includes('setActiveBrokerId'), 'active venue is persisted');
+
+  const picker = read('src/components/BrokerPicker.tsx');
+  ok(picker.includes('export function BrokerPicker'), 'BrokerPicker exported');
+  ok(picker.includes('Add funds'), 'BrokerPicker has an Add funds action');
+  ok(picker.includes('realMoney'), 'BrokerPicker confirms before switching to a real-money venue');
+  ok(picker.includes('never handles your card'), 'funding panel states the terminal does not touch card details');
+
+  const alp = read('src/services/alpaca.ts');
+  ok(alp.includes('brokerFetch'), 'alpaca.ts routes through the broker abstraction');
+}
+
 console.log(`✓ v64: ${N} assertions passed`);

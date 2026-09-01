@@ -7,15 +7,17 @@ interface Props {
   env: TradingEnv;
   connected: boolean;
   onPlaced: () => void;
+  /** Venue name shown in the confirm dialog (e.g. "Kraken"). */
+  brokerName?: string;
 }
 
 /**
  * Order ticket — the owner places their own orders on their own Alpaca
  * account. Two-step: Review opens a confirmation summary; nothing is sent
  * until the owner explicitly confirms. Live orders additionally require the
- * server-side ALPACA_LIVE_ORDERS_ENABLED secret.
+ * venue's server-side orders-enabled secret.
  */
-export function OrderTicket({ env, connected, onPlaced }: Props) {
+export function OrderTicket({ env, connected, onPlaced, brokerName = 'your broker' }: Props) {
   const [symbol, setSymbol] = useState('');
   const [qty, setQty] = useState('');
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
@@ -73,7 +75,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
             ? { background: amberAlpha(0.15), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.3)}` }
             : { background: accentAlpha(0.12), color: tv.accent, border: `1px solid ${accentAlpha(0.2)}` }}
         >
-          {isLive ? 'LIVE — REAL MONEY' : 'PAPER'}
+          {isLive ? 'REAL MONEY' : 'SIMULATED'}
         </span>
       </div>
 
@@ -144,7 +146,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
         <Send className="h-3.5 w-3.5" /> Review order
       </button>
       {!connected && (
-        <p className="mt-2 text-xs" style={{ color: tv.textMuted }}>Connect Alpaca to place orders.</p>
+        <p className="mt-2 text-xs" style={{ color: tv.textMuted }}>Connect {brokerName} to place orders.</p>
       )}
 
       {/* Confirmation — nothing is sent until this explicit confirm */}
@@ -157,7 +159,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
             </div>
             {isLive && (
               <div className="mb-4 rounded-lg px-3 py-2 text-xs font-semibold" style={{ background: redAlpha(0.08), border: `1px solid ${redAlpha(0.25)}`, color: tv.statusRed }}>
-                LIVE environment — this uses real money in your Alpaca brokerage account.
+                REAL MONEY — this order executes on your live {brokerName} account.
               </div>
             )}
             <div className="space-y-1.5 text-sm" style={{ color: tv.textPrimary }}>
@@ -174,7 +176,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
                 ? { background: amberAlpha(0.2), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.4)}` }
                 : { background: accentAlpha(0.15), color: tv.accent, border: `1px solid ${accentAlpha(0.3)}` }}
             >
-              {submitting ? 'Placing…' : `Place ${env} order`}
+              {submitting ? 'Placing…' : `Place ${isLive ? 'real' : 'simulated'} order`}
             </button>
             <button onClick={() => setReviewing(false)} className="mt-2 w-full rounded-lg py-2 text-xs" style={{ color: tv.textMuted, background: mutedAlpha(0.06) }}>
               Cancel

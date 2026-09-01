@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Lock, Shield, AlertTriangle, Activity, Radio, XCircle,
-  ArrowRight, RefreshCw, Zap, Wifi, WifiOff, CheckCircle2, Minus, Clock, X,
+  ArrowRight, RefreshCw, Zap, Wifi, WifiOff, CheckCircle2, Minus, Clock,
 } from 'lucide-react';
-import { getTradingEnv, setTradingEnv, type TradingEnv } from '@/services/alpaca';
+import { type TradingEnv } from '@/services/alpaca';
+import { getActiveBrokerId, setActiveBrokerId, getBroker, type BrokerId } from '@/services/brokers';
+import { BrokerPicker } from '@/components/BrokerPicker';
 import { OrderTicket } from '@/components/OrderTicket';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import { fmtCurrency } from '@/utils/format';
@@ -44,13 +46,13 @@ function sessionNow(s: typeof SESSIONS[number]) {
 
 export function TradingDashboard() {
   const live = useLiveTrading();
-  const [env, setEnvState] = useState<TradingEnv>(getTradingEnv());
-  const [confirmLive, setConfirmLive] = useState(false);
+  const [brokerId, setBrokerId] = useState<BrokerId>(getActiveBrokerId());
+  const broker = getBroker(brokerId);
+  const env: TradingEnv = broker.realMoney ? 'live' : 'paper';
 
-  function switchEnv(next: TradingEnv) {
-    setTradingEnv(next);
-    setEnvState(next);
-    setConfirmLive(false);
+  function switchBroker(next: BrokerId) {
+    setActiveBrokerId(next);
+    setBrokerId(next);
     live.refresh();
   }
 
@@ -58,17 +60,17 @@ export function TradingDashboard() {
   const equity = acct ? parseFloat(acct.equity) : null;
   const cash = acct ? parseFloat(acct.cash) : null;
   const buyingPower = acct ? parseFloat(acct.buying_power) : null;
-  const lastEquity = acct ? parseFloat(acct.last_equity) : null;
+  const lastEquity = acct?.last_equity != null ? parseFloat(acct.last_equity) : null;
   const dayPL = equity !== null && lastEquity !== null ? equity - lastEquity : null;
-  const longMV = acct ? parseFloat(acct.long_market_value) : null;
-  const shortMV = acct ? parseFloat(acct.short_market_value) : null;
+  const longMV = acct?.long_market_value != null ? parseFloat(acct.long_market_value) : null;
+  const shortMV = acct?.short_market_value != null ? parseFloat(acct.short_market_value) : null;
   const grossExposure = longMV !== null && shortMV !== null ? longMV + Math.abs(shortMV) : null;
   const netExposure = longMV !== null && shortMV !== null ? longMV - Math.abs(shortMV) : null;
 
   const liveConnections: ConnectionCard[] = [
     {
-      id: 'alpaca',
-      name: 'Alpaca Paper',
+      id: 'venue',
+      name: broker.name,
       status: live.connected ? 'connected' : live.error ? 'error' : 'missing_credentials',
       description: live.connected ? `Account ${acct?.account_number ?? ''}` : (live.error ?? 'Not connected'),
       lastSync: null, latencyMs: null, quota: null,
@@ -76,11 +78,11 @@ export function TradingDashboard() {
     },
     {
       id: 'market-data',
-      name: 'Market Data (IEX)',
+      name: broker.id === 'kraken' ? 'Market Data (Kraken)' : 'Market Data (IEX)',
       status: live.connected && live.tickers.length > 0 ? 'connected' : live.error ? 'error' : 'missing_credentials',
-      description: live.connected ? `${live.tickers.length} symbols streaming` : 'Waiting for Alpaca',
+      description: live.connected ? `${live.tickers.length} symbols streaming` : `Waiting for ${broker.name}`,
       lastSync: null, latencyMs: null, quota: null,
-      nextAction: live.connected ? 'Live quotes active' : 'Requires Alpaca connection',
+      nextAction: live.connected ? 'Live quotes active' : `Requires a ${broker.name} connection`,
     },
     {
       id: 'signals',
@@ -105,8 +107,8 @@ export function TradingDashboard() {
           eyebrow="Trading"
           title="Trading Command Center"
           subtitle={live.connected
-            ? `Connected to your ${env} Alpaca account. Live market data active.`
-            : live.error ? 'Alpaca not reachable — check your server keys below.' : 'Connecting to Alpaca...'}
+            ? `Connected to your ${broker.name} account. Live market data active.`
+            : live.error ? `${broker.name} not reachable — check your server keys below.` : `Connecting to ${broker.name}...`}
           action={
             <div className="flex items-center gap-2">
               <button onClick={live.refresh} disabled={live.loading} className="rounded-full p-2 transition-colors" style={{ background: mutedAlpha(0.1), border: `1px solid ${tv.borderBase}`, color: tv.textSecondary, minHeight: 44, minWidth: 44, backdropFilter: 'blur(4px)' }} aria-label="Refresh data">
@@ -118,60 +120,10 @@ export function TradingDashboard() {
         />
       </div>
 
-      {/* Paper / Live toggle */}
-      <div className="flex items-center gap-2" data-reveal>
-        <button
-          onClick={() => switchEnv('paper')}
-          className="rounded-full px-4 py-1.5 text-sm font-semibold"
-          style={env === 'paper'
-            ? { background: accentAlpha(0.12), color: tv.accent, border: `1px solid ${accentAlpha(0.2)}`, minHeight: '44px' }
-            : { background: mutedAlpha(0.06), color: tv.textMuted, border: `1px solid ${tv.borderBase}`, minHeight: '44px' }}
-        >
-          PAPER
-        </button>
-        <button
-          onClick={() => (env === 'live' ? undefined : setConfirmLive(true))}
-          className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold"
-          style={env === 'live'
-            ? { background: amberAlpha(0.15), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.35)}`, minHeight: '44px' }
-            : { background: mutedAlpha(0.06), color: tv.textMuted, border: `1px solid ${tv.borderBase}`, minHeight: '44px' }}
-        >
-          {env === 'live' ? <Zap className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />} LIVE
-        </button>
-        {env === 'live' && (
-          <span className="text-xs font-semibold" style={{ color: tv.statusAmber }}>
-            Real money — your live Alpaca account
-          </span>
-        )}
+      {/* Venue picker + funding */}
+      <div data-reveal>
+        <BrokerPicker active={brokerId} connected={live.connected} onSelect={switchBroker} />
       </div>
-
-      {/* Live switch confirmation */}
-      {confirmLive && (
-        <div className="fixed inset-0 z-[95] flex items-center justify-center p-4" style={{ background: 'rgba(3,6,5,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setConfirmLive(false)}>
-          <div className="panel-img w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.4)}` }} onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3 flex items-center justify-between">
-              <h4 className="text-sm font-bold" style={{ color: tv.statusAmber }}>Switch to LIVE trading?</h4>
-              <button onClick={() => setConfirmLive(false)} aria-label="Cancel"><X className="h-4 w-4" style={{ color: tv.textMuted }} /></button>
-            </div>
-            <p className="text-xs leading-relaxed" style={{ color: tv.textMuted }}>
-              The dashboard will read your LIVE Alpaca account and the order
-              ticket will place REAL-MONEY orders. Orders additionally require
-              the ALPACA_LIVE_ORDERS_ENABLED server secret — without it the
-              server refuses live orders even in this mode.
-            </p>
-            <button
-              onClick={() => switchEnv('live')}
-              className="mt-4 w-full rounded-lg py-2.5 text-sm font-bold"
-              style={{ background: amberAlpha(0.2), color: tv.statusAmber, border: `1px solid ${amberAlpha(0.4)}` }}
-            >
-              Switch to LIVE
-            </button>
-            <button onClick={() => setConfirmLive(false)} className="mt-2 w-full rounded-lg py-2 text-xs" style={{ color: tv.textMuted, background: mutedAlpha(0.06) }}>
-              Stay on paper
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Connection banners */}
       {live.error && (
@@ -179,12 +131,13 @@ export function TradingDashboard() {
           <div className="flex items-start gap-3">
             <WifiOff className="mt-0.5 h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>Alpaca not connected</p>
+              <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>{broker.name} not connected</p>
               <p className="mt-1 text-xs leading-relaxed" style={{ color: tv.textMuted }}>{live.error}</p>
               <p className="mt-1 text-xs leading-relaxed" style={{ color: tv.textMuted }}>
-                {env === 'live'
-                  ? 'LIVE mode reads your real account. Set ALPACA_LIVE_KEY_ID and ALPACA_LIVE_SECRET as Supabase edge-function secrets (and ALPACA_LIVE_ORDERS_ENABLED=true to place real orders). Switch to PAPER to trade the paper account.'
-                  : 'Set ALPACA_PAPER_KEY_ID and ALPACA_PAPER_SECRET as Supabase edge-function secrets on the alpaca-connector function. The dashboard retries automatically.'}
+                Set {broker.secrets.map((s) => s).join(', ')} as Supabase edge-function secrets on the{' '}
+                <code style={{ color: tv.textSecondary }}>{broker.fn}</code> function, then redeploy it.
+                The dashboard retries automatically.
+                {broker.realMoney && ' This account trades real money.'}
               </p>
             </div>
           </div>
@@ -217,7 +170,7 @@ export function TradingDashboard() {
           <Wifi className="h-5 w-5 shrink-0" style={{ color: tv.accent }} />
           <div>
             <p className="text-sm font-semibold" style={{ color: tv.accent }}>
-              Alpaca {env} account connected
+              {broker.name} account connected
             </p>
             <p className="text-xs" style={{ color: tv.textMuted }}>
               {env === 'live'
@@ -230,7 +183,7 @@ export function TradingDashboard() {
 
       {/* ORDER TICKET */}
       <div data-reveal>
-        <OrderTicket env={env} connected={live.connected} onPlaced={live.refresh} />
+        <OrderTicket env={env} connected={live.connected} onPlaced={live.refresh} brokerName={broker.name} />
       </div>
 
       {/* TICKER STRIP */}
@@ -292,7 +245,7 @@ export function TradingDashboard() {
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Account</h2>
           {live.connected && (
             <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: tv.accent }}>
-              <Wifi className="h-3 w-3" /> Live from Alpaca
+              <Wifi className="h-3 w-3" /> Live from {broker.name}
             </span>
           )}
         </div>
@@ -308,7 +261,7 @@ export function TradingDashboard() {
           <MetricBox label="PDT flag" value={acct ? (acct.pattern_day_trader ? 'YES' : 'No') : 'N/A'} live={live.connected} highlight={acct?.pattern_day_trader ? 'red' : undefined} />
         </div>
         <p className="mt-2 text-xs" style={{ color: mutedAlpha(0.5) }}>
-          {live.connected ? `Last synced ${live.lastSync ? new Date(live.lastSync).toLocaleTimeString() : 'never'}. Auto-refreshes every 30s.` : 'Values update after Alpaca API connection.'}
+          {live.connected ? `Last synced ${live.lastSync ? new Date(live.lastSync).toLocaleTimeString() : 'never'}. Auto-refreshes every 30s.` : `Values update once ${broker.name} is connected.`}
         </p>
       </div>
 
@@ -369,7 +322,7 @@ export function TradingDashboard() {
             {live.connected ? 'Signal engine analyzing...' : 'No signals yet'}
           </p>
           <p className="max-w-sm text-xs" style={{ color: tv.textMuted }}>
-            {live.connected ? 'Market data is flowing. The analysis engine will produce signals as patterns emerge.' : 'Connect your Alpaca paper account and market data to run the analysis engine.'}
+            {live.connected ? 'Market data is flowing. The analysis engine will produce signals as patterns emerge.' : `Connect ${broker.name} and market data to run the analysis engine.`}
           </p>
         </div>
       </div>
@@ -394,7 +347,7 @@ export function TradingDashboard() {
         </div>
         <p className="mt-3 text-xs" style={{ color: mutedAlpha(0.5) }}>
           {live.connected
-            ? `Connected. ${env === 'live' ? 'Live orders require the ALPACA_LIVE_ORDERS_ENABLED server secret.' : 'Paper mode — switch to LIVE for real-money trading.'}`
+            ? `Connected. ${broker.realMoney ? `Real orders also require the ${broker.secrets[broker.secrets.length - 1]} server secret.` : 'Simulated account — pick a real-money venue above to trade live.'}`
             : 'Set your Alpaca keys as edge-function secrets and redeploy alpaca-connector to connect.'}
         </p>
       </div>
@@ -428,8 +381,8 @@ export function TradingDashboard() {
         <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
         <span>
           {env === 'live'
-            ? 'LIVE mode — orders placed from the ticket use real money in your Alpaca brokerage account. Alpaca API keys are stored server-side only.'
-            : 'PAPER mode — orders are simulated by Alpaca, no real money at risk. Switch to LIVE on the toggle above for real-money trading.'}
+            ? `${broker.name} — orders placed from the ticket use REAL MONEY in your ${broker.name} account. API keys are stored server-side only.`
+            : `${broker.name} — orders are simulated, no real money at risk. Pick a real-money venue above to trade live.`}
         </span>
       </div>
     </div>

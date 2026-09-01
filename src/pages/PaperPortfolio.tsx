@@ -19,7 +19,7 @@ export function PaperPortfolio() {
   const equity = acct ? parseFloat(acct.equity) : null;
   const cash = acct ? parseFloat(acct.cash) : null;
   const buyingPower = acct ? parseFloat(acct.buying_power) : null;
-  const lastEquity = acct ? parseFloat(acct.last_equity) : null;
+  const lastEquity = acct?.last_equity != null ? parseFloat(acct.last_equity) : null;
   const dayPL = equity !== null && lastEquity !== null ? equity - lastEquity : null;
   const totalPL = equity !== null && cash !== null ? equity - 100000 : null;
 
