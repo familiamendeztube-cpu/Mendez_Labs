@@ -39,7 +39,7 @@ export function Settings() {
       />
 
       {/* ── Theme Picker ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center gap-2 mb-4">
           <Palette className="h-5 w-5" style={{ color: tv.accent }} />
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Theme</h2>
@@ -91,7 +91,7 @@ export function Settings() {
       </div>
 
       {/* ── Trading Connections ────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Trading connections</h2>
         <div className="space-y-2">
           {settingsConns.filter((c) => c.id.startsWith('alpaca')).map((c) => (
@@ -112,7 +112,7 @@ export function Settings() {
       </div>
 
       {/* ── Sports Lab Connections (collapsed) ─────────────────────────── */}
-      <details className="rounded-2xl" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <details className="panel-img rounded-2xl" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <summary className="cursor-pointer px-5 py-4 text-base font-semibold" style={{ color: tv.textPrimary }}>
           Sports Lab connections
         </summary>
@@ -124,7 +124,7 @@ export function Settings() {
       </details>
 
       {/* ── Readiness ──────────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Readiness</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <ReadinessChip label="Trading paper" ready={readiness.tradingPaper} />
@@ -138,7 +138,7 @@ export function Settings() {
       </div>
 
       {/* Provider status */}
-      <div className="rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-lg font-semibold mb-4" style={{ color: tv.textPrimary }}>Data provider</h2>
         {feedProvider ? (
           <div className="space-y-4">
@@ -194,7 +194,7 @@ export function Settings() {
 
       {/* Model health */}
       {modelHealth && (
-        <div className="rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="panel-img rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <h2 className="text-lg font-semibold mb-4" style={{ color: tv.textPrimary }}>Analysis engine</h2>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -237,7 +237,7 @@ export function Settings() {
       )}
 
       {/* Display settings */}
-      <div className="rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-lg font-semibold mb-4" style={{ color: tv.textPrimary }}>Display</h2>
         <div className="space-y-4">
           <ToggleRow label="Reduced motion" description="Minimize animations" value={settings.reducedMotion} onChange={(v) => setSettings({ reducedMotion: v })} />
@@ -246,7 +246,7 @@ export function Settings() {
       </div>
 
       {/* About */}
-      <div className="rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-lg font-semibold mb-3" style={{ color: tv.textPrimary }}>About</h2>
         <p className="text-sm" style={{ color: tv.textSecondary }}>
           Mendez Labs is a trading and sports research terminal. Trading signals use real market data from Alpaca.
@@ -258,7 +258,7 @@ export function Settings() {
       </div>
 
       {/* Log Out */}
-      <div className="rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${redAlpha(0.12)}` }}>
+      <div className="panel-img rounded-2xl p-6" style={{ background: tv.bgSurface, border: `1px solid ${redAlpha(0.12)}` }}>
         <h2 className="text-lg font-semibold mb-3" style={{ color: tv.textPrimary }}>Account</h2>
         <p className="mb-4 text-sm" style={{ color: tv.textMuted }}>
           Sign out of Mendez Labs. Your picks and results are saved automatically.

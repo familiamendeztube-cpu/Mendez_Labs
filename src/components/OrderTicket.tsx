@@ -64,7 +64,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
   } as const;
 
   return (
-    <div className="rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${isLive ? amberAlpha(0.35) : tv.borderBase}` }}>
+    <div className="panel-img rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${isLive ? amberAlpha(0.35) : tv.borderBase}` }}>
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Order Ticket</h3>
         <span
@@ -150,7 +150,7 @@ export function OrderTicket({ env, connected, onPlaced }: Props) {
       {/* Confirmation — nothing is sent until this explicit confirm */}
       {reviewing && (
         <div className="fixed inset-0 z-[95] flex items-center justify-center p-4" style={{ background: 'rgba(3,6,5,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setReviewing(false)}>
-          <div className="w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${isLive ? amberAlpha(0.4) : tv.borderBase}` }} onClick={(e) => e.stopPropagation()}>
+          <div className="panel-img w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${isLive ? amberAlpha(0.4) : tv.borderBase}` }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <h4 className="text-sm font-bold" style={{ color: tv.textPrimary }}>Confirm order</h4>
               <button onClick={() => setReviewing(false)} aria-label="Cancel"><X className="h-4 w-4" style={{ color: tv.textMuted }} /></button>

@@ -334,6 +334,41 @@ html { scrollbar-width: thin; scrollbar-color: rgba(237,229,213,0.25) #1B1511; }
   filter: blur(0);
 }
 
+/* ── Textured panels ─────────────────────────────────────────────────────────
+   Every surface panel carries a faint photographic layer under its content —
+   a dim candlestick screen, gradient-washed almost to the surface colour so
+   text stays crisp. One rule covers ~every card in the app. */
+:root {
+  --panel-texture: url('https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=900');
+}
+.app-card,
+.card-lift,
+.panel-img {
+  position: relative;
+  isolation: isolate;
+}
+.app-card::before,
+.card-lift::before,
+.panel-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(155deg,
+      color-mix(in srgb, var(--bg-surface) 88%, transparent) 0%,
+      color-mix(in srgb, var(--bg-surface) 97%, transparent) 62%,
+      var(--bg-surface) 100%),
+    var(--panel-texture);
+  background-size: cover, cover;
+  background-position: center, center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .panel-img::before { transition: opacity 0.4s ease; }
+}
+
 /* Interactive card lift — what's a surface you can act on reads as one. */
 .app-card {
   transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),

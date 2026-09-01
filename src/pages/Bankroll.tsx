@@ -51,7 +51,7 @@ export function Bankroll() {
       </div>
 
       {/* ── Paper balance card (preserved exactly) ───────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center gap-3">
           <Wallet className="h-6 w-6" style={{ color: tv.accent }} />
           <div>
@@ -78,7 +78,7 @@ export function Bankroll() {
       </div>
 
       {/* ── Settled record (preserved exactly) ───────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Settled record</h2>
         <div className="flex gap-6">
           <div>
@@ -97,7 +97,7 @@ export function Bankroll() {
       </div>
 
       {/* ── Risk status indicators ───────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Risk status</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <StatusIndicator
@@ -134,7 +134,7 @@ export function Bankroll() {
       </div>
 
       {/* ── Risk Rules ───────────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Risk rules</h2>
         <div className="space-y-3">
           {RISK_RULES.map((rule) => (
@@ -150,7 +150,7 @@ export function Bankroll() {
       </div>
 
       {/* ── Reset (preserved, scoped to paper only, now with confirmation) ── */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <RotateCcw className="h-4 w-4" style={{ color: tv.statusAmber }} />
@@ -187,7 +187,7 @@ export function Bankroll() {
 
 function PlannedCard({ label, amount }: { label: string; amount: number }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.12)}` }}>
+    <div className="panel-img rounded-xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.12)}` }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4" style={{ color: tv.statusAmber }} />

@@ -103,7 +103,7 @@ export function Performance() {
         <PerfCard label="Sample size" value="0" color={tv.textPrimary} tip="Total settled trades in this period" />
       </div>
 
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Trade history</h2>
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-xs" style={{ color: tv.textMuted }}>

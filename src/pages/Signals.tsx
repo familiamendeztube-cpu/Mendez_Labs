@@ -71,7 +71,7 @@ export function Signals() {
         </div>
       </div>
 
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Research universe</h2>
           <span className="rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider" style={{ background: hasLiveData ? accentAlpha(0.12) : 'rgba(224,165,50,0.12)', color: hasLiveData ? tv.accent : tv.statusAmber, border: `1px solid ${hasLiveData ? accentAlpha(0.2) : 'rgba(224,165,50,0.2)'}` }}>
@@ -117,7 +117,7 @@ function TickerCard({ ticker }: { ticker: LiveTicker }) {
   const sparkData = ticker.sparkline.map((v, i) => ({ i, v }));
 
   return (
-    <div className="relative overflow-hidden rounded-xl p-3 transition-all hover:scale-[1.02]" style={{ background: tv.bgSurface, border: `1px solid ${color}18` }}>
+    <div className="panel-img relative overflow-hidden rounded-xl p-3 transition-all hover:scale-[1.02]" style={{ background: tv.bgSurface, border: `1px solid ${color}18` }}>
       <div className="flex items-start justify-between mb-1">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-bold" style={{ color: tv.textPrimary }}>{ticker.symbol}</span>

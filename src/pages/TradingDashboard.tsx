@@ -147,7 +147,7 @@ export function TradingDashboard() {
       {/* Live switch confirmation */}
       {confirmLive && (
         <div className="fixed inset-0 z-[95] flex items-center justify-center p-4" style={{ background: 'rgba(3,6,5,0.75)', backdropFilter: 'blur(6px)' }} onClick={() => setConfirmLive(false)}>
-          <div className="w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.4)}` }} onClick={(e) => e.stopPropagation()}>
+          <div className="panel-img w-full max-w-sm rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.4)}` }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
               <h4 className="text-sm font-bold" style={{ color: tv.statusAmber }}>Switch to LIVE trading?</h4>
               <button onClick={() => setConfirmLive(false)} aria-label="Cancel"><X className="h-4 w-4" style={{ color: tv.textMuted }} /></button>
@@ -192,7 +192,7 @@ export function TradingDashboard() {
             {SESSIONS.map((s) => {
               const { time, isOpen } = sessionNow(s);
               return (
-                <div key={s.city} className="flex items-center justify-between rounded-xl px-4 py-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+                <div key={s.city} className="panel-img flex items-center justify-between rounded-xl px-4 py-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
                   <div>
                     <p className="text-[10px] tracking-[0.25em]" style={{ color: tv.textMuted }}>{s.city}</p>
                     <p className="serif text-xl" style={{ color: tv.textPrimary }}>{time}</p>
@@ -399,7 +399,7 @@ export function TradingDashboard() {
       </div>
 
       {/* RISK / PLANNED BANKROLL */}
-      <div className="rounded-xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.12)}` }}>
+      <div className="panel-img rounded-xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${amberAlpha(0.12)}` }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Lock className="h-4 w-4" style={{ color: tv.statusAmber }} />
@@ -502,7 +502,7 @@ function ConnectionCardUI({ card }: { card: ConnectionCard }) {
   const alphaFn = card.status === 'connected' ? accentAlpha : card.status === 'error' ? redAlpha : amberAlpha;
   const Icon = card.status === 'connected' ? Radio : card.status === 'error' ? XCircle : Lock;
   return (
-    <div className="rounded-xl p-4 relative overflow-hidden" style={{ background: tv.bgSurface, border: `1px solid ${alphaFn(0.13)}`, boxShadow: `inset 0 1px 0 0 ${alphaFn(0.07)}` }}>
+    <div className="panel-img rounded-xl p-4 relative overflow-hidden" style={{ background: tv.bgSurface, border: `1px solid ${alphaFn(0.13)}`, boxShadow: `inset 0 1px 0 0 ${alphaFn(0.07)}` }}>
       <div className="flex items-center gap-2 mb-2">
         <span className="relative flex h-2.5 w-2.5">
           <span className="absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: color, animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />

@@ -169,7 +169,7 @@ export function SportsIntel() {
       </div>
 
       {!hasData ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl py-16 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="panel-img flex flex-col items-center gap-3 rounded-2xl py-16 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <Activity className="h-8 w-8" style={{ color: mutedAlpha(0.3) }} />
           <p className="text-sm" style={{ color: tv.textMuted }}>No engine data yet. Hit Refresh, or check the feed status in Settings.</p>
         </div>
@@ -297,7 +297,7 @@ export function SportsIntel() {
 
 function Stat({ label, value, accent = tv.textPrimary }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="rounded-xl p-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+    <div className="panel-img rounded-xl p-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
       <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: tv.textMuted }}>{label}</p>
       <p className="mt-1 font-mono text-lg font-semibold capitalize" style={{ color: accent }}>{value}</p>
     </div>

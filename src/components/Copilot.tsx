@@ -237,7 +237,7 @@ export function Copilot() {
               {busy && (
                 <div className="flex items-center gap-2">
                   <CopilotAvatar size={24} state="thinking" />
-                  <div className="flex items-center gap-2 rounded-2xl px-3.5 py-2.5" style={{ background: tv.bgElevated, border: `1px solid ${tv.borderBase}` }}>
+                  <div className="panel-img flex items-center gap-2 rounded-2xl px-3.5 py-2.5" style={{ background: tv.bgElevated, border: `1px solid ${tv.borderBase}` }}>
                     <Loader2 className="h-4 w-4 animate-spin" style={{ color: tv.accent }} />
                     <span className="text-xs" style={{ color: tv.textMuted }}>Thinking…</span>
                   </div>

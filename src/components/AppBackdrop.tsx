@@ -1,4 +1,5 @@
 import { tv } from '@/lib/themeVars';
+import { APP_IMAGES } from '@/data/appImages';
 
 /**
  * Ambient app background — the same warm, golden-hour atmosphere as the
@@ -9,6 +10,18 @@ import { tv } from '@/lib/themeVars';
 export function AppBackdrop({ reducedMotion = false }: { reducedMotion?: boolean }) {
   return (
     <div className="fixed inset-0 z-0 overflow-hidden" aria-hidden="true" style={{ background: tv.bgRoot }}>
+      {/* Photographic base — a dim trading desk, blurred into atmosphere */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${APP_IMAGES.desk})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'blur(7px) saturate(0.65)',
+          opacity: 0.12,
+          transform: 'scale(1.1)',
+        }}
+      />
       {/* Golden ambient washes */}
       <div
         className="absolute inset-0"

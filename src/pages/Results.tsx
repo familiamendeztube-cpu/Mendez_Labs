@@ -207,7 +207,7 @@ export function Results() {
       {hasRecords ? (
         <>
           {/* Desktop table */}
-          <div className="hidden lg:block overflow-x-auto rounded-xl" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+          <div className="panel-img hidden lg:block overflow-x-auto rounded-xl" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
             <table className="w-full text-xs" style={{ color: tv.textSecondary }}>
               <thead>
                 <tr style={{ borderBottom: `1px solid ${tv.borderBase}` }}>
@@ -291,7 +291,7 @@ export function Results() {
           </div>
 
           {filtered.length === 0 && (
-            <div className="rounded-xl p-6 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+            <div className="panel-img rounded-xl p-6 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
               <p className="text-sm" style={{ color: tv.textMuted }}>
                 {tab === 'daily' ? 'No results settled today.' : 'No results match the selected filter.'}
               </p>
@@ -299,7 +299,7 @@ export function Results() {
           )}
         </>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-xl p-10 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="panel-img flex flex-col items-center gap-3 rounded-xl p-10 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <Info className="h-10 w-10" style={{ color: tv.textMuted }} />
           <p className="text-base font-semibold" style={{ color: tv.textPrimary }}>No tracked results yet</p>
           <p className="max-w-md text-sm" style={{ color: tv.textMuted }}>

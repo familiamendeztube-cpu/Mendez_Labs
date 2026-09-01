@@ -173,7 +173,7 @@ export function Today() {
       {feedLoading && rankedPicks.length === 0 && (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+            <div key={i} className="panel-img rounded-xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
               <div className="flex items-center gap-3">
                 <div className="skeleton-shimmer h-10 w-10 rounded-full" style={{ background: `linear-gradient(90deg, ${tv.bgSurface} 25%, ${tv.bgElevated} 50%, ${tv.bgSurface} 75%)`, backgroundSize: '200% 100%' }} />
                 <div className="flex-1 space-y-2">
@@ -188,7 +188,7 @@ export function Today() {
 
       {/* ── Error ────────────────────────────────────────────────────────── */}
       {feedError && rankedPicks.length === 0 && !feedLoading && (
-        <div className="flex flex-col items-center gap-4 rounded-xl p-8 text-center" style={{ background: tv.bgSurface, border: `1px solid ${redAlpha(0.12)}` }}>
+        <div className="panel-img flex flex-col items-center gap-4 rounded-xl p-8 text-center" style={{ background: tv.bgSurface, border: `1px solid ${redAlpha(0.12)}` }}>
           <AlertCircle className="h-10 w-10" style={{ color: tv.statusRed }} />
           <div>
             <p className="text-base font-semibold" style={{ color: tv.textPrimary }}>Live data unavailable</p>
@@ -202,7 +202,7 @@ export function Today() {
 
       {/* ── Empty ────────────────────────────────────────────────────────── */}
       {!feedLoading && !feedError && rankedPicks.length === 0 && (
-        <div className="flex flex-col items-center gap-3 rounded-xl p-8 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="panel-img flex flex-col items-center gap-3 rounded-xl p-8 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <Calendar className="h-10 w-10" style={{ color: tv.textMuted }} />
           <p className="text-base font-semibold" style={{ color: tv.textPrimary }}>Analysis unavailable</p>
           <p className="text-sm" style={{ color: tv.textMuted }}>
@@ -276,7 +276,7 @@ export function Today() {
 
       {/* ── No results for filter ────────────────────────────────────────── */}
       {rankedPicks.length > 0 && qualifiedPicks.length === 0 && excludedPicks.length === 0 && (
-        <div className="rounded-xl p-6 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="panel-img rounded-xl p-6 text-center" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <p className="text-sm" style={{ color: tv.textMuted }}>No games match the current filters.</p>
         </div>
       )}
@@ -478,7 +478,7 @@ function MathDrawer({ pick }: { pick: RankedPick }) {
 
 function SummaryCard({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent?: string }) {
   return (
-    <div className="rounded-xl px-3 py-2.5 card-lift" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+    <div className="panel-img rounded-xl px-3 py-2.5 card-lift" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
       <div className="flex items-center gap-1.5" style={{ color: tv.textMuted }}>
         {icon}
         <span className="text-xs">{label}</span>
