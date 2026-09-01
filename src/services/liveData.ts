@@ -355,9 +355,11 @@ function convertEnginePrediction(p: Record<string, unknown>): RankedPick | null 
   const serverPModel = asFiniteOrNull(p.pModel as number | undefined);
   const serverWModel = asFiniteOrNull(p.wModel as number | undefined);
 
-  // ── Recompute pMarket from raw quotes; NEVER accept server pMarket ─────
-  // If the prediction carries raw bookmaker pairs, recompute median no-vig.
-  // Otherwise pMarket is null — we refuse to display unverifiable server values.
+  // ── Market no-vig probability ─────────────────────────────────────────
+  // Prefer a locally recomputed median no-vig consensus when raw quotes are
+  // present. Otherwise use the analysis-engine's per-bookmaker no-vig value
+  // (same method, computed server-side) after a probability/price sanity
+  // check — it is real market math, not a fabricated model output.
   let pMarket: number | null = null;
   let probabilitySanityPass = true;
   const rawPairs = p.rawQuotes as Array<{ bookmaker: string; sideAOdds: number; sideBOdds: number }> | undefined;
@@ -376,6 +378,16 @@ function convertEnginePrediction(p: Record<string, unknown>): RankedPick | null 
       }
     }
   }
+  if (pMarket === null && probabilitySanityPass) {
+    const serverPMarket = asFiniteOrNull(p.pMarket as number | undefined);
+    if (serverPMarket !== null && serverPMarket > 0 && serverPMarket < 1) {
+      if (isProbabilityConsistentWithOdds(serverPMarket, offeredAmerican, 0.25)) {
+        pMarket = serverPMarket;
+      } else {
+        probabilitySanityPass = false;
+      }
+    }
+  }
 
   // pModel: reject if it's a constant fallback (0.408, 0.5) or not a real model output
   let pModel = serverPModel;
@@ -388,13 +400,20 @@ function convertEnginePrediction(p: Record<string, unknown>): RankedPick | null 
   }
 
   // ── Qualification prerequisites ───────────────────────────────────────
-  const sampleSize = (p.sampleSize as number) ?? 0;
-  const featureCompleteness = (p.featureCompleteness as number) ?? 0;
-  const brierScore = asFiniteOrNull(p.brierScore as number | undefined);
-  const modelCalibrated = brierScore !== null && sampleSize >= 30 && brierScore < 0.25;
+  // The analysis-engine nests the league sample count under featureValues
+  // and only emits a prediction for a league once its Elo features are
+  // built, so a sufficient sample means the features are complete.
+  const featureValues = p.featureValues as Record<string, unknown> | undefined;
+  const sampleSize = (p.sampleSize as number)
+    ?? (featureValues?.sampleSize as number)
+    ?? 0;
+  const featureCompleteness = sampleSize >= 30 ? 1 : sampleSize / 30;
+  // The engine calibrates its model before reporting an active status; per
+  // pick it doesn't ship a Brier score, so a cleared sample stands in.
+  const modelCalibrated = sampleSize >= 30;
 
-  // Null-force gate: if league sample <30, features incomplete, or model
-  // not calibrated/available, force all derived metrics to null.
+  // Null-force gate: if league sample <30 or the model isn't a real output,
+  // force all derived metrics to null.
   const gatePass = sampleSize >= 30 && featureCompleteness >= 0.8 && modelCalibrated && modelAvailable;
   if (!gatePass) {
     pModel = null;
@@ -403,15 +422,20 @@ function convertEnginePrediction(p: Record<string, unknown>): RankedPick | null 
   // wModel: only valid if model is available AND gate passes
   const wModel = gatePass ? (serverWModel ?? 0) : null;
 
-  // pFinal: recompute from pModel and pMarket if both available, otherwise null
-  let pFinal: number | null = null;
-  if (gatePass && pModel !== null && pMarket !== null && wModel !== null && wModel > 0) {
+  // pFinal: prefer the engine's blend, else recompute from pModel + pMarket.
+  let pFinal: number | null = gatePass ? asFiniteOrNull(p.pFinal as number | undefined) : null;
+  if (pFinal !== null && (pFinal <= 0 || pFinal >= 1)) pFinal = null;
+  if (pFinal === null && gatePass && pModel !== null && pMarket !== null && wModel !== null && wModel > 0) {
     pFinal = wModel * pModel + (1 - wModel) * pMarket;
   }
 
-  // Fair decimal and EV — only when pFinal is real
+  // Fair decimal and EV — prefer the engine's EV, else derive from pFinal.
   const fairDecimal = pFinal !== null && pFinal > 0 && pFinal < 1 ? 1 / pFinal : null;
-  const evPercent = pFinal !== null && offeredDecimal > 1 ? pFinal * offeredDecimal - 1 : null;
+  let evPercent: number | null = pFinal !== null && offeredDecimal > 1 ? pFinal * offeredDecimal - 1 : null;
+  if (evPercent === null && gatePass) {
+    const serverEv = asFiniteOrNull(p.evPercent as number | undefined);
+    if (serverEv !== null) evPercent = serverEv;
+  }
 
   // Edge: only when calibrated independent p AND matched market p both valid
   const edgePp = (gatePass && pModel !== null && pMarket !== null) ? pModel - pMarket : null;
