@@ -114,7 +114,7 @@ function barsToCandles(bars: AlpacaBar[]): { t: number; o: number; h: number; l:
   }));
 }
 
-export function useLiveTrading(refreshMs = 30_000) {
+export function useLiveTrading(refreshMs = 30_000, enabled = true) {
   const [state, setState] = useState<LiveTradingState>(INITIAL);
   const mountedRef = useRef(true);
 
@@ -182,13 +182,14 @@ export function useLiveTrading(refreshMs = 30_000) {
 
   useEffect(() => {
     mountedRef.current = true;
+    if (!enabled) return () => { mountedRef.current = false; };
     refresh();
     const iv = setInterval(refresh, refreshMs);
     return () => {
       mountedRef.current = false;
       clearInterval(iv);
     };
-  }, [refresh, refreshMs]);
+  }, [refresh, refreshMs, enabled]);
 
   return { ...state, refresh, cancelAllOrders };
 }

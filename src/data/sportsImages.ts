@@ -16,7 +16,7 @@ export const SPORTS_IMAGES = {
 /** Per-league photo for cards, headers, and thumbnails. */
 export function leagueImage(league: string): string {
   const l = league.toLowerCase();
-  if (l.includes('nfl') || l.includes('football') && !l.includes('soccer')) return SPORTS_IMAGES.todayNFL;
+  if (l.includes('nfl') || (l.includes('football') && !l.includes('soccer'))) return SPORTS_IMAGES.todayNFL;
   if (l.includes('nba') || l.includes('basket')) return SPORTS_IMAGES.todayNBA;
   if (l.includes('mlb') || l.includes('baseball')) return SPORTS_IMAGES.todayMLB;
   if (l.includes('nhl') || l.includes('hockey')) return SPORTS_IMAGES.todayNHL;

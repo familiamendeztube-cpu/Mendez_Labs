@@ -1,8 +1,12 @@
 import { useState } from 'react';
 
-// Drop a photo at  public/copilot-face.jpg  (or .png) and it becomes the
-// Copilot's face everywhere. Until then, the geometric character below is used.
+// Drop a photo at  public/copilot-face.jpg  and it becomes the Copilot's face
+// everywhere. Until then, the geometric character below is used.
 const FACE_SRC = `${import.meta.env.BASE_URL}copilot-face.jpg`;
+
+// Once any instance fails to load the photo, every other instance skips
+// straight to the SVG — no repeated 404s.
+let faceMissing = false;
 
 /**
  * The Copilot's face. Uses a photo from public/copilot-face.jpg when present,
@@ -16,7 +20,7 @@ export function CopilotAvatar({
   size?: number;
   state?: 'idle' | 'thinking' | 'speaking';
 }) {
-  const [useFace, setUseFace] = useState(true);
+  const [useFace, setUseFace] = useState(!faceMissing);
 
   if (useFace) {
     return (
@@ -25,7 +29,7 @@ export function CopilotAvatar({
         alt="Copilot"
         width={size}
         height={size}
-        onError={() => setUseFace(false)}
+        onError={() => { faceMissing = true; setUseFace(false); }}
         style={{
           width: size,
           height: size,

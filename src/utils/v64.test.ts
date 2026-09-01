@@ -15,14 +15,17 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   const p = 'supabase/functions/ai-copilot/index.ts';
   ok(fs.existsSync(path.join(ROOT, p)), 'ai-copilot/index.ts exists');
   const src = read(p);
+  const shared = read('supabase/functions/_shared/terminal.ts');
 
-  ok(src.includes('x-terminal-key') && src.includes('TERMINAL_ACCESS_KEY'), 'copilot checks the shared terminal key');
+  ok(src.includes('terminalAuthorized') && src.includes('_shared/terminal.ts'), 'copilot uses the shared terminal gate');
+  ok(shared.includes('x-terminal-key') && shared.includes('TERMINAL_ACCESS_KEY'), 'shared gate checks x-terminal-key vs TERMINAL_ACCESS_KEY');
+  ok(src.includes('rateLimited'), 'copilot is rate-limited');
   ok(src.includes('ANTHROPIC_API_KEY'), 'copilot uses the Anthropic key');
   ok(src.includes('api.anthropic.com/v1/messages'), 'copilot calls the Claude messages API');
   ok(src.includes('claude-sonnet-5') || src.includes('claude-opus-5'), 'copilot targets a current Claude model');
   ok(src.includes('system'), 'copilot sends a system prompt');
   ok(/do NOT place trades|never place|advice only|advice and analysis/i.test(src), 'copilot system prompt forbids taking actions');
-  ok(src.includes('Access-Control-Allow-Headers') && src.includes('x-terminal-key'), 'copilot CORS allows the terminal key header');
+  ok(shared.includes('Access-Control-Allow-Headers') && shared.includes('x-terminal-key'), 'shared CORS allows the terminal key header');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -85,7 +88,7 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   const fn = 'supabase/functions/ai-picks/index.ts';
   ok(fs.existsSync(path.join(ROOT, fn)), 'ai-picks/index.ts exists');
   const src = read(fn);
-  ok(src.includes('x-terminal-key') && src.includes('TERMINAL_ACCESS_KEY'), 'ai-picks checks the terminal key');
+  ok(src.includes('terminalAuthorized') && src.includes('rateLimited'), 'ai-picks uses the shared gate + rate limit');
   ok(src.includes('api.anthropic.com/v1/messages'), 'ai-picks calls Claude');
   ok(/never pad the card|empty picks array|Never pad/i.test(src), 'ai-picks is told not to pad the card');
 

@@ -70,13 +70,24 @@ function diversify(
   return selected;
 }
 
-export function autoSelectBestFive(rankedPicks: RankedPick[], bankroll: number): AutoSelectResult {
-  if (rankedPicks.length === 0) {
+export function autoSelectBestFive(allPicks: RankedPick[], bankroll: number): AutoSelectResult {
+  if (allPicks.length === 0) {
     return {
       selected: [],
       tier: 'none',
       explanation:
         "Today's board hasn't loaded yet — the odds feed is catching up. Hit Refresh in a moment and try again.",
+    };
+  }
+
+  // Only games that haven't started yet are ever selectable.
+  const now = Date.now();
+  const rankedPicks = allPicks.filter((p) => new Date(p.startTime).getTime() > now);
+  if (rankedPicks.length === 0) {
+    return {
+      selected: [],
+      tier: 'none',
+      explanation: "Every game on today's board has already started. Nothing left to play.",
     };
   }
 
@@ -86,15 +97,20 @@ export function autoSelectBestFive(rankedPicks: RankedPick[], bankroll: number):
     .sort((a, b) => autoSelectScore(b) - autoSelectScore(a));
 
   if (modelEligible.length > 0) {
-    const selected = diversify(modelEligible, bankroll, true);
-    return {
-      selected,
-      tier: 'model',
-      explanation:
-        selected.length < 5
-          ? `${selected.length} pick${selected.length === 1 ? '' : 's'} passed every qualification gate. The rest of the slate didn't clear the bar today.`
-          : null,
-    };
+    // Try with stake > 0 required; if bankroll is 0/unset that yields nothing,
+    // so retry without the stake gate before falling through to later tiers.
+    let selected = diversify(modelEligible, bankroll, bankroll > 0);
+    if (selected.length === 0 && bankroll > 0) selected = diversify(modelEligible, bankroll, false);
+    if (selected.length > 0) {
+      return {
+        selected,
+        tier: 'model',
+        explanation:
+          selected.length < 5
+            ? `${selected.length} pick${selected.length === 1 ? '' : 's'} passed every qualification gate. The rest of the slate didn't clear the bar today.`
+            : null,
+      };
+    }
   }
 
   // Tier 2 — model has no history yet. Fall back to market value: positive

@@ -1,25 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey, x-terminal-key",
-};
-
-// Single-user terminal — access gated by one shared code in the x-terminal-key
-// header, checked against the TERMINAL_ACCESS_KEY secret.
-function terminalAuthorized(req: Request): boolean {
-  const expected = Deno.env.get("TERMINAL_ACCESS_KEY") ?? "312593";
-  return req.headers.get("x-terminal-key") === expected;
-}
-
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { corsHeaders, jsonResponse, terminalAuthorized, rateLimited, readJson } from "../_shared/terminal.ts";
 
 function envOrThrow(name: string): string {
   const v = Deno.env.get(name);
@@ -54,6 +34,9 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
+  const limited = rateLimited(req);
+  if (limited) return limited;
+
   try {
     if (!terminalAuthorized(req)) {
       return jsonResponse({ error: "Unauthorized" }, 401);
@@ -63,7 +46,13 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ error: "POST required" }, 405);
     }
 
-    const { picks } = (await req.json()) as { picks: PickInput[] };
+    if (!Deno.env.get("ANTHROPIC_API_KEY")) {
+      return jsonResponse({ error: "AI Research needs the ANTHROPIC_API_KEY secret on this function." }, 503);
+    }
+
+    const parsed = await readJson<{ picks?: PickInput[] }>(req);
+    if ("error" in parsed) return parsed.error;
+    const { picks } = parsed.body;
     if (!picks || !Array.isArray(picks) || picks.length === 0) {
       return jsonResponse({ error: "picks array required" }, 400);
     }
@@ -127,8 +116,7 @@ Deno.serve(async (req: Request) => {
       );
 
       if (!claudeRes.ok) {
-        const errText = await claudeRes.text();
-        console.error(`Claude API error: ${claudeRes.status} ${errText}`);
+        console.error(`ai-analysis: Claude API ${claudeRes.status}`);
         results.push(fallbackResult(pick.id));
         continue;
       }
@@ -137,30 +125,31 @@ Deno.serve(async (req: Request) => {
       const text =
         claudeData.content?.[0]?.text ?? "";
 
-      const parsed = parseResearchResponse(pick.id, text);
-      results.push(parsed);
+      const research = parseResearchResponse(pick.id, text);
+      results.push(research);
 
-      // Cache result
-      await serviceClient.from("ai_research").insert({
+      // Cache result — surface a write failure so it can't rot silently again.
+      const { error: cacheErr } = await serviceClient.from("ai_research").insert({
         pick_id: pick.id,
         matchup: pick.matchup,
         league: pick.league,
         market: pick.market,
         side: pick.side,
-        summary: parsed.summary,
-        key_factors: parsed.key_factors,
-        risk_flags: parsed.risk_flags,
-        verdict: parsed.verdict,
-        confidence: parsed.confidence,
-        sources: parsed.sources,
+        summary: research.summary,
+        key_factors: research.key_factors,
+        risk_flags: research.risk_flags,
+        verdict: research.verdict,
+        confidence: research.confidence,
+        sources: research.sources,
       });
+      if (cacheErr) console.error("ai-analysis: cache insert failed —", cacheErr.message);
     }
 
     return jsonResponse({ results });
   } catch (err) {
-    console.error(err);
+    console.error("ai-analysis:", err);
     return jsonResponse(
-      { error: err instanceof Error ? err.message : "Internal error" },
+      { error: "Internal error" },
       500
     );
   }

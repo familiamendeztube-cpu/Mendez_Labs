@@ -35,7 +35,7 @@ export async function aiSelectFive(
     americanOdds: p.bestOdds,
     evPercent: p.evPercent,
     modelProbability: p.pModel,
-    marketProbability: p.pFinal,
+    marketProbability: p.consensusProbability,
     bookmakerCount: p.bookmakerCount,
     startTime: p.startTime,
     qualified: p.qualified,

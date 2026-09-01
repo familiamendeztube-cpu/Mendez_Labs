@@ -219,11 +219,13 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(fs.existsSync(filePath), 'alpaca-connector/index.ts exists');
 
   const src = read('supabase/functions/alpaca-connector/index.ts');
+  const shared = read('supabase/functions/_shared/terminal.ts');
 
-  // CORS headers
-  ok(src.includes('Access-Control-Allow-Origin'), 'edge fn has CORS origin header');
-  ok(src.includes('Access-Control-Allow-Methods'), 'edge fn has CORS methods header');
-  ok(src.includes('Access-Control-Allow-Headers'), 'edge fn has CORS headers header');
+  // CORS headers (now in the shared module)
+  ok(src.includes('_shared/terminal.ts') && src.includes('corsHeaders'), 'edge fn imports shared corsHeaders');
+  ok(shared.includes('Access-Control-Allow-Origin'), 'shared module has CORS origin header');
+  ok(shared.includes('Access-Control-Allow-Methods'), 'shared module has CORS methods header');
+  ok(shared.includes('Access-Control-Allow-Headers') && shared.includes('x-terminal-key'), 'shared CORS allows x-terminal-key');
 
   // Routes
   ok(src.includes('path === "account"'), 'edge fn has account route');
@@ -238,9 +240,11 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(src.includes('Live orders disabled'), 'edge fn returns 403 for live orders');
 
   // Auth check — single-user shared-code model (no accounts / JWTs)
-  ok(src.includes('x-terminal-key'), 'edge fn checks the x-terminal-key header');
-  ok(src.includes('TERMINAL_ACCESS_KEY'), 'edge fn compares against TERMINAL_ACCESS_KEY secret');
+  ok(src.includes('terminalAuthorized'), 'edge fn calls terminalAuthorized');
   ok(src.includes('Unauthorized'), 'edge fn returns 401 for a bad code');
+  ok(shared.includes('x-terminal-key') && shared.includes('TERMINAL_ACCESS_KEY'), 'shared gate checks x-terminal-key vs TERMINAL_ACCESS_KEY');
+  ok(shared.includes('diff |=') || shared.includes('timingSafe'), 'shared gate uses a constant-time compare');
+  ok(src.includes('rateLimited'), 'edge fn is rate-limited');
 
   // No hardcoded API keys — uses envOrThrow
   ok(src.includes('envOrThrow("ALPACA_PAPER_KEY_ID")'), 'uses envOrThrow for paper key');

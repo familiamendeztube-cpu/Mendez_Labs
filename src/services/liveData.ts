@@ -172,10 +172,12 @@ export async function fetchLiveFeed(): Promise<FeedResult> {
   // Then the analysis-engine (server-side independent model predictions).
   // The engine does a lot of work per call (odds cache + completed-game
   // history + Elo), so a cold invocation occasionally times out or 5xxs.
-  // Retry twice with backoff before giving up on it.
+  // Retry ONLY on network error / non-2xx — a 200 with an empty/short body is
+  // a legitimate "no games / cold model" answer, not a transient failure.
   try {
     let engineData: { predictions?: Array<Record<string, unknown>>; model?: ModelHealth } | null = null;
     for (let attempt = 0; attempt < 3; attempt++) {
+      let retriable = false;
       try {
         const engineResponse = await fetch(`${SUPABASE_URL}/functions/v1/analysis-engine`, {
           headers: {
@@ -184,13 +186,15 @@ export async function fetchLiveFeed(): Promise<FeedResult> {
           },
         });
         if (engineResponse.ok) {
-          const parsed = await engineResponse.json();
-          if (parsed?.predictions?.length > 0) { engineData = parsed; break; }
+          engineData = await engineResponse.json();
+          break;
         }
+        retriable = engineResponse.status >= 500 || engineResponse.status === 429;
       } catch {
-        // transient — retry
+        retriable = true; // network error
       }
-      if (attempt < 2) await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+      if (!retriable || attempt === 2) break;
+      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
     }
 
     if (engineData && engineData.predictions && engineData.predictions.length > 0) {

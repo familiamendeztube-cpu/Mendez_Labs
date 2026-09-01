@@ -4,26 +4,7 @@
 // today's sports picks, bankroll) and answers questions grounded in those
 // numbers. Advice only — it never places a trade or a bet.
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey, x-terminal-key",
-};
-
-// Single-user terminal — access gated by one shared code in the x-terminal-key
-// header, checked against the TERMINAL_ACCESS_KEY secret.
-function terminalAuthorized(req: Request): boolean {
-  const expected = Deno.env.get("TERMINAL_ACCESS_KEY") ?? "312593";
-  return req.headers.get("x-terminal-key") === expected;
-}
-
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { corsHeaders, jsonResponse, terminalAuthorized, rateLimited, readJson } from "../_shared/terminal.ts";
 
 // Flagship model for the advisor. Swap to "claude-opus-5" for maximum depth
 // (slower), or "claude-haiku-4-5-20251001" for the fastest replies.
@@ -39,6 +20,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
+
+  const limited = rateLimited(req);
+  if (limited) return limited;
 
   try {
     if (!terminalAuthorized(req)) {
@@ -56,11 +40,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const body = (await req.json()) as {
+    const parsed = await readJson<{
       messages?: ChatMessage[];
       context?: Record<string, unknown>;
       image?: { media_type: string; data: string } | null;
-    };
+    }>(req);
+    if ("error" in parsed) return parsed.error;
+    const body = parsed.body;
 
     const messages = Array.isArray(body.messages) ? body.messages : [];
     if (messages.length === 0) {
@@ -78,14 +64,16 @@ Deno.serve(async (req: Request) => {
     }
 
     // Attach an uploaded image to the final user turn as a vision block.
+    // ~6.6M base64 chars ≈ 4.9 MB decoded, just under Anthropic's 5 MB limit.
     const img = body.image;
+    const mediaType = img?.media_type === "image/jpg" ? "image/jpeg" : img?.media_type;
     if (
-      img && typeof img.data === "string" && img.data.length < 7_000_000 &&
-      /^image\/(png|jpeg|jpg|webp|gif)$/.test(img.media_type)
+      img && typeof img.data === "string" && img.data.length < 6_600_000 &&
+      mediaType && /^image\/(png|jpeg|webp|gif)$/.test(mediaType)
     ) {
       const last = trimmed[trimmed.length - 1];
       last.content = [
-        { type: "image", source: { type: "base64", media_type: img.media_type, data: img.data } },
+        { type: "image", source: { type: "base64", media_type: mediaType, data: img.data } },
         { type: "text", text: typeof last.content === "string" ? last.content : "What do you make of this?" },
       ];
     }
@@ -128,11 +116,8 @@ Deno.serve(async (req: Request) => {
       model: COPILOT_MODEL,
     });
   } catch (err) {
-    console.error(err);
-    return jsonResponse(
-      { error: err instanceof Error ? err.message : "Internal error" },
-      500,
-    );
+    console.error("ai-copilot:", err);
+    return jsonResponse({ error: "Internal error" }, 500);
   }
 });
 

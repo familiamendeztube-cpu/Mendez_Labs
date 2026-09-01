@@ -27,12 +27,13 @@ function num(v: string | null | undefined): number | null {
 /**
  * Assembles a plain snapshot of the operator's real state — Alpaca account,
  * open positions, today's sports picks, bankroll — for the Copilot to reason
- * over. Polls Alpaca slowly (60s); the chat only needs a fresh-enough picture.
+ * over. Only polls Alpaca while `active` (the Copilot panel is open); the chat
+ * needs a fresh-enough picture, not a constant background poller.
  */
-export function useTerminalContext(): () => CopilotContext {
+export function useTerminalContext(active = true): () => CopilotContext {
   const location = useLocation();
   const store = useStore();
-  const live = useLiveTrading(60_000);
+  const live = useLiveTrading(60_000, active);
 
   return useCallback((): CopilotContext => {
     const acct = live.account;
@@ -88,7 +89,7 @@ export function useTerminalContext(): () => CopilotContext {
           side: p.side,
           odds: p.bestOdds,
           evPercent: p.evPercent,
-          modelProbability: p.pFinal,
+          modelProbability: p.pModel,
           reasoning: p.reasoning,
         })),
         excludedSample: excluded.slice(0, 8).map((p) => ({

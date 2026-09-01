@@ -4,24 +4,7 @@
 // line quality and matchup context, and is told to return fewer than five (or
 // none) when the board is thin. Advisory: the operator still locks the card.
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey, x-terminal-key",
-};
-
-function terminalAuthorized(req: Request): boolean {
-  const expected = Deno.env.get("TERMINAL_ACCESS_KEY") ?? "312593";
-  return req.headers.get("x-terminal-key") === expected;
-}
-
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { corsHeaders, jsonResponse, terminalAuthorized, rateLimited, readJson } from "../_shared/terminal.ts";
 
 const MODEL = "claude-sonnet-5";
 const MAX_CANDIDATES = 60;
@@ -54,6 +37,9 @@ interface AiPick {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
 
+  const limited = rateLimited(req);
+  if (limited) return limited;
+
   try {
     if (!terminalAuthorized(req)) return jsonResponse({ error: "Unauthorized" }, 401);
     if (req.method !== "POST") return jsonResponse({ error: "POST required" }, 405);
@@ -63,10 +49,9 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ error: "AI Select needs the ANTHROPIC_API_KEY secret on this function." }, 503);
     }
 
-    const { candidates, bankroll } = (await req.json()) as {
-      candidates?: Candidate[];
-      bankroll?: number;
-    };
+    const parsed = await readJson<{ candidates?: Candidate[]; bankroll?: number }>(req);
+    if ("error" in parsed) return parsed.error;
+    const { candidates, bankroll } = parsed.body;
 
     if (!Array.isArray(candidates) || candidates.length === 0) {
       return jsonResponse({ error: "candidates array required" }, 400);
@@ -111,8 +96,7 @@ Respond with ONLY this JSON (no prose, no code fences):
     });
 
     if (!claudeRes.ok) {
-      const errText = await claudeRes.text();
-      console.error(`Claude API error ${claudeRes.status}: ${errText}`);
+      console.error(`ai-picks: Claude API ${claudeRes.status}`);
       return jsonResponse({ error: `AI Select is unavailable right now (${claudeRes.status}).` }, 502);
     }
 
@@ -123,17 +107,24 @@ Respond with ONLY this JSON (no prose, no code fences):
       .join("")
       .trim();
 
-    const parsed = parsePicks(text);
-    const validIds = new Set(slate.map((c) => `${c.eventId}|${c.market}|${c.side}`));
-    const picks = parsed.picks
-      .filter((p) => validIds.has(`${p.eventId}|${p.market}|${p.side}`))
+    const aiResult = parsePicks(text);
+    const norm = (s: string) => s.trim().toLowerCase();
+    const validIds = new Set(slate.map((c) => `${c.eventId}|${norm(c.market)}|${norm(c.side)}`));
+    const seen = new Set<string>();
+    const picks = aiResult.picks
+      .filter((p) => {
+        const key = `${p.eventId}|${norm(p.market)}|${norm(p.side)}`;
+        if (!validIds.has(key) || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 5);
 
-    return jsonResponse({ summary: parsed.summary, picks, model: MODEL });
+    return jsonResponse({ summary: aiResult.summary, picks, model: MODEL });
   } catch (err) {
-    console.error(err);
-    return jsonResponse({ error: err instanceof Error ? err.message : "Internal error" }, 500);
+    console.error("ai-picks:", err);
+    return jsonResponse({ error: "Internal error" }, 500);
   }
 });
 

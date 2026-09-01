@@ -80,6 +80,7 @@ interface StoreContextValue {
   pickFiveToday: PickFiveSet;
   settledHistory: SettledPickRecord[];
   addToPickFive: (pick: RankedPick) => { ok: boolean; reason?: string };
+  setPickFiveFromPicks: (picks: RankedPick[]) => number;
   removeFromPickFive: (slot: number) => void;
   reorderPickFive: (fromSlot: number, toSlot: number) => void;
   lockPickFive: () => { ok: boolean; reason?: string };
@@ -323,23 +324,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setLogs([]);
   }, [riskSettings.startingBankroll]);
 
-  const addToPickFive = useCallback((pick: RankedPick): { ok: boolean; reason?: string } => {
+  // Build a frozen pick at a given slot. Pure — no state reads.
+  const freezePick = useCallback((pick: RankedPick, slot: number): FrozenPick => {
     const matchup = `${pick.homeTeam} vs ${pick.awayTeam}`;
-    const newPick = { opportunityId: pick.eventId, matchup, startTime: pick.startTime };
-    const validation = canAddPick(pickFiveToday, newPick);
-    if (!validation.ok) return validation;
-
-    if (isContradictory(pickFiveToday.picks, { matchup, market: pick.market, side: pick.side })) {
-      return { ok: false, reason: 'This pick contradicts another pick from the same game.' };
-    }
-
     const implied = americanToImpliedProb(pick.bestOdds);
     const consensus = pick.consensusProbability ?? implied;
     const edge = calculateEdge(consensus, implied);
     const stake = Math.round(suggestedStake(edge, consensus, balance, riskSettings) * 100) / 100;
-    const slot = pickFiveToday.picks.length + 1;
-
-    const frozenPick: FrozenPick = {
+    return {
       slot,
       opportunityId: pick.eventId,
       matchup,
@@ -359,13 +351,46 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       startTime: pick.startTime,
       frozenAt: new Date().toISOString(),
     };
+  }, [balance, riskSettings]);
 
+  const addToPickFive = useCallback((pick: RankedPick): { ok: boolean; reason?: string } => {
+    const matchup = `${pick.homeTeam} vs ${pick.awayTeam}`;
+    const newPick = { opportunityId: pick.eventId, matchup, startTime: pick.startTime };
+    const validation = canAddPick(pickFiveToday, newPick);
+    if (!validation.ok) return validation;
+    if (isContradictory(pickFiveToday.picks, { matchup, market: pick.market, side: pick.side })) {
+      return { ok: false, reason: 'This pick contradicts another pick from the same game.' };
+    }
     setPickFiveToday((prev) => ({
       ...prev,
-      picks: [...prev.picks, frozenPick],
+      picks: [...prev.picks, freezePick(pick, prev.picks.length + 1)],
     }));
     return { ok: true };
-  }, [pickFiveToday, balance, riskSettings]);
+  }, [pickFiveToday, freezePick]);
+
+  /**
+   * Replace the whole card with a ranked list in one atomic update — used by
+   * Auto-select and AI Select. Validates (game not started, no dupes, no
+   * contradictions) inside the updater so slots and guards never see stale
+   * state. Returns how many picks actually landed.
+   */
+  const setPickFiveFromPicks = useCallback((picks: RankedPick[]): number => {
+    if (pickFiveToday.locked) return 0;
+    const now = Date.now();
+    const frozen: FrozenPick[] = [];
+    const seenMatchups = new Set<string>();
+    for (const p of picks) {
+      if (frozen.length >= 5) break;
+      const matchup = `${p.homeTeam} vs ${p.awayTeam}`;
+      if (seenMatchups.has(matchup)) continue;
+      if (new Date(p.startTime).getTime() < now) continue;
+      if (isContradictory(frozen, { matchup, market: p.market, side: p.side })) continue;
+      frozen.push(freezePick(p, frozen.length + 1));
+      seenMatchups.add(matchup);
+    }
+    setPickFiveToday((prev) => (prev.locked ? prev : { ...prev, picks: frozen }));
+    return frozen.length;
+  }, [pickFiveToday.locked, freezePick]);
 
   const removeFromPickFive = useCallback((slot: number) => {
     setPickFiveToday((prev) => ({
@@ -580,6 +605,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     pickFiveToday,
     settledHistory,
     addToPickFive,
+    setPickFiveFromPicks,
     removeFromPickFive,
     reorderPickFive,
     lockPickFive,

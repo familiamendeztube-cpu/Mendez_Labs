@@ -84,10 +84,10 @@ export function SportsIntel() {
   const probPoints = useMemo(
     () =>
       rankedPicks
-        .filter((p) => p.pModel !== null && p.pFinal !== null)
+        .filter((p) => p.pModel !== null && p.consensusProbability !== null)
         .slice(0, 400)
         .map((p) => ({
-          market: Number((((p.pFinal ?? 0)) * 100).toFixed(1)),
+          market: Number((((p.consensusProbability ?? 0)) * 100).toFixed(1)),
           model: Number((((p.pModel ?? 0)) * 100).toFixed(1)),
           matchup: `${p.homeTeam} vs ${p.awayTeam}`,
           side: p.side,

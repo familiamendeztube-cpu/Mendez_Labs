@@ -33,6 +33,7 @@ export function PickFive() {
     pickFiveToday,
     rankedPicks,
     addToPickFive,
+    setPickFiveFromPicks,
     removeFromPickFive,
     reorderPickFive,
     lockPickFive,
@@ -68,19 +69,15 @@ export function PickFive() {
 
   const handleAutoSelect = () => {
     if (pickFiveToday.locked) return;
-
-    for (let i = pickFiveToday.picks.length; i >= 1; i--) {
-      removeFromPickFive(i);
-    }
-
     const { selected, explanation, tier } = autoSelectBestFive(rankedPicks, bankroll);
-
-    for (const pick of selected) {
-      addToPickFive(pick);
-    }
-
-    setAutoSelectMsg(explanation ? { text: explanation, tier } : null);
-    if (explanation) setTimeout(() => setAutoSelectMsg(null), 12000);
+    const added = setPickFiveFromPicks(selected);
+    const note = explanation
+      ? explanation
+      : added < 5
+        ? `Added ${added} pick${added === 1 ? '' : 's'} — that's every independent game with data today.`
+        : null;
+    setAutoSelectMsg(note ? { text: note, tier } : null);
+    if (note) setTimeout(() => setAutoSelectMsg(null), 12000);
   };
 
   const handleAiSelect = async () => {
@@ -90,17 +87,12 @@ export function PickFive() {
     setAutoSelectMsg(null);
     try {
       const { summary, picks } = await aiSelectFive(rankedPicks, bankroll);
-      for (let i = pickFiveToday.picks.length; i >= 1; i--) removeFromPickFive(i);
-      let added = 0;
-      for (const p of picks) {
-        const match = rankedPicks.find(
+      const ordered = picks
+        .map((p) => rankedPicks.find(
           (r) => r.eventId === p.eventId && r.market === p.market && r.side === p.side,
-        );
-        if (match) {
-          addToPickFive(match);
-          added += 1;
-        }
-      }
+        ))
+        .filter((r): r is NonNullable<typeof r> => r != null);
+      const added = setPickFiveFromPicks(ordered);
       setAiSelectSummary(
         added > 0
           ? `${summary}\n\nAdded ${added} pick${added === 1 ? '' : 's'} to your card.`

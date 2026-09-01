@@ -65,7 +65,7 @@ export function Copilot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recRef = useRef<SpeechRec | null>(null);
-  const getContext = useTerminalContext();
+  const getContext = useTerminalContext(open);
 
   useEffect(() => {
     try { localStorage.setItem(THREAD_KEY, JSON.stringify(messages.slice(-40))); } catch { /* ignore */ }
@@ -74,6 +74,12 @@ export function Copilot() {
   useEffect(() => {
     if (open) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, open, busy]);
+
+  // Stop voice recognition when the panel closes or the component unmounts.
+  useEffect(() => {
+    if (!open && listening) { recRef.current?.stop(); setListening(false); }
+  }, [open, listening]);
+  useEffect(() => () => { recRef.current?.stop(); }, []);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();

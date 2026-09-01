@@ -1,25 +1,4 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey, x-terminal-key",
-};
-
-// Single-user terminal. There are no accounts — access is gated by one shared
-// code supplied in the x-terminal-key header and checked against the
-// TERMINAL_ACCESS_KEY secret. Falls back to the known master code so the
-// function still works before the secret is set.
-function terminalAuthorized(req: Request): boolean {
-  const expected = Deno.env.get("TERMINAL_ACCESS_KEY") ?? "312593";
-  return req.headers.get("x-terminal-key") === expected;
-}
-
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { corsHeaders, jsonResponse, terminalAuthorized, rateLimited } from "../_shared/terminal.ts";
 
 function envOrThrow(name: string): string {
   const v = Deno.env.get(name);
@@ -56,6 +35,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
+
+  const limited = rateLimited(req, 90);
+  if (limited) return limited;
 
   try {
     if (!terminalAuthorized(req)) {
@@ -212,9 +194,12 @@ Deno.serve(async (req: Request) => {
 
     return jsonResponse({ error: `Unknown route: ${path}` }, 404);
   } catch (err) {
-    return jsonResponse(
-      { error: err instanceof Error ? err.message : "Internal error" },
-      500
-    );
+    console.error("alpaca-connector:", err);
+    // The message here is setup guidance ("Missing secret: ALPACA_PAPER_KEY_ID")
+    // and only ever reaches an authorized caller — keep it.
+    const msg = err instanceof Error && err.message.startsWith("Missing secret:")
+      ? err.message
+      : "Internal error";
+    return jsonResponse({ error: msg }, 500);
   }
 });
