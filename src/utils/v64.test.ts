@@ -177,4 +177,29 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(alp.includes('brokerFetch'), 'alpaca.ts routes through the broker abstraction');
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 8: System status self-diagnosis
+// ═══════════════════════════════════════════════════════════════════════════════
+{
+  const svc = read('src/services/systemStatus.ts');
+  ok(svc.includes('export async function probeSystem'), 'probeSystem exported');
+  ok(svc.includes("'not-deployed'") && svc.includes("'stale'") && svc.includes("'needs-secrets'"), 'probe distinguishes missing / stale / unkeyed');
+  ok(svc.includes("auth: 'terminal' | 'anon'"), 'probe uses the right credential per function');
+  // The sports functions authenticate with the anon key, not the terminal key.
+  ok(/slug: 'analysis-engine'[^}]*auth: 'anon'/.test(svc), 'analysis-engine probed with the anon key');
+  ok(/slug: 'alpaca-connector'[^}]*auth: 'terminal'/.test(svc), 'alpaca-connector probed with the terminal key');
+  for (const fn of ['alpaca-connector', 'kraken-connector', 'ai-copilot', 'ai-picks', 'ai-analysis', 'analysis-engine', 'sports-feed', 'settle-picks']) {
+    ok(svc.includes(`slug: '${fn}'`), `system status probes ${fn}`);
+  }
+
+  const cmp = read('src/components/SystemStatus.tsx');
+  ok(cmp.includes('export function SystemStatus'), 'SystemStatus component exported');
+  ok(cmp.includes('probeSystem'), 'SystemStatus runs the probe');
+  ok(cmp.includes('Adding API keys will not help until the code is on the server'), 'SystemStatus explains why keys alone are not enough');
+
+  const settings = read('src/pages/Settings.tsx');
+  ok(settings.includes('<SystemStatus />'), 'SystemStatus rendered on the Settings page');
+}
+
 console.log(`✓ v64: ${N} assertions passed`);

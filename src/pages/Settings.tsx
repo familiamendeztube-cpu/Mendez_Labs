@@ -11,6 +11,7 @@ import {
 } from '@/utils/tradingCalc';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
 import { PageHero } from '@/components/PageHero';
+import { SystemStatus } from '@/components/SystemStatus';
 import { APP_IMAGES } from '@/data/appImages';
 import { useTheme } from '@/lib/useTheme';
 import { THEMES } from '@/lib/themes';
@@ -37,6 +38,9 @@ export function Settings() {
         subtitle="Connections, readiness, and display preferences."
         height="sm"
       />
+
+      {/* ── System status — what is actually live on the server ───────── */}
+      <SystemStatus />
 
       {/* ── Theme Picker ─────────────────────────────────────────────── */}
       <div className="panel-img rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
