@@ -56,11 +56,14 @@ SECRET_ARGS=(
 [[ -n "${ALPACA_LIVE_KEY_ID:-}"      ]] && SECRET_ARGS+=( "ALPACA_LIVE_KEY_ID=${ALPACA_LIVE_KEY_ID}" )
 [[ -n "${ALPACA_LIVE_SECRET:-}"      ]] && SECRET_ARGS+=( "ALPACA_LIVE_SECRET=${ALPACA_LIVE_SECRET}" )
 [[ -n "${ALPACA_LIVE_ORDERS_ENABLED:-}" ]] && SECRET_ARGS+=( "ALPACA_LIVE_ORDERS_ENABLED=${ALPACA_LIVE_ORDERS_ENABLED}" )
+[[ -n "${KRAKEN_API_KEY:-}"          ]] && SECRET_ARGS+=( "KRAKEN_API_KEY=${KRAKEN_API_KEY}" )
+[[ -n "${KRAKEN_API_SECRET:-}"       ]] && SECRET_ARGS+=( "KRAKEN_API_SECRET=${KRAKEN_API_SECRET}" )
+[[ -n "${KRAKEN_ORDERS_ENABLED:-}"   ]] && SECRET_ARGS+=( "KRAKEN_ORDERS_ENABLED=${KRAKEN_ORDERS_ENABLED}" )
 
 $SB secrets set "${SECRET_ARGS[@]}" --project-ref "$PROJECT_REF"
 
 echo "→ Deploying functions"
-for fn in alpaca-connector ai-analysis analysis-engine sports-feed sports-odds settle-picks; do
+for fn in alpaca-connector kraken-connector ai-analysis ai-copilot ai-picks analysis-engine sports-feed sports-odds settle-picks; do
   echo "   • $fn"
   $SB functions deploy "$fn" --project-ref "$PROJECT_REF"
 done
