@@ -7,6 +7,7 @@ import {
 import { getTradingEnv, setTradingEnv, type TradingEnv } from '@/services/alpaca';
 import { OrderTicket } from '@/components/OrderTicket';
 import { useStore } from '@/store/StoreContext';
+import { useScrollReveal } from '@/lib/useScrollReveal';
 import { fmtCurrency } from '@/utils/format';
 import {
   connectionStatusLabel,
@@ -92,13 +93,14 @@ export function TradingDashboard() {
 
   const hasChartData = live.equityCurve.length > 0;
   const hasSpyData = live.spyCandles.length > 0;
+  const revealRef = useScrollReveal<HTMLDivElement>();
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-8" data-stagger-visible>
+    <div ref={revealRef} className="mx-auto max-w-5xl space-y-5 pb-8">
       {/* HEADER */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4" data-reveal>
         <div>
-          <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
+          <h1 className="serif text-[2.5rem] font-semibold leading-[1.02]" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
             Trading Command Center
           </h1>
           <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
@@ -116,7 +118,7 @@ export function TradingDashboard() {
       </div>
 
       {/* Paper / Live toggle */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" data-reveal>
         <button
           onClick={() => switchEnv('paper')}
           className="rounded-full px-4 py-1.5 text-sm font-semibold"
@@ -249,7 +251,9 @@ export function TradingDashboard() {
       )}
 
       {/* ORDER TICKET */}
-      <OrderTicket env={env} connected={live.connected} onPlaced={live.refresh} />
+      <div data-reveal>
+        <OrderTicket env={env} connected={live.connected} onPlaced={live.refresh} />
+      </div>
 
       {/* TICKER STRIP */}
       <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin', scrollbarColor: `${mutedAlpha(0.2)} transparent` }}>
@@ -261,7 +265,7 @@ export function TradingDashboard() {
       </div>
 
       {/* SPY Intraday */}
-      <div className="rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="app-card rounded-2xl p-4" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>SPY -- Intraday</h3>
@@ -274,14 +278,14 @@ export function TradingDashboard() {
 
       {/* TWO-COLUMN CHART ROW */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2" data-stagger-visible style={{ '--stagger': '80ms' } as React.CSSProperties}>
-        <div className="rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="app-card rounded-2xl p-4" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Equity Curve</h3>
             <StatusBadge connected={hasChartData} label={hasChartData ? 'Live' : 'No history'} />
           </div>
           {hasChartData ? <EquityCurveChart data={live.equityCurve} /> : <EmptyChart message="Equity history will appear after your first trading day" />}
         </div>
-        <div className="rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="app-card rounded-2xl p-4" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Daily P&L</h3>
             <StatusBadge connected={hasChartData} label={hasChartData ? 'Live' : 'No history'} />
@@ -291,7 +295,7 @@ export function TradingDashboard() {
       </div>
 
       {/* EXPOSURE */}
-      <div className="rounded-2xl p-4" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="app-card rounded-2xl p-4" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Portfolio Exposure</h3>
           <StatusBadge connected={live.positions.length > 0} label={live.positions.length > 0 ? 'Live' : 'No positions'} />
@@ -305,7 +309,7 @@ export function TradingDashboard() {
       </div>
 
       {/* ACCOUNT METRICS */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="app-card rounded-2xl p-5" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Account</h2>
           {live.connected && (
@@ -332,7 +336,7 @@ export function TradingDashboard() {
 
       {/* POSITIONS TABLE */}
       {live.positions.length > 0 && (
-        <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+        <div className="app-card rounded-2xl p-5" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <h2 className="text-base font-semibold mb-3" style={{ color: tv.textPrimary }}>Open Positions</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -371,7 +375,7 @@ export function TradingDashboard() {
       )}
 
       {/* TOP 5 SIGNALS PREVIEW */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="app-card rounded-2xl p-5" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Top five trade candidates</h2>
           <Link to="/signals" className="flex items-center gap-1 text-xs font-semibold" style={{ color: tv.accent, minHeight: '44px' }}>
@@ -393,7 +397,7 @@ export function TradingDashboard() {
       </div>
 
       {/* EXECUTION READINESS */}
-      <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+      <div className="app-card rounded-2xl p-5" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
         <div className="flex items-center gap-2 mb-3">
           <Shield className="h-5 w-5" style={{ color: live.connected ? tv.accent : tv.statusAmber }} />
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Execution readiness</h2>

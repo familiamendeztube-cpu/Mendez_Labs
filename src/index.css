@@ -59,16 +59,16 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(32,200,120,0.2); background-clip: content-box; }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+    font-family: 'Bricolage Grotesque', 'Archivo', 'Sora', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 }
 
 @layer components {
   .mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-feature-settings: 'tnum' 1, 'zero' 1; }
-  .serif { font-family: 'Unbounded', 'Archivo', 'Sora', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.01em; font-weight: 600; }
-  .display { font-family: 'Archivo', 'Sora', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.03em; }
+  .serif { font-family: 'Bricolage Grotesque', 'Archivo', 'Sora', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.02em; font-weight: 600; }
+  .display { font-family: 'Bricolage Grotesque', 'Archivo', 'Sora', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.02em; }
   .body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
   .label { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.02em; }
 
@@ -303,12 +303,48 @@ html { scrollbar-width: thin; scrollbar-color: rgba(237,229,213,0.25) #1B1511; }
    (A transition can't fire here because pages set the attribute statically —
    the previous transition-based rules left children stuck at opacity 0.) */
 @keyframes stagger-in {
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
 }
 [data-stagger-visible] > * {
   opacity: 0;
-  transform: translateY(12px);
-  animation: stagger-in 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation: stagger-in 0.72s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+/* Scroll-triggered reveal — the section starts hidden, then this class is
+   added by useScrollReveal when it enters the viewport. Premium masked
+   rise, restrained (one move, not a cascade of effects). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(34px);
+  filter: blur(7px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+              transform 0.8s cubic-bezier(0.16,1,0.3,1),
+              filter 0.8s cubic-bezier(0.16,1,0.3,1);
+  will-change: opacity, transform;
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+/* Interactive card lift — what's a surface you can act on reads as one. */
+.app-card {
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+.app-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-active);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .app-card { transition: none !important; }
+  .app-card:hover { transform: none !important; }
 }
 [data-stagger-visible] > *:nth-child(1) { animation-delay: calc(var(--stagger, 60ms) * 0); }
 [data-stagger-visible] > *:nth-child(2) { animation-delay: calc(var(--stagger, 60ms) * 1); }
