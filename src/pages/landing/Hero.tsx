@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { registerMotion, revealWords } from './motion';
+import { registerMotion, revealChars } from './motion';
 import { introAlreadySeen } from './Preloader';
 import { HeroBackdrop } from './HeroBackdrop';
 import { LP } from './theme';
@@ -23,16 +23,13 @@ export function Hero({ reduced }: { reduced: boolean }) {
       // ── Entrance ──
       const upper = trackRef.current!.querySelector('[data-hero-upper]')!;
       const lower = trackRef.current!.querySelector('[data-hero-lower]')!;
-      revealWords(upper, { delay });
-      revealWords(lower, { delay: delay + 0.2 });
+      revealChars(upper, { delay });
+      revealChars(lower, { delay: delay + 0.25 });
       gsap.from(windowRef.current, {
         opacity: 0, scale: 0.92, duration: 1.8, ease: 'lux', delay: delay - 0.3,
       });
       gsap.from('[data-hero-mark]', {
         opacity: 0, letterSpacing: '0.6em', duration: 1.6, ease: 'lux', delay: delay + 0.4,
-      });
-      gsap.from('[data-hero-sub]', {
-        opacity: 0, y: 14, duration: 0.8, ease: 'lux', delay: delay + 0.6,
       });
       const pill = document.querySelector('[data-lp-pill]');
       if (pill) {
@@ -69,7 +66,7 @@ export function Hero({ reduced }: { reduced: boolean }) {
         .to('[data-hero-mark]', { opacity: 0, ease: 'none', duration: 0.25 }, 0.35)
         .to('[data-hero-upper]', { xPercent: -18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
         .to('[data-hero-lower]', { xPercent: 18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
-        .to('[data-hero-sub]', { opacity: 0, ease: 'none', duration: 0.2 }, 0.2);
+        .to('[data-hero-mark]', { opacity: 0, ease: 'none', duration: 0.2 }, 0.2);
     }, trackRef);
     return () => ctx.revert();
   }, [reduced]);
@@ -163,28 +160,21 @@ export function Hero({ reduced }: { reduced: boolean }) {
           </span>
         </div>
 
-        {/* Split headline */}
+        {/* Split headline — oversized, tight, char-revealed */}
         <h1
           data-hero-upper
-          className="absolute left-[5vw] top-[14vh] z-20 font-bold"
-          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 700, fontSize: 'clamp(2.4rem, 7vw, 7.5rem)', lineHeight: 1.02, letterSpacing: '-0.01em' }}
+          className="absolute left-[4vw] top-[11vh] z-20 font-bold"
+          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 700, fontSize: 'clamp(2.7rem, 8.4vw, 9rem)', lineHeight: 0.98, letterSpacing: '-0.02em' }}
         >
           We are<br />discipline
         </h1>
         <h1
           data-hero-lower
-          className="absolute bottom-[16vh] right-[5vw] z-20 text-right font-bold"
-          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 700, fontSize: 'clamp(2.4rem, 7vw, 7.5rem)', lineHeight: 1.02, letterSpacing: '-0.01em' }}
+          className="absolute bottom-[13vh] right-[4vw] z-20 text-right font-bold"
+          style={{ color: LP.bone, fontFamily: LP.displayHero, fontWeight: 700, fontSize: 'clamp(2.7rem, 8.4vw, 9rem)', lineHeight: 0.98, letterSpacing: '-0.02em' }}
         >
           We are<br />edge
         </h1>
-        <p
-          data-hero-sub
-          className="absolute bottom-[16vh] left-1/2 z-20 w-full -translate-x-1/2 px-8 text-center text-xs tracking-[0.35em] lg:bottom-[8vh] lg:w-auto lg:px-0"
-          style={{ color: LP.mutedOnDark, fontFamily: LP.mono }}
-        >
-          TRADING FIRST · SPORTS LAB SECOND
-        </p>
       </div>
     </section>
   );

@@ -58,6 +58,14 @@ export function revealLines(el: Element, vars: gsap.TweenVars = {}) {
 }
 
 /** Masked word pull-up — Jesko's chunky per-word headline reveal. */
+/** Masked per-character pull-up — the tightest agency headline reveal. */
+export function revealChars(el: Element, vars: gsap.TweenVars = {}) {
+  const split = SplitText.create(el, { type: 'chars,lines', mask: 'lines' });
+  return gsap.from(split.chars, {
+    yPercent: 120, duration: 1.0, stagger: 0.028, ease: 'pull', ...vars,
+  });
+}
+
 export function revealWords(el: Element, vars: gsap.TweenVars = {}) {
   const split = SplitText.create(el, { type: 'words,lines', mask: 'lines' });
   return gsap.from(split.words, {

@@ -41,6 +41,21 @@ export function JetPass({ reduced }: { reduced: boolean }) {
             ease: 'none',
             duration: 1,
           }, 0)
+        // Motion blur that engages mid-pass (fastest travel) and relaxes at
+        // the ends — the cue a real render gives that a static illustration
+        // never does. Keeps the drop-shadow in the same filter string.
+        .fromTo(jetInnerRef.current, {
+          filter: 'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34)) blur(0px)',
+        }, {
+          keyframes: {
+            filter: [
+              'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34)) blur(0px)',
+              'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34)) blur(3.5px)',
+              'drop-shadow(-52px 68px 42px rgba(16,19,18,0.34)) blur(0px)',
+            ],
+          },
+          ease: 'none', duration: 1,
+        }, 0)
         .fromTo('[data-jet-sheen]',
           { yPercent: -60 },
           { yPercent: 480, ease: 'none', duration: 1 }, 0)
