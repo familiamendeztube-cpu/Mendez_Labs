@@ -20,9 +20,9 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
       // Each line brightens from muted to full as it crosses the viewport center.
       split.lines.forEach((line) => {
         gsap.fromTo(line,
-          { color: 'rgba(250,252,254,0.30)' },
+          { color: 'rgba(255,255,255,0.45)' },
           {
-            color: LP.textOnSky,
+            color: '#FFFFFF',
             ease: 'none',
             scrollTrigger: { trigger: line, start: 'top 75%', end: 'top 45%', scrub: true },
           });
@@ -39,8 +39,12 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
     <section
       ref={ref}
       data-lp-theme="sky"
-      className="relative mx-2 flex min-h-screen items-center overflow-hidden rounded-[2.5rem] px-[6vw] py-[20vh] lg:mx-4 lg:rounded-[3rem]"
-      style={{ background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 100%)` }}
+      className="relative flex min-h-[140vh] items-center overflow-hidden px-[6vw] py-[24vh]"
+      style={{
+        // One continuous atmosphere: sky deepens through the text zone, then
+        // warms into the cream of the jet chapter — no card seam.
+        background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 48%, #AAB5BC 72%, #D6CFBF 90%, #E9E2D0 100%)`,
+      }}
     >
       <FloatingChips
         tone="sky"
@@ -58,11 +62,11 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
         <p
           data-manifesto
           className="font-semibold"
-          style={{ color: LP.textOnSky, fontFamily: LP.display, fontSize: 'clamp(1.9rem, 4.6vw, 4.4rem)', lineHeight: 1.12, letterSpacing: '-0.025em' }}
+          style={{ color: '#FFFFFF', fontFamily: LP.display, fontSize: 'clamp(1.9rem, 4.6vw, 4.4rem)', lineHeight: 1.12, letterSpacing: '-0.025em', textShadow: '0 2px 28px rgba(30,43,56,0.28)' }}
         >
           {COPY}
         </p>
-        <p className="mt-10 text-sm font-bold tracking-widest" style={{ color: LP.textOnSky, fontFamily: LP.mono }}>
+        <p className="mt-10 text-sm font-bold tracking-widest" style={{ color: 'rgba(255,255,255,0.9)', fontFamily: LP.mono, textShadow: '0 1px 14px rgba(30,43,56,0.3)' }}>
           STUDY. SIZE THE RISK. STRIKE ONCE.
         </p>
       </div>

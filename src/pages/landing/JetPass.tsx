@@ -76,10 +76,14 @@ export function JetPass({ reduced }: { reduced: boolean }) {
     <section
       ref={trackRef}
       data-lp-theme="light"
-      className="relative mx-2 rounded-[2.5rem] lg:mx-4 lg:rounded-[3rem]"
-      style={{ background: `linear-gradient(180deg, #CFC4B4 0%, ${LP.ivory} 55%, #F8F3E8 100%)`, height: '420vh' }}
+      className="relative"
+      style={{
+        // Continues seamlessly from the manifesto's warming sky (#E9E2D0).
+        background: `linear-gradient(180deg, #E9E2D0 0%, #EFE8D8 40%, ${LP.ivory} 75%, #F8F3E8 100%)`,
+        height: '420vh',
+      }}
     >
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden rounded-[2.5rem] px-[6vw] lg:rounded-[3rem]">
+      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden px-[6vw]">
         <h2
           data-jet-head
           className="relative z-10 font-semibold"
@@ -135,29 +139,30 @@ export function JetPass({ reduced }: { reduced: boolean }) {
             />
             <svg viewBox="0 0 600 1400" className="h-auto w-full" preserveAspectRatio="xMidYMin meet">
               <defs>
+                {/* Champagne-gold metal: deep bronze edges, hot cream specular */}
                 <linearGradient id="jp-fuse" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#8E9092" />
-                  <stop offset="10%" stopColor="#BCBEBF" />
-                  <stop offset="30%" stopColor="#F0F2F2" />
-                  <stop offset="44%" stopColor="#FFFFFF" />
-                  <stop offset="56%" stopColor="#F6F7F7" />
-                  <stop offset="76%" stopColor="#D2D4D3" />
-                  <stop offset="100%" stopColor="#898B8D" />
+                  <stop offset="0%" stopColor="#71613F" />
+                  <stop offset="10%" stopColor="#A6926A" />
+                  <stop offset="30%" stopColor="#E9DBB6" />
+                  <stop offset="44%" stopColor="#FFF9E7" />
+                  <stop offset="56%" stopColor="#F3E7C8" />
+                  <stop offset="76%" stopColor="#C6B489" />
+                  <stop offset="100%" stopColor="#6B5B3A" />
                 </linearGradient>
                 <linearGradient id="jp-wing-r" x1="0" y1="0" x2="1" y2="0.35">
-                  <stop offset="0%" stopColor="#F2F4F3" />
-                  <stop offset="45%" stopColor="#DDDFDE" />
-                  <stop offset="100%" stopColor="#A9ACAD" />
+                  <stop offset="0%" stopColor="#E7D9B3" />
+                  <stop offset="45%" stopColor="#C2AF83" />
+                  <stop offset="100%" stopColor="#84714A" />
                 </linearGradient>
                 <linearGradient id="jp-wing-l" x1="1" y1="0" x2="0" y2="0.35">
-                  <stop offset="0%" stopColor="#FAFBFA" />
-                  <stop offset="45%" stopColor="#E6E8E7" />
-                  <stop offset="100%" stopColor="#B3B6B7" />
+                  <stop offset="0%" stopColor="#F3E7C4" />
+                  <stop offset="45%" stopColor="#CFBD92" />
+                  <stop offset="100%" stopColor="#93805A" />
                 </linearGradient>
                 <linearGradient id="jp-eng" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3A3D40" />
-                  <stop offset="25%" stopColor="#5C5F62" />
-                  <stop offset="100%" stopColor="#2A2C2F" />
+                  <stop offset="0%" stopColor="#4E4128" />
+                  <stop offset="25%" stopColor="#6E5F40" />
+                  <stop offset="100%" stopColor="#2E2718" />
                 </linearGradient>
                 <linearGradient id="jp-glass" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#0C1118" />
@@ -217,8 +222,11 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" fill="url(#jp-fin-gold)" />
               </g>
               {/* Wing overlays */}
-              <path d="M316,455 C328,585 362,715 428,830 C482,925 534,1005 554,1052 L548,1058 C527,1010 476,930 422,836 C357,722 323,590 311,458 Z" fill="#FFFFFF" opacity="0.8" />
-              <path d="M284,455 C272,585 238,715 172,830 C118,925 66,1005 46,1052 L52,1058 C73,1010 124,930 178,836 C243,722 277,590 289,458 Z" fill="#FFFFFF" opacity="0.9" />
+              <path d="M316,455 C328,585 362,715 428,830 C482,925 534,1005 554,1052 L548,1058 C527,1010 476,930 422,836 C357,722 323,590 311,458 Z" fill="#FFF6DE" opacity="0.85" />
+              <path d="M284,455 C272,585 238,715 172,830 C118,925 66,1005 46,1052 L52,1058 C73,1010 124,930 178,836 C243,722 277,590 289,458 Z" fill="#FFFAEA" opacity="0.9" />
+              {/* Engine contact shadows cast onto the wings */}
+              <ellipse cx="394" cy="1158" rx="54" ry="9" fill="#241C10" opacity="0.24" filter="url(#jp-soft)" />
+              <ellipse cx="206" cy="1158" rx="54" ry="9" fill="#241C10" opacity="0.20" filter="url(#jp-soft)" />
               <path d="M340,1148 L352,1094" stroke="rgba(30,34,38,0.16)" strokeWidth="1.4" fill="none" />
               <path d="M300,1152 L470,1116" stroke="rgba(30,34,38,0.10)" strokeWidth="1.2" fill="none" />
               <path d="M260,1148 L248,1094" stroke="rgba(30,34,38,0.16)" strokeWidth="1.4" fill="none" />
@@ -285,8 +293,11 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 <path d="M306,130 C309,420 309,760 305,1180" stroke="#A8C4DB" strokeWidth="6" opacity="0.22" fill="none" filter="url(#jp-soft)" />
                 <line x1="291" y1="150" x2="309" y2="150" stroke="rgba(20,23,26,0.18)" strokeWidth="1.2" />
                 <ellipse cx="298" cy="70" rx="10" ry="34" fill="url(#jp-nose)" />
-                <path d="M289,180 L285,440 L285,1000 C285,1090 289,1180 293,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.8" />
-                <path d="M311,180 L315,440 L315,1000 C315,1090 311,1180 307,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.7" />
+                {/* Dark cheat-lines (dark stripe reads sharper on gold metal) */}
+                <path d="M289,180 L285,440 L285,1000 C285,1090 289,1180 293,1246" fill="none" stroke="rgba(58,46,28,0.6)" strokeWidth="1.8" />
+                <path d="M311,180 L315,440 L315,1000 C315,1090 311,1180 307,1246" fill="none" stroke="rgba(58,46,28,0.5)" strokeWidth="1.8" />
+                {/* Belly shading toward the tail — grounds the hull */}
+                <path d="M292,1040 C288,1130 288,1210 294,1256 L306,1256 C312,1210 312,1130 308,1040 Z" fill="#2A2216" opacity="0.16" filter="url(#jp-softer)" />
                 {[260, 420, 620, 830, 1010].map((y) => (
                   <g key={y}>
                     <line x1="286" y1={y} x2="314" y2={y} stroke="rgba(255,255,255,0.5)" strokeWidth="0.9" />
@@ -299,9 +310,9 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 <rect x="287" y="236" width="9" height="34" rx="4" fill="none" stroke="rgba(20,23,26,0.22)" strokeWidth="1.2" />
                 {Array.from({ length: 15 }).map((_, i) => (
                   <g key={i}>
-                    <circle cx="288.5" cy={320 + i * 38} r="2.4" fill="#C9CBCA" />
+                    <circle cx="288.5" cy={320 + i * 38} r="2.4" fill="#8A7B5D" />
                     <circle cx="288.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
-                    <circle cx="311.5" cy={320 + i * 38} r="2.4" fill="#BEC0BF" />
+                    <circle cx="311.5" cy={320 + i * 38} r="2.4" fill="#7E7052" />
                     <circle cx="311.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
                   </g>
                 ))}
