@@ -31,6 +31,10 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
     <div
       ref={ref}
       className="pointer-events-none fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-4 py-4 lg:px-8 lg:py-5"
+      style={{
+        background: 'linear-gradient(180deg, rgba(15,11,8,0.55) 0%, rgba(15,11,8,0.28) 55%, transparent 100%)',
+        backdropFilter: 'blur(2px)',
+      }}
     >
       {/* Left: editorial nav — scrolls to chapters */}
       <nav className="pointer-events-auto hidden items-center gap-6 lg:flex" style={{ mixBlendMode: 'difference' }}>

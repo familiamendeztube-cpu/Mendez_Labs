@@ -48,13 +48,13 @@ export function JetPass({ reduced }: { reduced: boolean }) {
         //    cabin interior fades up — then the skin returns as it departs.
         .fromTo('[data-jet-interior]',
           { opacity: 0 },
-          { opacity: 1, ease: 'none', duration: 0.22 }, 0.34)
+          { opacity: 1, ease: 'power1.out', duration: 0.16 }, 0.34)
         .to('[data-jet-skin]',
-          { opacity: 0.1, ease: 'none', duration: 0.22 }, 0.34)
+          { opacity: 0, ease: 'power1.out', duration: 0.16 }, 0.34)
         .to('[data-jet-interior]',
-          { opacity: 0, ease: 'none', duration: 0.18 }, 0.72)
+          { opacity: 0, ease: 'power1.in', duration: 0.14 }, 0.74)
         .to('[data-jet-skin]',
-          { opacity: 1, ease: 'none', duration: 0.18 }, 0.72);
+          { opacity: 1, ease: 'power1.in', duration: 0.14 }, 0.74);
 
       gsap.from('[data-jet-sub]', {
         x: -90, opacity: 0, duration: 1.1, ease: 'lux',
@@ -239,36 +239,95 @@ export function JetPass({ reduced }: { reduced: boolean }) {
 
               {/* ── Cabin interior — revealed as the skin dissolves overhead ── */}
               <g data-jet-interior opacity="0">
-                {/* Cabin shell */}
+                <defs>
+                  <linearGradient id="jp-floor" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#6E5A3F" />
+                    <stop offset="50%" stopColor="#8A7350" />
+                    <stop offset="100%" stopColor="#5E4C36" />
+                  </linearGradient>
+                  <linearGradient id="jp-seat" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#F3E9D2" />
+                    <stop offset="100%" stopColor="#D4C4A0" />
+                  </linearGradient>
+                </defs>
+
+                {/* Cabin shell — a wider stylized cutaway so the plan reads,
+                    with a warm wood floor that holds contrast on cream */}
                 <path
-                  d="M300,26 C304,26 307,38 308.5,62 L311,150 C313,240 315,330 316,440 L316,1000 C316,1090 312,1180 308,1250 C305,1300 302,1340 300,1352 C298,1340 295,1300 292,1250 C288,1180 284,1090 284,1000 L284,440 C285,330 287,240 289,150 L291.5,62 C293,38 296,26 300,26 Z"
-                  fill="#F2EBDA" stroke="rgba(36,28,20,0.55)" strokeWidth="2"
+                  d="M300,120 C270,120 256,150 254,210 L252,360 C251,520 251,900 254,1080 C256,1150 268,1210 300,1230 C332,1210 344,1150 346,1080 C349,900 349,520 348,360 L346,210 C344,150 330,120 300,120 Z"
+                  fill="url(#jp-floor)" stroke="rgba(24,18,10,0.5)" strokeWidth="2.5"
                 />
-                {/* Cockpit: two crew seats + console */}
-                <path d="M290,160 C293,152 307,152 310,160" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.4" />
-                <rect x="288.5" y="168" width="9" height="11" rx="2.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
-                <rect x="302.5" y="168" width="9" height="11" rx="2.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
-                {/* Forward galley */}
-                <rect x="287" y="212" width="26" height="38" rx="3" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
-                <line x1="287" y1="231" x2="313" y2="231" stroke="rgba(36,28,20,0.35)" strokeWidth="1" />
-                {/* Seat rows, aisle down the middle */}
-                {Array.from({ length: 18 }).map((_, i) => {
-                  const y = 286 + i * 38;
-                  return (
-                    <g key={i}>
-                      <rect x="286.5" y={y} width="10.5" height="15" rx="3" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
-                      <rect x="288.5" y={y} width="6.5" height="3.4" rx="1.6" fill="#C4B89D" />
-                      <rect x="303" y={y} width="10.5" height="15" rx="3" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
-                      <rect x="305" y={y} width="6.5" height="3.4" rx="1.6" fill="#C4B89D" />
-                    </g>
-                  );
-                })}
-                {/* Rear lounge + table */}
-                <rect x="286.5" y="984" width="11" height="52" rx="3.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
-                <rect x="303.5" y="994" width="9" height="20" rx="2" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
-                {/* Aft lavatory */}
-                <rect x="287" y="1052" width="26" height="30" rx="3" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
-                <line x1="289" y1="1054" x2="311" y2="1080" stroke="rgba(36,28,20,0.3)" strokeWidth="1" />
+                {/* Runner down the aisle */}
+                <rect x="294" y="150" width="12" height="1050" rx="6" fill="#3E3222" opacity="0.5" />
+
+                {/* Cockpit bulkhead + door */}
+                <line x1="262" y1="150" x2="338" y2="150" stroke="rgba(24,18,10,0.45)" strokeWidth="2" />
+                <rect x="292" y="150" width="16" height="6" fill="#3E3222" opacity="0.7" />
+
+                {/* Forward galley (left) + wardrobe (right) */}
+                <rect x="260" y="164" width="30" height="54" rx="4" fill="#C9B893" stroke="rgba(24,18,10,0.4)" strokeWidth="1.4" />
+                <line x1="260" y1="191" x2="290" y2="191" stroke="rgba(24,18,10,0.35)" strokeWidth="1.2" />
+                <rect x="310" y="164" width="30" height="54" rx="4" fill="#C9B893" stroke="rgba(24,18,10,0.4)" strokeWidth="1.4" />
+
+                {/* Club groups: four chairs facing a conference table */}
+                {(() => {
+                  const chairs: React.ReactNode[] = [];
+                  const groups = [260, 470, 700];
+                  groups.forEach((gy, gi) => {
+                    // shadow
+                    chairs.push(<ellipse key={`sh-${gi}`} cx="300" cy={gy + 92} rx="52" ry="14" fill="#241810" opacity="0.22" filter="url(#jp-soft)" />);
+                    // conference table
+                    chairs.push(<rect key={`tb-${gi}`} x="282" y={gy + 30} width="36" height="44" rx="6" fill="#6B5637" stroke="rgba(24,18,10,0.45)" strokeWidth="1.4" />);
+                    chairs.push(<line key={`tbl-${gi}`} x1="300" y1={gy + 30} x2="300" y2={gy + 74} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />);
+                    // four club chairs facing the table
+                    const pos = [
+                      { x: 268, y: gy + 6, rot: 0 },
+                      { x: 268, y: gy + 60, rot: 0 },
+                      { x: 314, y: gy + 6, rot: 180 },
+                      { x: 314, y: gy + 60, rot: 180 },
+                    ];
+                    pos.forEach((p, pi) => {
+                      chairs.push(
+                        <g key={`ch-${gi}-${pi}`} transform={`rotate(${p.rot} ${p.x + 9} ${p.y + 17})`}>
+                          <rect x={p.x} y={p.y} width="18" height="34" rx="7" fill="url(#jp-seat)" stroke="rgba(24,18,10,0.5)" strokeWidth="1.2" />
+                          <rect x={p.x + 2} y={p.y + 2} width="14" height="8" rx="4" fill="#B7A57F" />
+                          <rect x={p.x - 3} y={p.y + 6} width="4" height="20" rx="2" fill="#C9B893" />
+                          <rect x={p.x + 17} y={p.y + 6} width="4" height="20" rx="2" fill="#C9B893" />
+                        </g>,
+                      );
+                    });
+                  });
+                  return chairs;
+                })()}
+
+                {/* Mid three-seat divan (right wall) */}
+                <rect x="316" y="470" width="26" height="120" rx="8" fill="url(#jp-seat)" stroke="rgba(24,18,10,0.5)" strokeWidth="1.3" />
+                {[0, 1, 2].map((i) => (
+                  <line key={i} x1="316" y1={506 + i * 38} x2="342" y2={506 + i * 38} stroke="rgba(24,18,10,0.3)" strokeWidth="1" />
+                ))}
+
+                {/* Aft credenza + entertainment bulkhead */}
+                <rect x="264" y="950" width="72" height="16" rx="3" fill="#6B5637" stroke="rgba(24,18,10,0.45)" strokeWidth="1.3" />
+                <rect x="284" y="920" width="32" height="18" rx="2" fill="#241810" opacity="0.55" />
+
+                {/* Aft lounge — facing divans + low table */}
+                <ellipse cx="300" cy="1090" rx="56" ry="16" fill="#241810" opacity="0.22" filter="url(#jp-soft)" />
+                <rect x="262" y="1000" width="24" height="90" rx="8" fill="url(#jp-seat)" stroke="rgba(24,18,10,0.5)" strokeWidth="1.3" />
+                <rect x="314" y="1000" width="24" height="90" rx="8" fill="url(#jp-seat)" stroke="rgba(24,18,10,0.5)" strokeWidth="1.3" />
+                <ellipse cx="300" cy="1045" rx="16" ry="24" fill="#6B5637" stroke="rgba(24,18,10,0.45)" strokeWidth="1.3" />
+
+                {/* Aft lav */}
+                <rect x="270" y="1120" width="60" height="70" rx="5" fill="#C9B893" stroke="rgba(24,18,10,0.4)" strokeWidth="1.4" />
+                <circle cx="300" cy="1150" r="9" fill="none" stroke="rgba(24,18,10,0.35)" strokeWidth="1.3" />
+                <rect x="288" y="1168" width="24" height="12" rx="3" fill="none" stroke="rgba(24,18,10,0.3)" strokeWidth="1.2" />
+
+                {/* Window ports along both walls */}
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <g key={i}>
+                    <rect x="250" y={210 + i * 48} width="4" height="16" rx="2" fill="#EAF2F8" opacity="0.9" />
+                    <rect x="346" y={210 + i * 48} width="4" height="16" rx="2" fill="#EAF2F8" opacity="0.9" />
+                  </g>
+                ))}
               </g>
 
               {/* ── Fuselage skin (dissolves overhead) ── */}
