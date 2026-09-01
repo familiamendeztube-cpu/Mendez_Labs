@@ -1,5 +1,5 @@
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { StoreProvider, useStore } from '@/store/StoreContext';
 import { Landing } from '@/pages/landing/Landing';
 import { Sidebar } from '@/components/Sidebar';
@@ -7,15 +7,31 @@ import { TopBar } from '@/components/TopBar';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { SportsSubNav } from '@/components/SportsSubNav';
 import { DataRainBackground } from '@/components/DataRainBackground';
-import { TradingDashboard } from '@/pages/TradingDashboard';
-import { Signals } from '@/pages/Signals';
-import { PaperPortfolio } from '@/pages/PaperPortfolio';
-import { Performance } from '@/pages/Performance';
-import { Today } from '@/pages/Today';
-import { PickFive } from '@/pages/PickFive';
-import { Results } from '@/pages/Results';
-import { Bankroll } from '@/pages/Bankroll';
-import { Settings } from '@/pages/Settings';
+import { tv } from '@/lib/themeVars';
+
+// Route-split: the chart-heavy pages pull recharts (~170 KB gzip). Lazy
+// loading keeps it out of the initial bundle — the shell paints instantly
+// and each screen fetches its own chunk on navigation.
+const TradingDashboard = lazy(() => import('@/pages/TradingDashboard').then((m) => ({ default: m.TradingDashboard })));
+const Signals = lazy(() => import('@/pages/Signals').then((m) => ({ default: m.Signals })));
+const PaperPortfolio = lazy(() => import('@/pages/PaperPortfolio').then((m) => ({ default: m.PaperPortfolio })));
+const Performance = lazy(() => import('@/pages/Performance').then((m) => ({ default: m.Performance })));
+const Today = lazy(() => import('@/pages/Today').then((m) => ({ default: m.Today })));
+const PickFive = lazy(() => import('@/pages/PickFive').then((m) => ({ default: m.PickFive })));
+const Results = lazy(() => import('@/pages/Results').then((m) => ({ default: m.Results })));
+const Bankroll = lazy(() => import('@/pages/Bankroll').then((m) => ({ default: m.Bankroll })));
+const Settings = lazy(() => import('@/pages/Settings').then((m) => ({ default: m.Settings })));
+
+function RouteFallback() {
+  return (
+    <div className="flex h-[60vh] items-center justify-center">
+      <div
+        className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
+        style={{ borderColor: tv.accent, borderTopColor: 'transparent' }}
+      />
+    </div>
+  );
+}
 
 function AppLayout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -41,6 +57,7 @@ function AppLayout() {
           <TopBar onOpenSidebar={() => setMobileOpen(true)} />
           {isSportsRoute && <SportsSubNav />}
           <main className="flex-1 overflow-y-auto p-4 pb-24 lg:p-6 lg:pb-6">
+            <Suspense fallback={<RouteFallback />}>
             <Routes>
               {/* Trading-first routes */}
               <Route path="/dashboard" element={<TradingDashboard />} />
@@ -68,6 +85,7 @@ function AppLayout() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
+            </Suspense>
           </main>
         </div>
       </div>
