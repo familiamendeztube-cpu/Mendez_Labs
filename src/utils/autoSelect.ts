@@ -38,6 +38,7 @@ function diversify(
   ranked: RankedPick[],
   bankroll: number,
   requireStake: boolean,
+  maxPerLeague = 2,
 ): RankedPick[] {
   const selected: RankedPick[] = [];
   const seenEvents = new Set<string>();
@@ -55,7 +56,7 @@ function diversify(
         !seenEvents.has(p.eventId) &&
         !isCorrelatedPick(p, [...selected, pick]),
     );
-    if (leagueCount >= 2 && eligibleAfter.length > 0 && selected.length < 4) continue;
+    if (leagueCount >= maxPerLeague && eligibleAfter.length > 0 && selected.length < 4) continue;
 
     if (requireStake && pick.pFinal !== null) {
       const { stake } = quarterKellyStake(pick.pFinal, pick.offeredDecimal, bankroll);
@@ -105,12 +106,42 @@ export function autoSelectBestFive(rankedPicks: RankedPick[], bankroll: number):
     })
     .sort((a, b) => marketValueScore(b) - marketValueScore(a));
 
-  if (marketEligible.length > 0) {
-    const selected = diversify(marketEligible, bankroll, false);
+  const marketSelected = marketEligible.length > 0 ? diversify(marketEligible, bankroll, false) : [];
+
+  // Tier 3 — top up to a full card with the highest win-probability plays left
+  // on the board, even where there's no market edge. Clearly flagged: these are
+  // "best available", not value bets.
+  if (marketSelected.length < 5) {
+    const winProb = (p: RankedPick) => p.pModel ?? p.pFinal ?? p.consensusProbability ?? 0;
+    const chosen = new Set(marketSelected.map((p) => `${p.eventId}|${p.market}|${p.side}`));
+    const rest = rankedPicks
+      .filter((p) => !chosen.has(`${p.eventId}|${p.market}|${p.side}`) && winProb(p) > 0)
+      .sort((a, b) => winProb(b) - winProb(a));
+    const merged = [...marketSelected, ...rest];
+    // Try for a full five; loosen the per-league cap if the board is thin.
+    let topped = diversify(merged, bankroll, false);
+    if (topped.length < 5) topped = diversify(merged, bankroll, false, 3);
+    if (topped.length < 5) topped = diversify(merged, bankroll, false, 5);
+    if (topped.length > marketSelected.length) {
+      return {
+        selected: topped,
+        tier: 'market',
+        explanation:
+          marketSelected.length > 0
+            ? `${marketSelected.length} of these beat the consensus line; the rest are the highest win-probability plays left on the board (no market edge). The Elo model is still building history — treat the whole card as watch-list.`
+            : `Nothing on today's board beats the consensus line, so these are simply the highest win-probability plays available. No edge — watch-list only until the Elo model has game history.`,
+      };
+    }
+  }
+
+  if (marketSelected.length > 0) {
+    const short = marketSelected.length < 5
+      ? ` Only ${marketSelected.length} slot${marketSelected.length === 1 ? '' : 's'} filled — today's board has few independent games to choose from (one pick per game, no shared teams).`
+      : '';
     return {
-      selected,
+      selected: marketSelected,
       tier: 'market',
-      explanation: `The Elo model is still building game history, so nothing clears the full model gates yet. These ${selected.length} are ranked by market value — where the offered price beats the consensus line. Treat them as watch-list, not signal.`,
+      explanation: `The Elo model is still building game history, so nothing clears the full model gates. These are ranked by market value — where the offered price beats the consensus line. Watch-list, not signal.${short}`,
     };
   }
 
@@ -118,6 +149,6 @@ export function autoSelectBestFive(rankedPicks: RankedPick[], bankroll: number):
     selected: [],
     tier: 'none',
     explanation:
-      "No value anywhere on today's board — every price is at or worse than consensus. Nothing to play today.",
+      "Today's board hasn't loaded any playable games yet — hit Refresh in a moment and try again.",
   };
 }
