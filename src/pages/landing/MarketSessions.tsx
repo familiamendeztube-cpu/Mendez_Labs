@@ -59,7 +59,12 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="dark" className="relative overflow-hidden px-[6vw] py-[20vh]">
+    <section
+      ref={ref}
+      data-lp-theme="dark"
+      className="relative overflow-hidden px-[6vw] pt-[16vh]"
+      style={{ background: `linear-gradient(180deg, #241D17 0%, ${LP.carbon} 25%, ${LP.carbon} 100%)` }}
+    >
       {/* Ghost type */}
       <div
         data-ms-ghost
@@ -135,6 +140,16 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
           );
         })}
       </div>
+
+      {/* Atmospheric handoff: espresso lifts through bronze into the ivory
+          sports chapter. */}
+      <div
+        aria-hidden="true"
+        className="-mx-[6vw] mt-[14vh] h-[40vh]"
+        style={{
+          background: `linear-gradient(180deg, ${LP.carbon} 0%, #55452F 50%, #BBA680 78%, ${LP.ivory} 100%)`,
+        }}
+      />
     </section>
   );
 }

@@ -80,7 +80,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
     <section
       ref={ref}
       data-lp-theme="light"
-      className="relative mx-2 rounded-[2.5rem] px-[6vw] py-[14vh] lg:mx-4 lg:rounded-[3rem]"
+      className="relative px-[6vw] pt-[14vh]"
       style={{ background: LP.ivory }}
     >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
@@ -217,6 +217,16 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
           </div>
         ))}
       </div>
+
+      {/* Atmospheric handoff: ivory fades through bronze into the dark
+          markets chapter — no card edge, no color step. */}
+      <div
+        aria-hidden="true"
+        className="-mx-[6vw] mt-[12vh] h-[42vh]"
+        style={{
+          background: `linear-gradient(180deg, ${LP.ivory} 0%, #C9B592 45%, #6E5A41 75%, #241D17 100%)`,
+        }}
+      />
     </section>
   );
 }

@@ -37,7 +37,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
     <section
       ref={ref}
       data-lp-theme="light"
-      className="relative mx-2 rounded-[2.5rem] px-[6vw] py-[14vh] lg:mx-4 lg:rounded-[3rem]"
+      className="relative px-[6vw] pt-[14vh]"
       style={{ background: LP.ivory }}
     >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
@@ -69,6 +69,16 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
           ))}
         </div>
       </div>
+
+      {/* Atmospheric handoff: ivory settles through bronze into the
+          espresso footer. */}
+      <div
+        aria-hidden="true"
+        className="-mx-[6vw] mt-[12vh] h-[38vh]"
+        style={{
+          background: `linear-gradient(180deg, ${LP.ivory} 0%, #C9B592 45%, #5C4B34 78%, ${LP.carbon} 100%)`,
+        }}
+      />
     </section>
   );
 }

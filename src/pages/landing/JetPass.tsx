@@ -79,7 +79,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       className="relative"
       style={{
         // Continues seamlessly from the manifesto's warming sky (#E9E2D0).
-        background: `linear-gradient(180deg, #E9E2D0 0%, #EFE8D8 40%, ${LP.ivory} 75%, #F8F3E8 100%)`,
+        background: `linear-gradient(180deg, #E9E2D0 0%, #EFE8D8 40%, #F8F3E8 75%, ${LP.ivory} 100%)`,
         height: '420vh',
       }}
     >

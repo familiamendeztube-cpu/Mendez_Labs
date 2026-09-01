@@ -29,7 +29,12 @@ export function LandingFooter({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <section ref={ref} data-lp-theme="dark" className="relative flex min-h-[70vh] flex-col justify-end overflow-hidden px-[6vw] pb-28 pt-[14vh]">
+    <section
+      ref={ref}
+      data-lp-theme="dark"
+      className="relative flex min-h-[70vh] flex-col justify-end overflow-hidden px-[6vw] pb-28 pt-[14vh]"
+      style={{ background: LP.carbon }}
+    >
       <img
         data-foot-belt
         src="/assets/boxing/belt-cinematic-v2.webp"
