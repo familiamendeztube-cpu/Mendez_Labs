@@ -21,3 +21,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# backend deploy secrets
+scripts/deploy-backend.env
+supabase/.temp
+supabase/.branches

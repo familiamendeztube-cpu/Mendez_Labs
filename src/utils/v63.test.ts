@@ -103,8 +103,8 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(td.includes('Trading Command Center'), 'TradingDashboard has "Trading Command Center" heading');
   ok(td.includes('PAPER') && td.includes('LIVE'), 'TradingDashboard has Paper/Live toggle');
   ok(td.includes('Execution readiness'), 'TradingDashboard has readiness checklist');
-  ok(td.includes('Blocks live'), 'TradingDashboard shows "Blocks live" text');
-  ok(td.includes('Live trading locked'), 'TradingDashboard shows live locked banner');
+  ok(td.includes('Live orders enabled'), 'TradingDashboard readiness row for live orders');
+  ok(td.includes('real money in your Alpaca brokerage account'), 'TradingDashboard shows env-aware live disclosure');
 
   // Signals
   const sig = read('src/pages/Signals.tsx');

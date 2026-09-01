@@ -378,8 +378,8 @@ export function TradingDashboard() {
           <h2 className="text-base font-semibold" style={{ color: tv.textPrimary }}>Execution readiness</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-          <ReadinessRow label="Supabase Auth" verified />
-          <ReadinessRow label="Alpaca paper connection" verified={live.connected} />
+          <ReadinessRow label="Terminal access" verified />
+          <ReadinessRow label={`Alpaca ${env} connection`} verified={live.connected} />
           <ReadinessRow label="Market data feed" verified={live.connected && live.tickers.length > 0} />
           <ReadinessRow label="Account funded" verified={equity !== null && equity > 0} />
           <ReadinessRow label="Risk limits configured" verified />
@@ -387,9 +387,13 @@ export function TradingDashboard() {
           <ReadinessRow label="Server-side order validation" verified />
           <ReadinessRow label="Daily stop-loss enforced" verified />
           <ReadinessRow label="Position size limits" verified />
-          <ReadinessRow label="Live trading approval" verified={false} blocksLive />
+          <ReadinessRow label="Live orders enabled" verified={env === 'live' && live.connected} />
         </div>
-        <p className="mt-3 text-xs" style={{ color: mutedAlpha(0.5) }}>Live trading requires all checks to pass. Paper trading is active when Alpaca is connected.</p>
+        <p className="mt-3 text-xs" style={{ color: mutedAlpha(0.5) }}>
+          {live.connected
+            ? `Connected. ${env === 'live' ? 'Live orders require the ALPACA_LIVE_ORDERS_ENABLED server secret.' : 'Paper mode — switch to LIVE for real-money trading.'}`
+            : 'Set your Alpaca keys as edge-function secrets and redeploy alpaca-connector to connect.'}
+        </p>
       </div>
 
       {/* RISK / PLANNED BANKROLL */}
@@ -419,7 +423,11 @@ export function TradingDashboard() {
       {/* Disclosure */}
       <div className="flex items-start gap-2 rounded-lg px-4 py-3 text-xs" style={{ background: amberAlpha(0.04), border: `1px solid ${amberAlpha(0.12)}`, color: tv.statusAmber }}>
         <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-        <span>Live trading locked. Paper mode only. No real orders are placed. All amounts are simulated. Credentials are stored server-side only.</span>
+        <span>
+          {env === 'live'
+            ? 'LIVE mode — orders placed from the ticket use real money in your Alpaca brokerage account. Alpaca API keys are stored server-side only.'
+            : 'PAPER mode — orders are simulated by Alpaca, no real money at risk. Switch to LIVE on the toggle above for real-money trading.'}
+        </span>
       </div>
     </div>
   );
