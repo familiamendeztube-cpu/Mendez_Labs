@@ -161,7 +161,7 @@ function SigMetric({ label, value, fmt, accent }: { label: string; value: number
     else display = `${value}`;
   }
   return (
-    <div className="rounded-lg overflow-hidden" style={{ background: mutedAlpha(0.04) }}>
+    <div className="stat-img rounded-lg overflow-hidden" style={{ background: mutedAlpha(0.05) }}>
       <div className="h-0.5" style={{ background: value !== null ? accent : 'transparent' }} />
       <div className="px-2.5 py-2">
         <p className="text-xs" style={{ color: tv.textMuted }}>{label}</p>

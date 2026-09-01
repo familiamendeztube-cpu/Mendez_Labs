@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { tv } from '@/lib/themeVars';
 import { Skeleton } from './Skeleton';
+import { EmptyState } from './EmptyState';
 
 interface Props {
   title: string;
@@ -52,17 +53,7 @@ export function ChartContainer({ title, subtitle, action, children, className = 
         {loading ? (
           <ChartSkeleton />
         ) : empty ? (
-          <div className="flex h-48 flex-col items-center justify-center gap-2">
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center"
-              style={{ background: `rgba(115,122,118,0.08)` }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M2 14L6 8L9 11L14 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: tv.textMuted }} />
-              </svg>
-            </div>
-            <span className="text-xs" style={{ color: tv.textMuted }}>{emptyText}</span>
-          </div>
+          <EmptyState kind="chart" message={emptyText} compact />
         ) : (
           children
         )}

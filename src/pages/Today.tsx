@@ -478,7 +478,7 @@ function MathDrawer({ pick }: { pick: RankedPick }) {
 
 function SummaryCard({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent?: string }) {
   return (
-    <div className="panel-img rounded-xl px-3 py-2.5 card-lift" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+    <div className="stat-img rounded-xl px-3 py-2.5 card-lift" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
       <div className="flex items-center gap-1.5" style={{ color: tv.textMuted }}>
         {icon}
         <span className="text-xs">{label}</span>

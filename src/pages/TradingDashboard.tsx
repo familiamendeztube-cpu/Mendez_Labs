@@ -21,6 +21,7 @@ import { EquityCurveChart, DailyPnlChart, MarketPriceChart, ExposurePieChart } f
 import { useLiveTrading, type LiveTicker } from '@/services/tradingLive';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
+import { EmptyState } from '@/components/EmptyState';
 import { PageHero } from '@/components/PageHero';
 import { APP_IMAGES } from '@/data/appImages';
 
@@ -250,7 +251,7 @@ export function TradingDashboard() {
           </div>
           <StatusBadge connected={hasSpyData} label={hasSpyData ? 'Live' : 'No data'} />
         </div>
-        {hasSpyData ? <MarketPriceChart candles={live.spyCandles} /> : <EmptyChart message="SPY intraday data will appear during market hours" />}
+        {hasSpyData ? <MarketPriceChart candles={live.spyCandles} /> : <EmptyChart kind="market" message="SPY intraday data will appear during market hours" />}
       </div>
 
       {/* TWO-COLUMN CHART ROW */}
@@ -260,14 +261,14 @@ export function TradingDashboard() {
             <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Equity Curve</h3>
             <StatusBadge connected={hasChartData} label={hasChartData ? 'Live' : 'No history'} />
           </div>
-          {hasChartData ? <EquityCurveChart data={live.equityCurve} /> : <EmptyChart message="Equity history will appear after your first trading day" />}
+          {hasChartData ? <EquityCurveChart data={live.equityCurve} /> : <EmptyChart kind="equity" message="Equity history will appear after your first trading day" />}
         </div>
         <div className="app-card rounded-2xl p-4" data-reveal style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold" style={{ color: tv.textPrimary }}>Daily P&L</h3>
             <StatusBadge connected={hasChartData} label={hasChartData ? 'Live' : 'No history'} />
           </div>
-          {hasChartData ? <DailyPnlChart data={live.dailyPnl} /> : <EmptyChart message="Daily P&L will appear after your first trading day" />}
+          {hasChartData ? <DailyPnlChart data={live.dailyPnl} /> : <EmptyChart kind="pnl" message="Daily P&L will appear after your first trading day" />}
         </div>
       </div>
 
@@ -437,13 +438,8 @@ export function TradingDashboard() {
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
-function EmptyChart({ message }: { message: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <Activity className="h-8 w-8 mb-2" style={{ color: mutedAlpha(0.25) }} />
-      <p className="text-sm" style={{ color: tv.textMuted }}>{message}</p>
-    </div>
-  );
+function EmptyChart({ message, kind = 'chart' }: { message: string; kind?: 'chart' | 'equity' | 'pnl' | 'positions' | 'market' }) {
+  return <EmptyState kind={kind} message={message} />;
 }
 
 function StatusBadge({ connected, label }: { connected: boolean; label: string }) {
@@ -469,7 +465,7 @@ function TickerChip({ ticker, isLive }: { ticker: LiveTicker; isLive: boolean })
   const color = positive ? tv.accent : tv.statusRed;
   const sparkData = ticker.sparkline.map((v, i) => ({ i, v }));
   return (
-    <div className="flex items-center gap-2.5 rounded-xl px-3 py-2 shrink-0" style={{ background: mutedAlpha(0.04), border: `1px solid ${tv.borderBase}`, minWidth: 172 }}>
+    <div className="stat-img flex items-center gap-2.5 rounded-xl px-3 py-2 shrink-0" style={{ background: mutedAlpha(0.04), border: `1px solid ${tv.borderBase}`, minWidth: 172 }}>
       <div className="flex flex-col gap-0.5 min-w-0">
         <div className="flex items-center gap-1">
           <span className="text-xs font-bold" style={{ color: tv.textPrimary }}>{ticker.symbol}</span>
@@ -523,7 +519,7 @@ function MetricBox({ label, value, live, highlight }: { label: string; value: st
   const borderColor = highlight === 'green' ? accentAlpha(0.35) : highlight === 'red' ? redAlpha(0.35) : live ? accentAlpha(0.35) : mutedAlpha(0.15);
   const valueColor = highlight === 'green' ? tv.accent : highlight === 'red' ? tv.statusRed : isNA ? tv.textMuted : tv.textPrimary;
   return (
-    <div className="rounded-lg px-2.5 py-2" style={{ background: mutedAlpha(0.04), borderLeft: `2px solid ${borderColor}` }}>
+    <div className="stat-img rounded-lg px-2.5 py-2" style={{ background: mutedAlpha(0.04), borderLeft: `2px solid ${borderColor}` }}>
       <p className="text-xs" style={{ color: tv.textMuted }}>{label}</p>
       <p className="text-sm font-bold mono" style={{ color: valueColor }}>{value}</p>
     </div>
@@ -542,7 +538,7 @@ function ReadinessRow({ label, verified, blocksLive }: { label: string; verified
 
 function RiskStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="text-center rounded-lg p-1.5" style={{ background: mutedAlpha(0.04) }}>
+    <div className="stat-img text-center rounded-lg p-1.5" style={{ background: mutedAlpha(0.04) }}>
       <p className="text-xs" style={{ color: tv.textMuted }}>{label}</p>
       <p className="text-sm font-bold mono" style={{ color: tv.statusAmber }}>{value}</p>
       {sub && <p className="text-xs" style={{ color: mutedAlpha(0.4) }}>{sub}</p>}

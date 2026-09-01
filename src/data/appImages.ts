@@ -17,6 +17,19 @@ export const APP_IMAGES = {
   bull: px(844124),              // abstract green up-move
 } as const;
 
+/** Small square thumbnails for empty states, stat tiles, and chips. */
+export const THUMBS = {
+  chart: px(6801648, 320),
+  equity: px(7567434, 320),
+  pnl: px(6771607, 320),
+  positions: px(210607, 320),
+  trophy: px(260352, 320),
+  ticker: px(6779727, 320),
+  bankroll: px(730547, 320),
+  research: px(590041, 320),
+  market: px(534216, 320),
+} as const;
+
 /** Header banner image for each route. */
 export function pageHero(pathname: string): string {
   const p = pathname.replace(/\/+$/, '');

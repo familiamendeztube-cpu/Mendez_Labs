@@ -16,6 +16,7 @@ import {
 import { RefreshCw, Activity } from 'lucide-react';
 import { useStore } from '@/store/StoreContext';
 import { PageHero } from '@/components/PageHero';
+import { EmptyState } from '@/components/EmptyState';
 import { APP_IMAGES } from '@/data/appImages';
 import { tv, accentAlpha, mutedAlpha } from '@/lib/themeVars';
 import { useScrollReveal } from '@/lib/useScrollReveal';
@@ -286,7 +287,7 @@ export function SportsIntel() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center py-12 text-sm" style={{ color: tv.textMuted }}>No settled picks yet.</div>
+              <EmptyState kind="trophy" message="No settled picks yet." compact />
             )}
           </Panel>
         </>
@@ -297,7 +298,7 @@ export function SportsIntel() {
 
 function Stat({ label, value, accent = tv.textPrimary }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="panel-img rounded-xl p-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
+    <div className="stat-img rounded-xl p-3" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>
       <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: tv.textMuted }}>{label}</p>
       <p className="mt-1 font-mono text-lg font-semibold capitalize" style={{ color: accent }}>{value}</p>
     </div>

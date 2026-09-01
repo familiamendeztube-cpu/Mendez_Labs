@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { HelpCircle, BarChart3, Activity } from 'lucide-react';
+import { HelpCircle, BarChart3 } from 'lucide-react';
 import { ChartContainer } from '@/components/ChartContainer';
 import { EquityCurveChart, DailyPnlChart, DrawdownChart } from '@/components/Charts';
 import { useLiveTrading } from '@/services/tradingLive';
 import { tv, accentAlpha, amberAlpha, mutedAlpha } from '@/lib/themeVars';
+import { EmptyState } from '@/components/EmptyState';
 import { PageHero } from '@/components/PageHero';
 import { APP_IMAGES } from '@/data/appImages';
 
@@ -55,7 +56,7 @@ export function Performance() {
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <ChartContainer title="Equity Curve" action={liveBadge(hasData)}>
-            {hasData ? <EquityCurveChart data={live.equityCurve} /> : <EmptyChart message="Equity curve will appear after your first trading day" />}
+            {hasData ? <EquityCurveChart data={live.equityCurve} /> : <EmptyChart kind="equity" message="Equity curve will appear after your first trading day" />}
           </ChartContainer>
         </div>
         <ChartContainer title="Win / Loss" empty emptyText="No settled trades" />
@@ -63,10 +64,10 @@ export function Performance() {
 
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         <ChartContainer title="Daily P&L" action={liveBadge(hasData)}>
-          {hasData ? <DailyPnlChart data={live.dailyPnl} /> : <EmptyChart message="Daily P&L populates after your first trading day" />}
+          {hasData ? <DailyPnlChart data={live.dailyPnl} /> : <EmptyChart kind="pnl" message="Daily P&L populates after your first trading day" />}
         </ChartContainer>
         <ChartContainer title="Drawdown" action={liveBadge(hasData)}>
-          {hasData ? <DrawdownChart data={live.drawdown} /> : <EmptyChart message="Drawdown chart populates after your first trading day" />}
+          {hasData ? <DrawdownChart data={live.drawdown} /> : <EmptyChart kind="pnl" message="Drawdown chart populates after your first trading day" />}
         </ChartContainer>
       </div>
 
@@ -140,13 +141,8 @@ export function Performance() {
   );
 }
 
-function EmptyChart({ message }: { message: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <Activity className="h-8 w-8 mb-2" style={{ color: mutedAlpha(0.25) }} />
-      <p className="text-sm" style={{ color: tv.textMuted }}>{message}</p>
-    </div>
-  );
+function EmptyChart({ message, kind = 'chart' }: { message: string; kind?: 'chart' | 'equity' | 'pnl' | 'positions' | 'market' }) {
+  return <EmptyState kind={kind} message={message} />;
 }
 
 function PerfCard({ label, value, sub, color, tip }: { label: string; value: string; sub?: string; color: string; tip?: string }) {
@@ -157,7 +153,7 @@ function PerfCard({ label, value, sub, color, tip }: { label: string; value: str
   const accentColor = isPositive ? accentAlpha(0.5) : isNegative ? 'rgba(217,69,80,0.5)' : 'transparent';
 
   return (
-    <div className="relative rounded-lg px-3 py-2.5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}`, borderTop: isNA ? undefined : `2px solid ${accentColor}` }}>
+    <div className="stat-img relative rounded-lg px-3 py-2.5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}`, borderTop: isNA ? undefined : `2px solid ${accentColor}` }}>
       <div className="flex items-center gap-1">
         <p className="text-xs" style={{ color: tv.textMuted }}>{label}</p>
         {tip && (

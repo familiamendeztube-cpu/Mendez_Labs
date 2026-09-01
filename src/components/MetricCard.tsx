@@ -78,7 +78,7 @@ export function MetricCard({ label, value, sub, trend, tooltip, accent = 'intel'
 
   return (
     <div
-      className={`relative flex flex-col gap-1 rounded-2xl p-4 card-lift ${flash === 'green' ? 'flash-green' : flash === 'red' ? 'flash-red' : ''}`}
+      className={`stat-img relative flex flex-col gap-1 rounded-2xl p-4 card-lift ${flash === 'green' ? 'flash-green' : flash === 'red' ? 'flash-red' : ''}`}
       style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}
     >
       <div className="flex items-center justify-between">

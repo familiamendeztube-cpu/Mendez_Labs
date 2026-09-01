@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Briefcase, AlertTriangle, XCircle, RefreshCw, Info, Activity, Loader2 } from 'lucide-react';
+import { AlertTriangle, XCircle, RefreshCw, Info, Loader2 } from 'lucide-react';
 import { fmtCurrency, fmtSignedCurrency } from '@/utils/format';
 import { ChartContainer } from '@/components/ChartContainer';
 import { ExposurePieChart, EquityCurveChart } from '@/components/Charts';
 import { useLiveTrading } from '@/services/tradingLive';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
+import { EmptyState } from '@/components/EmptyState';
 import { PageHero } from '@/components/PageHero';
 import { APP_IMAGES } from '@/data/appImages';
 
@@ -83,10 +84,7 @@ export function PaperPortfolio() {
           </span>
         }>
           {hasEquityHistory ? <EquityCurveChart data={live.equityCurve} /> : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Activity className="h-8 w-8 mb-2" style={{ color: mutedAlpha(0.25) }} />
-              <p className="text-sm" style={{ color: tv.textMuted }}>Equity history will appear after your first trading day</p>
-            </div>
+            <EmptyState kind="equity" message="Equity history will appear after your first trading day" />
           )}
         </ChartContainer>
         <ChartContainer title="Exposure Breakdown" action={
@@ -134,14 +132,10 @@ export function PaperPortfolio() {
             </table>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 0', textAlign: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 24, background: `linear-gradient(135deg, ${accentAlpha(0.1)}, ${mutedAlpha(0.06)})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Briefcase size={22} style={{ color: tv.textMuted }} />
-            </div>
-            <p style={{ fontSize: 13, color: tv.textMuted, margin: 0 }}>
-              {live.connected ? 'No open positions. Submit paper orders to see positions here.' : 'Connect your Alpaca paper account to see positions.'}
-            </p>
-          </div>
+          <EmptyState
+            kind="positions"
+            message={live.connected ? 'No open positions. Submit paper orders to see positions here.' : 'Connect your Alpaca paper account to see positions.'}
+          />
         )}
       </Section>
 

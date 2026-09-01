@@ -369,6 +369,38 @@ html { scrollbar-width: thin; scrollbar-color: rgba(237,229,213,0.25) #1B1511; }
   .panel-img::before { transition: opacity 0.4s ease; }
 }
 
+/* Small stat tiles / chips — a faint image bloom in the top-right corner,
+   radial-masked so it never touches the label or value. */
+.stat-img {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.stat-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120px 90px at 100% 0%,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      transparent 70%),
+    var(--panel-texture);
+  background-size: auto, 220% auto;
+  background-position: center, top right;
+  opacity: 0.14;
+  -webkit-mask-image: radial-gradient(130% 120% at 100% 0%, #000 0%, transparent 62%);
+          mask-image: radial-gradient(130% 120% at 100% 0%, #000 0%, transparent 62%);
+}
+
+/* Panel edge-blend — feather the bottom of tall panels into the backdrop so
+   sections flow together instead of stacking as hard boxes. */
+.blend-b {
+  -webkit-mask-image: linear-gradient(180deg, #000 82%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 82%, transparent 100%);
+}
+
 /* Interactive card lift — what's a surface you can act on reads as one. */
 .app-card {
   transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
