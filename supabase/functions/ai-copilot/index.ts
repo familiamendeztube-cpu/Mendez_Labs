@@ -59,6 +59,7 @@ Deno.serve(async (req: Request) => {
     const body = (await req.json()) as {
       messages?: ChatMessage[];
       context?: Record<string, unknown>;
+      image?: { media_type: string; data: string } | null;
     };
 
     const messages = Array.isArray(body.messages) ? body.messages : [];
@@ -66,7 +67,7 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ error: "messages array required" }, 400);
     }
 
-    const trimmed = messages
+    const trimmed: Array<{ role: "user" | "assistant"; content: unknown }> = messages
       .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
       .slice(-MAX_TURNS)
       .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
@@ -74,6 +75,19 @@ Deno.serve(async (req: Request) => {
     // Guarantee the model gets a user turn last.
     if (trimmed.length === 0 || trimmed[trimmed.length - 1].role !== "user") {
       return jsonResponse({ error: "last message must be from the user" }, 400);
+    }
+
+    // Attach an uploaded image to the final user turn as a vision block.
+    const img = body.image;
+    if (
+      img && typeof img.data === "string" && img.data.length < 7_000_000 &&
+      /^image\/(png|jpeg|jpg|webp|gif)$/.test(img.media_type)
+    ) {
+      const last = trimmed[trimmed.length - 1];
+      last.content = [
+        { type: "image", source: { type: "base64", media_type: img.media_type, data: img.data } },
+        { type: "text", text: typeof last.content === "string" ? last.content : "What do you make of this?" },
+      ];
     }
 
     const system = buildSystemPrompt(body.context ?? {});

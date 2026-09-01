@@ -49,18 +49,25 @@ export interface CopilotContext {
   };
 }
 
+export interface CopilotImage {
+  media_type: string;
+  data: string; // base64, no data-URI prefix
+}
+
 /**
  * Send the running conversation plus a snapshot of the operator's real state to
- * the ai-copilot edge function and return the assistant's reply.
+ * the ai-copilot edge function and return the assistant's reply. An optional
+ * image is attached to the latest user turn for Claude to look at.
  */
 export async function askCopilot(
   messages: CopilotMessage[],
   context: CopilotContext,
+  image?: CopilotImage | null,
 ): Promise<string> {
   const res = await fetch(FUNC_URL, {
     method: 'POST',
     headers: terminalHeaders(),
-    body: JSON.stringify({ messages, context }),
+    body: JSON.stringify({ messages, context, image: image ?? null }),
   });
 
   const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));

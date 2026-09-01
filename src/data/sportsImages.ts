@@ -13,6 +13,17 @@ export const SPORTS_IMAGES = {
   todayNHL: 'https://images.pexels.com/photos/13978860/pexels-photo-13978860.jpeg?auto=compress&cs=tinysrgb&w=800',
 } as const;
 
+/** Per-league photo for cards, headers, and thumbnails. */
+export function leagueImage(league: string): string {
+  const l = league.toLowerCase();
+  if (l.includes('nfl') || l.includes('football') && !l.includes('soccer')) return SPORTS_IMAGES.todayNFL;
+  if (l.includes('nba') || l.includes('basket')) return SPORTS_IMAGES.todayNBA;
+  if (l.includes('mlb') || l.includes('baseball')) return SPORTS_IMAGES.todayMLB;
+  if (l.includes('nhl') || l.includes('hockey')) return SPORTS_IMAGES.todayNHL;
+  if (l.includes('soccer') || l.includes('epl') || l.includes('premier') || l.includes('liga') || l.includes('uefa')) return SPORTS_IMAGES.todaySoccer;
+  return SPORTS_IMAGES.todayHero;
+}
+
 export const SPORT_STRIP = [
   { league: 'Soccer', label: 'Soccer', img: SPORTS_IMAGES.todaySoccer, alt: 'Action-packed soccer game with athletes competing intensely' },
   { league: 'NFL', label: 'Football', img: SPORTS_IMAGES.todayNFL, alt: 'Aerial view of the Rose Bowl stadium in Los Angeles' },

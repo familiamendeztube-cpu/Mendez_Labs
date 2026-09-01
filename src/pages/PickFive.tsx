@@ -1,12 +1,15 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Lock, X, ArrowUp, ArrowDown, Plus, CheckCircle2, Zap, AlertTriangle, Info, Brain, Loader2, ThumbsUp, Minus, ThumbsDown, ExternalLink } from 'lucide-react';
+import { Lock, X, ArrowUp, ArrowDown, Plus, CheckCircle2, Zap, AlertTriangle, Info, Brain, Loader2, ThumbsUp, Minus, ThumbsDown, ExternalLink, Sparkles } from 'lucide-react';
 import { useStore } from '@/store/StoreContext';
 import { fmtOdds, fmtPercent, fmtDateTime, fmtCurrency } from '@/utils/format';
 import { fmtCostaRicaDateTime } from '@/services/liveData';
 import { plainEnglishBet } from '@/utils/pickFive';
 import { quarterKellyStake } from '@/utils/valueEngine';
 import { autoSelectBestFive } from '@/utils/autoSelect';
+import { aiSelectFive } from '@/services/aiPicks';
+import { MatchupBadges } from '@/components/TeamBadge';
+import { SPORTS_IMAGES } from '@/data/sportsImages';
 import { tv, accentAlpha, redAlpha, mutedAlpha, amberAlpha } from '@/lib/themeVars';
 import { terminalHeaders } from '@/lib/terminalConfig';
 import type { RankedPick } from '@/services/liveData';
@@ -40,10 +43,12 @@ export function PickFive() {
   const [showReplaceModal, setShowReplaceModal] = useState<number | null>(null);
   const [auditNote, setAuditNote] = useState('');
   const [lockMessage, setLockMessage] = useState<{ ok: boolean; reason?: string } | null>(null);
-  const [autoSelectMsg, setAutoSelectMsg] = useState<string | null>(null);
+  const [autoSelectMsg, setAutoSelectMsg] = useState<{ text: string; tier: 'model' | 'market' | 'none' } | null>(null);
   const [aiResearch, setAiResearch] = useState<Record<string, AIResearch>>({});
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSelecting, setAiSelecting] = useState(false);
+  const [aiSelectSummary, setAiSelectSummary] = useState<string | null>(null);
 
   const bankroll = riskSettings.startingBankroll;
 
@@ -68,14 +73,50 @@ export function PickFive() {
       removeFromPickFive(i);
     }
 
-    const { selected, explanation } = autoSelectBestFive(rankedPicks, bankroll);
+    const { selected, explanation, tier } = autoSelectBestFive(rankedPicks, bankroll);
 
     for (const pick of selected) {
       addToPickFive(pick);
     }
 
-    setAutoSelectMsg(explanation);
-    if (explanation) setTimeout(() => setAutoSelectMsg(null), 8000);
+    setAutoSelectMsg(explanation ? { text: explanation, tier } : null);
+    if (explanation) setTimeout(() => setAutoSelectMsg(null), 12000);
+  };
+
+  const handleAiSelect = async () => {
+    if (pickFiveToday.locked || aiSelecting) return;
+    setAiSelecting(true);
+    setAiSelectSummary(null);
+    setAutoSelectMsg(null);
+    try {
+      const { summary, picks } = await aiSelectFive(rankedPicks, bankroll);
+      for (let i = pickFiveToday.picks.length; i >= 1; i--) removeFromPickFive(i);
+      let added = 0;
+      for (const p of picks) {
+        const match = rankedPicks.find(
+          (r) => r.eventId === p.eventId && r.market === p.market && r.side === p.side,
+        );
+        if (match) {
+          addToPickFive(match);
+          added += 1;
+        }
+      }
+      setAiSelectSummary(
+        added > 0
+          ? `${summary}\n\nAdded ${added} pick${added === 1 ? '' : 's'} to your card.`
+          : summary || 'The AI found no plays worth backing today.',
+      );
+    } catch (err) {
+      setAiSelectSummary(
+        err instanceof Error && err.message.includes('ANTHROPIC_API_KEY')
+          ? 'AI Select needs the ANTHROPIC_API_KEY secret set on the ai-picks function.'
+          : err instanceof Error
+            ? err.message
+            : 'AI Select failed.',
+      );
+    } finally {
+      setAiSelecting(false);
+    }
   };
 
   const handleAIResearch = useCallback(async () => {
@@ -116,13 +157,17 @@ export function PickFive() {
   return (
     <div className="mx-auto max-w-4xl space-y-5 pb-8">
       {/* Header */}
-      <div>
-        <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-          Top Five
-        </h1>
-        <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-          Choose your five best picks or let the engine select. Lock when ready to paper track.
-        </p>
+      <div className="relative overflow-hidden rounded-2xl" style={{ border: `1px solid ${tv.borderBase}` }}>
+        <img src={SPORTS_IMAGES.entranceHero} alt="" loading="lazy" className="h-32 w-full object-cover sm:h-40" style={{ opacity: 0.5 }} />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, rgba(27,21,17,0.2), ${tv.bgRoot})` }} />
+        <div className="absolute bottom-0 left-0 p-4 sm:p-5">
+          <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
+            Top Five
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: tv.textSecondary }}>
+            Choose your five best picks, or let AI Select build the card. Lock when ready to paper track.
+          </p>
+        </div>
       </div>
 
       {/* Sticky progress + actions */}
@@ -169,18 +214,35 @@ export function PickFive() {
             </button>
           )}
           {!pickFiveToday.locked && (
-            <button
-              onClick={handleAutoSelect}
-              className="flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
-              style={{
-                background: accentAlpha(0.08),
-                color: tv.accent,
-                border: `1px solid ${accentAlpha(0.2)}`,
-                minHeight: '44px',
-              }}
-            >
-              <Zap className="h-4 w-4" /> Auto-select
-            </button>
+            <>
+              <button
+                onClick={handleAiSelect}
+                disabled={aiSelecting}
+                className="flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(214,183,122,0.18), rgba(181,138,58,0.12))',
+                  color: tv.accent,
+                  border: `1px solid ${accentAlpha(0.35)}`,
+                  minHeight: '44px',
+                  opacity: aiSelecting ? 0.6 : 1,
+                }}
+              >
+                {aiSelecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                {aiSelecting ? 'Thinking...' : 'AI Select'}
+              </button>
+              <button
+                onClick={handleAutoSelect}
+                className="flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
+                style={{
+                  background: accentAlpha(0.08),
+                  color: tv.accent,
+                  border: `1px solid ${accentAlpha(0.2)}`,
+                  minHeight: '44px',
+                }}
+              >
+                <Zap className="h-4 w-4" /> Auto-select
+              </button>
+            </>
           )}
           <button
             onClick={handleLock}
@@ -222,10 +284,26 @@ export function PickFive() {
       {autoSelectMsg && (
         <div
           className="flex items-start gap-2 rounded-lg px-4 py-3 text-sm"
-          style={{ background: amberAlpha(0.06), border: `1px solid ${amberAlpha(0.15)}`, color: tv.statusAmber }}
+          style={
+            autoSelectMsg.tier === 'model'
+              ? { background: accentAlpha(0.08), border: `1px solid ${accentAlpha(0.2)}`, color: tv.accent }
+              : { background: amberAlpha(0.06), border: `1px solid ${amberAlpha(0.15)}`, color: tv.statusAmber }
+          }
         >
-          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-          {autoSelectMsg}
+          {autoSelectMsg.tier === 'model'
+            ? <Zap className="h-4 w-4 shrink-0 mt-0.5" />
+            : <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />}
+          {autoSelectMsg.text}
+        </div>
+      )}
+
+      {aiSelectSummary && (
+        <div
+          className="flex items-start gap-2 rounded-lg px-4 py-3 text-sm whitespace-pre-line"
+          style={{ background: accentAlpha(0.08), border: `1px solid ${accentAlpha(0.25)}`, color: tv.textSecondary }}
+        >
+          <Sparkles className="h-4 w-4 shrink-0 mt-0.5" style={{ color: tv.accent }} />
+          <span><strong style={{ color: tv.accent }}>AI Select:</strong> {aiSelectSummary}</span>
         </div>
       )}
 
@@ -368,6 +446,10 @@ function PickSlot({ slot, pick, bankroll, locked, onRemove, onMoveUp, onMoveDown
     >
       <div className="flex items-start gap-3">
         <span className="mono text-2xl font-bold" style={{ color: tv.accent }}>{slot}</span>
+        {(() => {
+          const [h, a] = pick.matchup.split(/\s+vs\.?\s+/i);
+          return <MatchupBadges home={h ?? pick.matchup} away={a ?? ''} size={30} />;
+        })()}
         <div className="min-w-0 flex-1">
           <p className="text-base font-semibold" style={{ color: tv.textPrimary }}>
             {pick.league} {pick.matchup}
@@ -452,7 +534,8 @@ function AvailablePickRow({ pick, bankroll, onAdd }: { pick: RankedPick; bankrol
       className="flex items-center justify-between gap-3 rounded-lg p-3"
       style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}
     >
-      <div className="min-w-0">
+      <MatchupBadges home={pick.homeTeam} away={pick.awayTeam} size={26} />
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-medium" style={{ color: tv.textPrimary }}>
           {pick.league} {pick.homeTeam} vs {pick.awayTeam}
         </p>

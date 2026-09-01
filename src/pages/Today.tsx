@@ -16,7 +16,8 @@ import {
 import { useStore } from '@/store/StoreContext';
 import { fmtOdds, fmtPercent, fmtSignedPp, americanToDecimal } from '@/utils/format';
 import { fmtCostaRicaDateTime } from '@/services/liveData';
-import { SPORTS_IMAGES, SPORT_STRIP } from '@/data/sportsImages';
+import { SPORTS_IMAGES, SPORT_STRIP, leagueImage } from '@/data/sportsImages';
+import { MatchupBadges } from '@/components/TeamBadge';
 import type { RankedPick } from '@/services/liveData';
 import { tv, accentAlpha, redAlpha, mutedAlpha, amberAlpha } from '@/lib/themeVars';
 
@@ -325,14 +326,25 @@ function PickCard({
 
   return (
     <div
-      className={`rounded-xl card-lift ${featured ? 'p-5' : 'p-4'}`}
+      className={`overflow-hidden rounded-xl card-lift`}
       style={{ background: tv.bgSurface, border: `1px solid ${borderColor}` }}
     >
+      {/* League photo banner */}
+      <div className={`relative w-full overflow-hidden ${featured ? 'h-24' : 'h-16'}`}>
+        <img src={leagueImage(pick.league)} alt={pick.league} loading="lazy" className="h-full w-full object-cover" style={{ opacity: 0.55 }} />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, rgba(27,21,17,0.15), ${tv.bgSurface})` }} />
+        <span className="absolute left-3 top-2 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest" style={{ background: 'rgba(27,21,17,0.6)', color: tv.textPrimary, backdropFilter: 'blur(4px)' }}>
+          {pick.league}
+        </span>
+      </div>
+
+      <div className={featured ? 'p-5' : 'p-4'}>
       {/* ── Header row: rank, teams, status, add button ──────────────── */}
       <div className="flex items-start gap-3">
         <span className="mono shrink-0 text-lg font-bold" style={{ color: pick.qualified ? tv.accent : tv.textMuted }}>
           #{rank}
         </span>
+        <MatchupBadges home={pick.homeTeam} away={pick.awayTeam} size={featured ? 38 : 32} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className={`${featured ? 'text-lg' : 'text-base'} font-semibold`} style={{ color: tv.textPrimary }}>
@@ -411,6 +423,7 @@ function PickCard({
       </button>
 
       {expanded && <MathDrawer pick={pick} />}
+      </div>
     </div>
   );
 }

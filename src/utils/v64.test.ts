@@ -78,4 +78,59 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(nav.includes("path: '/sports/intel'") && nav.includes("label: 'Intelligence'"), 'Intelligence sub-nav item added');
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 5: AI Select (ai-picks) + smarter auto-select fallback
+// ═══════════════════════════════════════════════════════════════════════════════
+{
+  const fn = 'supabase/functions/ai-picks/index.ts';
+  ok(fs.existsSync(path.join(ROOT, fn)), 'ai-picks/index.ts exists');
+  const src = read(fn);
+  ok(src.includes('x-terminal-key') && src.includes('TERMINAL_ACCESS_KEY'), 'ai-picks checks the terminal key');
+  ok(src.includes('api.anthropic.com/v1/messages'), 'ai-picks calls Claude');
+  ok(/never pad the card|empty picks array|Never pad/i.test(src), 'ai-picks is told not to pad the card');
+
+  const cfg = read('supabase/config.toml');
+  ok(cfg.includes('[functions.ai-picks]'), 'config has ai-picks');
+  const sec = cfg.slice(cfg.indexOf('[functions.ai-picks]'));
+  ok(sec.slice(sec.indexOf('verify_jwt')).startsWith('verify_jwt = false'), 'ai-picks verify_jwt false');
+
+  const svc = read('src/services/aiPicks.ts');
+  ok(svc.includes('/functions/v1/ai-picks') && svc.includes('terminalHeaders()'), 'aiPicks service wired');
+
+  const auto = read('src/utils/autoSelect.ts');
+  ok(auto.includes('marketValueScore') && auto.includes("tier: 'market'"), 'auto-select has a market-value fallback tier');
+  ok(auto.includes("tier: 'model'") && auto.includes("tier: 'none'"), 'auto-select reports which tier it used');
+
+  const pf = read('src/pages/PickFive.tsx');
+  ok(pf.includes('handleAiSelect') && pf.includes('aiSelectFive'), 'PickFive wires the AI Select button');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 6: Copilot face + uploads, team crests, league imagery
+// ═══════════════════════════════════════════════════════════════════════════════
+{
+  const av = read('src/components/CopilotAvatar.tsx');
+  ok(av.includes('export function CopilotAvatar') && av.includes('<svg'), 'Copilot has an SVG face, not a logo');
+
+  const cmp = read('src/components/Copilot.tsx');
+  ok(cmp.includes('CopilotAvatar'), 'Copilot renders its face');
+  ok(cmp.includes('pickImage') && cmp.includes('FileReader'), 'Copilot supports image upload');
+  ok(cmp.includes('SpeechRecognition') || cmp.includes('getSpeechRecognition'), 'Copilot supports voice input');
+
+  const cop = read('supabase/functions/ai-copilot/index.ts');
+  ok(cop.includes('"image"') && cop.includes('base64'), 'ai-copilot accepts an image vision block');
+
+  const badge = read('src/components/TeamBadge.tsx');
+  ok(badge.includes('export function TeamBadge') && badge.includes('export function MatchupBadges'), 'TeamBadge + MatchupBadges exported');
+
+  const today = read('src/pages/Today.tsx');
+  ok(today.includes('MatchupBadges') && today.includes('leagueImage('), 'Today cards show crests + league photos');
+
+  const imgs = read('src/data/sportsImages.ts');
+  ok(imgs.includes('export function leagueImage'), 'leagueImage helper added');
+
+  const pf = read('src/pages/PickFive.tsx');
+  ok(pf.includes('MatchupBadges') && pf.includes('SPORTS_IMAGES'), 'Top Five shows crests + a hero image');
+}
+
 console.log(`✓ v64: ${N} assertions passed`);
