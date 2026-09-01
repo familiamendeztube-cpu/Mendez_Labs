@@ -85,7 +85,7 @@ export function HeroBackdrop({ reduced }: { reduced: boolean }) {
       {/* Vignette keeps the dial and type readable over any backdrop */}
       <div
         className="absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(3,6,5,0.85) 78%)' }}
+        style={{ background: 'radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(27,21,17,0.85) 78%)' }}
       />
     </div>
   );

@@ -32,7 +32,7 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
         style={{
           color: LP.gold,
           border: '1px solid rgba(181,138,58,0.35)',
-          background: 'rgba(3,6,5,0.35)',
+          background: 'rgba(27,21,17,0.35)',
           backdropFilter: 'blur(8px)',
           fontFamily: LP.mono,
         }}

@@ -59,6 +59,15 @@ export function Landing() {
       className="relative"
       style={{ backgroundColor: LP.carbon, overflowX: 'clip' }}
     >
+      {/* Warm ambient light — golden-hour wash over the dark chapters */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[1]"
+        aria-hidden="true"
+        style={{
+          background:
+            'radial-gradient(1100px 600px at 50% -5%, rgba(214,183,122,0.07), transparent 60%), radial-gradient(900px 500px at 85% 105%, rgba(214,183,122,0.05), transparent 55%)',
+        }}
+      />
       <Preloader reduced={reduced} />
       <LandingHeader reduced={reduced} />
       <Hero reduced={reduced} />

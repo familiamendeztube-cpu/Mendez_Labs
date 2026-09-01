@@ -81,7 +81,7 @@ export function PillCta() {
       {open && (
         <div
           className="fixed inset-0 z-[90] flex items-center justify-center p-4"
-          style={{ background: 'rgba(3,6,5,0.72)', backdropFilter: 'blur(8px)' }}
+          style={{ background: 'rgba(27,21,17,0.72)', backdropFilter: 'blur(8px)' }}
           onClick={() => setOpen(false)}
         >
           <form

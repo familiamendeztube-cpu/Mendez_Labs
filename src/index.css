@@ -271,13 +271,13 @@
 }
 
 /* ── Premium scrollbar ───────────────────────────────────────────────────────── */
-html { scrollbar-width: thin; scrollbar-color: rgba(232,226,214,0.25) #030605; }
+html { scrollbar-width: thin; scrollbar-color: rgba(237,229,213,0.25) #1B1511; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #030605; }
+::-webkit-scrollbar-track { background: #1B1511; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(232,226,214,0.18);
+  background: rgba(237,229,213,0.18);
   border-radius: 8px;
-  border: 2px solid #030605;
+  border: 2px solid #1B1511;
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(232,226,214,0.34); }
 
