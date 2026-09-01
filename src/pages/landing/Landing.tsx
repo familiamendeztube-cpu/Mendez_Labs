@@ -41,8 +41,8 @@ export function Landing() {
             if (self.isActive) {
               gsap.to(rootRef.current, {
                 backgroundColor: bg,
-                duration: 0.8,
-                ease: 'power2.out',
+                duration: 1.4,
+                ease: 'power1.inOut',
                 overwrite: 'auto',
               });
             }

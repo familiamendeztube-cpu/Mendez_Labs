@@ -5,10 +5,10 @@ import { LP } from './theme';
 
 /**
  * The signature chapter: a supersonic delta jet rises vertically through the
- * section while scrolling — 3D perspective pitch, hull swell at the closest
- * point, traveling specular sheen. Original artwork (Concorde-class
- * geometry: needle fuselage, ogival delta wing, paired engine boxes,
- * pointed tail cone); lighting is consistent from the upper-left.
+ * section while scrolling — 3D perspective pitch, hull swell, traveling
+ * sheen — and mid-pass the metal skin dissolves to reveal the cabin
+ * interior floor plan. Original artwork throughout; lighting is computed
+ * (feDiffuse/feSpecular) from a golden-hour distant light.
  */
 export function JetPass({ reduced }: { reduced: boolean }) {
   const trackRef = useRef<HTMLElement>(null);
@@ -31,12 +31,9 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           scrub: 1,
         },
       });
-      // Pure vertical rise; nose crosses the bottom edge at track start,
-      // tail clears the top at track end.
       tl.fromTo(jetRef.current,
         { yPercent: 10 },
         { yPercent: -101, ease: 'none', duration: 1 }, 0)
-        // 3D pass-under: pitch toward camera, flatten overhead, pitch away.
         .fromTo(jetInnerRef.current,
           { rotateX: 16, scale: 0.94 },
           {
@@ -44,12 +41,21 @@ export function JetPass({ reduced }: { reduced: boolean }) {
             ease: 'none',
             duration: 1,
           }, 0)
-        // Specular sheen sliding along the hull during the pass.
         .fromTo('[data-jet-sheen]',
           { yPercent: -60 },
-          { yPercent: 480, ease: 'none', duration: 1 }, 0);
+          { yPercent: 480, ease: 'none', duration: 1 }, 0)
+        // ── X-ray moment: directly overhead, the skin dissolves and the
+        //    cabin interior fades up — then the skin returns as it departs.
+        .fromTo('[data-jet-interior]',
+          { opacity: 0 },
+          { opacity: 1, ease: 'none', duration: 0.22 }, 0.34)
+        .to('[data-jet-skin]',
+          { opacity: 0.1, ease: 'none', duration: 0.22 }, 0.34)
+        .to('[data-jet-interior]',
+          { opacity: 0, ease: 'none', duration: 0.18 }, 0.72)
+        .to('[data-jet-skin]',
+          { opacity: 1, ease: 'none', duration: 0.18 }, 0.72);
 
-      // Side entrances
       gsap.from('[data-jet-sub]', {
         x: -90, opacity: 0, duration: 1.1, ease: 'lux',
         scrollTrigger: { trigger: trackRef.current, start: 'top 45%' },
@@ -71,7 +77,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
       ref={trackRef}
       data-lp-theme="light"
       className="relative mx-2 rounded-[2.5rem] lg:mx-4 lg:rounded-[3rem]"
-      style={{ background: LP.ivory, height: '420vh' }}
+      style={{ background: `linear-gradient(180deg, #CFC4B4 0%, ${LP.ivory} 55%, #F8F3E8 100%)`, height: '420vh' }}
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden rounded-[2.5rem] px-[6vw] lg:rounded-[3rem]">
         <h2
@@ -103,7 +109,7 @@ export function JetPass({ reduced }: { reduced: boolean }) {
           </span>
         </div>
 
-        {/* ── The jet (original supersonic-delta artwork; sun upper-left) ── */}
+        {/* ── The jet ── */}
         <div
           ref={jetRef}
           className="pointer-events-none absolute left-1/2 top-0 z-20 w-[280vw] max-w-none -translate-x-1/2"
@@ -168,10 +174,6 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 <filter id="jp-softer" x="-60%" y="-60%" width="220%" height="220%">
                   <feGaussianBlur stdDeviation="13" />
                 </filter>
-                {/* Computed 3D lighting: golden-hour sun from the upper-left.
-                    Diffuse shading multiplies the base paint; a specular pass
-                    adds the metallic hot highlights — real rounded surfaces
-                    derived from each shape's silhouette, not hand-painted. */}
                 <filter id="jp-3d" x="-15%" y="-8%" width="130%" height="116%">
                   <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="relief" />
                   <feDiffuseLighting in="relief" surfaceScale="8" diffuseConstant="1.05" lightingColor="#FFF3E2" result="diff">
@@ -184,7 +186,6 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                   <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn" />
                   <feComposite in="lit" in2="specIn" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
                 </filter>
-                {/* Photographic grain — kills vector flatness */}
                 <filter id="jp-grain">
                   <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n" />
                   <feColorMatrix in="n" type="matrix"
@@ -205,124 +206,106 @@ export function JetPass({ reduced }: { reduced: boolean }) {
                 </clipPath>
               </defs>
 
-              {/* ── Airframe under the computed-lighting pass ── */}
+              {/* ── Wings / engines / fin under the computed-lighting pass ── */}
               <g filter="url(#jp-3d)">
-              {/* ── Ogival delta wings ── */}
-              <path
-                d="M316,455
-                   C328,585 362,715 428,830
-                   C482,925 534,1005 554,1052
-                   Q561,1072 559,1094 L548,1112
-                   L522,1116 L318,1152 Z"
-                fill="url(#jp-wing-r)"
-              />
-              <path
-                d="M284,455
-                   C272,585 238,715 172,830
-                   C118,925 66,1005 46,1052
-                   Q39,1072 41,1094 L52,1112
-                   L78,1116 L282,1152 Z"
-                fill="url(#jp-wing-l)"
-              />
-              {/* Polished leading edges along the ogival curve */}
+                <path d="M316,455 C328,585 362,715 428,830 C482,925 534,1005 554,1052 Q561,1072 559,1094 L548,1112 L522,1116 L318,1152 Z" fill="url(#jp-wing-r)" />
+                <path d="M284,455 C272,585 238,715 172,830 C118,925 66,1005 46,1052 Q39,1072 41,1094 L52,1112 L78,1116 L282,1152 Z" fill="url(#jp-wing-l)" />
+                <rect x="348" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
+                <rect x="396" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
+                <rect x="160" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
+                <rect x="208" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
+                <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" fill="url(#jp-fin-gold)" />
+              </g>
+              {/* Wing overlays */}
               <path d="M316,455 C328,585 362,715 428,830 C482,925 534,1005 554,1052 L548,1058 C527,1010 476,930 422,836 C357,722 323,590 311,458 Z" fill="#FFFFFF" opacity="0.8" />
               <path d="M284,455 C272,585 238,715 172,830 C118,925 66,1005 46,1052 L52,1058 C73,1010 124,930 178,836 C243,722 277,590 289,458 Z" fill="#FFFFFF" opacity="0.9" />
-              {/* Elevon hinge lines along the trailing edge */}
               <path d="M340,1148 L352,1094" stroke="rgba(30,34,38,0.16)" strokeWidth="1.4" fill="none" />
               <path d="M300,1152 L470,1116" stroke="rgba(30,34,38,0.10)" strokeWidth="1.2" fill="none" />
               <path d="M260,1148 L248,1094" stroke="rgba(30,34,38,0.16)" strokeWidth="1.4" fill="none" />
               <path d="M300,1152 L130,1116" stroke="rgba(30,34,38,0.10)" strokeWidth="1.2" fill="none" />
-              {/* Fuselage shadow cast onto the right wing (sun upper-left) */}
-              <path d="M318,520 L392,760 L344,820 L318,700 Z" fill="#2A2D30" opacity="0.20" filter="url(#jp-softer)" />
-              {/* Wing-root ambient occlusion */}
-              <path d="M316,520 L316,1120 L336,1080 L330,620 Z" fill="#2A2D30" opacity="0.16" filter="url(#jp-soft)" />
-              <path d="M284,520 L284,1120 L264,1080 L270,620 Z" fill="#2A2D30" opacity="0.11" filter="url(#jp-soft)" />
-
-              {/* ── Paired engine boxes under each wing, at the trailing edge ── */}
-              {/* Right pair */}
-              <rect x="348" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
-              <rect x="396" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
               <rect x="352" y="1082" width="36" height="10" rx="3" fill="#0F1113" />
               <rect x="400" y="1082" width="36" height="10" rx="3" fill="#0F1113" />
-              <line x1="370" y1="1098" x2="370" y2="1148" stroke="rgba(255,255,255,0.16)" strokeWidth="1.4" />
-              <line x1="418" y1="1098" x2="418" y2="1148" stroke="rgba(255,255,255,0.16)" strokeWidth="1.4" />
-              {/* Left pair */}
-              <rect x="160" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
-              <rect x="208" y="1078" width="44" height="76" rx="5" fill="url(#jp-eng)" />
               <rect x="164" y="1082" width="36" height="10" rx="3" fill="#0F1113" />
               <rect x="212" y="1082" width="36" height="10" rx="3" fill="#0F1113" />
-              <line x1="182" y1="1098" x2="182" y2="1148" stroke="rgba(255,255,255,0.16)" strokeWidth="1.4" />
-              <line x1="230" y1="1098" x2="230" y2="1148" stroke="rgba(255,255,255,0.16)" strokeWidth="1.4" />
-
-              {/* ── Tail fin (top-view spine) ── */}
-              <path d="M300,1128 L307,1298 L300,1312 L293,1298 Z" fill="url(#jp-fin-gold)" />
               <path d="M300,1128 L303.5,1298 L300,1312 Z" fill="#F4E2B6" opacity="0.8" />
 
-              {/* ── Needle fuselage with pointed tail cone ── */}
-              <path
-                d="M300,26
-                   C304,26 307,38 308.5,62 L311,150
-                   C313,240 315,330 316,440 L316,1000
-                   C316,1090 312,1180 308,1250
-                   C305,1300 302,1340 300,1352
-                   C298,1340 295,1300 292,1250
-                   C288,1180 284,1090 284,1000 L284,440
-                   C285,330 287,240 289,150 L291.5,62
-                   C293,38 296,26 300,26 Z"
-                fill="url(#jp-fuse)"
-              />
+              {/* ── Cabin interior — revealed as the skin dissolves overhead ── */}
+              <g data-jet-interior opacity="0">
+                {/* Cabin shell */}
+                <path
+                  d="M300,26 C304,26 307,38 308.5,62 L311,150 C313,240 315,330 316,440 L316,1000 C316,1090 312,1180 308,1250 C305,1300 302,1340 300,1352 C298,1340 295,1300 292,1250 C288,1180 284,1090 284,1000 L284,440 C285,330 287,240 289,150 L291.5,62 C293,38 296,26 300,26 Z"
+                  fill="#F2EBDA" stroke="rgba(36,28,20,0.55)" strokeWidth="2"
+                />
+                {/* Cockpit: two crew seats + console */}
+                <path d="M290,160 C293,152 307,152 310,160" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.4" />
+                <rect x="288.5" y="168" width="9" height="11" rx="2.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
+                <rect x="302.5" y="168" width="9" height="11" rx="2.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
+                {/* Forward galley */}
+                <rect x="287" y="212" width="26" height="38" rx="3" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
+                <line x1="287" y1="231" x2="313" y2="231" stroke="rgba(36,28,20,0.35)" strokeWidth="1" />
+                {/* Seat rows, aisle down the middle */}
+                {Array.from({ length: 18 }).map((_, i) => {
+                  const y = 286 + i * 38;
+                  return (
+                    <g key={i}>
+                      <rect x="286.5" y={y} width="10.5" height="15" rx="3" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
+                      <rect x="288.5" y={y} width="6.5" height="3.4" rx="1.6" fill="#C4B89D" />
+                      <rect x="303" y={y} width="10.5" height="15" rx="3" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
+                      <rect x="305" y={y} width="6.5" height="3.4" rx="1.6" fill="#C4B89D" />
+                    </g>
+                  );
+                })}
+                {/* Rear lounge + table */}
+                <rect x="286.5" y="984" width="11" height="52" rx="3.5" fill="#DCD2BC" stroke="rgba(36,28,20,0.55)" strokeWidth="1" />
+                <rect x="303.5" y="994" width="9" height="20" rx="2" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
+                {/* Aft lavatory */}
+                <rect x="287" y="1052" width="26" height="30" rx="3" fill="none" stroke="rgba(36,28,20,0.5)" strokeWidth="1.2" />
+                <line x1="289" y1="1054" x2="311" y2="1080" stroke="rgba(36,28,20,0.3)" strokeWidth="1" />
               </g>
 
-              {/* Photographic grain across the whole airframe */}
-              <rect
-                x="0" y="0" width="600" height="1400"
-                filter="url(#jp-grain)"
-                clipPath="url(#jp-clip)"
-                opacity="0.45"
-                style={{ mixBlendMode: 'overlay' }}
-              />
-              {/* Nose probe */}
-              <rect x="299" y="6" width="2" height="22" rx="1" fill="#7E8082" />
-              {/* Curvature AO along both hull edges */}
-              <path d="M288,160 C286,420 285,800 291,1240 L286,1240 C280,800 281,420 283,160 Z" fill="#1E2124" opacity="0.10" filter="url(#jp-soft)" />
-              <path d="M312,160 C314,420 315,800 309,1240 L314,1240 C320,800 319,420 317,160 Z" fill="#1E2124" opacity="0.15" filter="url(#jp-soft)" />
-              {/* Long gloss line (specular, left of the spine) */}
-              <path d="M294,110 C291,420 291,800 295,1230" stroke="#FFFFFF" strokeWidth="5" opacity="0.6" fill="none" filter="url(#jp-soft)" />
-              {/* Faint sky-reflection band right of the spine */}
-              <path d="M306,130 C309,420 309,760 305,1180" stroke="#A8C4DB" strokeWidth="6" opacity="0.22" fill="none" filter="url(#jp-soft)" />
-              {/* Radome seam + nose highlight */}
-              <line x1="291" y1="150" x2="309" y2="150" stroke="rgba(20,23,26,0.18)" strokeWidth="1.2" />
-              <ellipse cx="298" cy="70" rx="10" ry="34" fill="url(#jp-nose)" />
-
-              {/* Gold coachlines along both sides */}
-              <path d="M289,180 L285,440 L285,1000 C285,1090 289,1180 293,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.8" />
-              <path d="M311,180 L315,440 L315,1000 C315,1090 311,1180 307,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.7" />
-
-              {/* Embossed seam rings */}
-              {[260, 420, 620, 830, 1010].map((y) => (
-                <g key={y}>
-                  <line x1="286" y1={y} x2="314" y2={y} stroke="rgba(255,255,255,0.5)" strokeWidth="0.9" />
-                  <line x1="286" y1={y + 2} x2="314" y2={y + 2} stroke="rgba(20,23,26,0.13)" strokeWidth="1" />
+              {/* ── Fuselage skin (dissolves overhead) ── */}
+              <g data-jet-skin>
+                <g filter="url(#jp-3d)">
+                  <path
+                    d="M300,26 C304,26 307,38 308.5,62 L311,150 C313,240 315,330 316,440 L316,1000 C316,1090 312,1180 308,1250 C305,1300 302,1340 300,1352 C298,1340 295,1300 292,1250 C288,1180 284,1090 284,1000 L284,440 C285,330 287,240 289,150 L291.5,62 C293,38 296,26 300,26 Z"
+                    fill="url(#jp-fuse)"
+                  />
                 </g>
-              ))}
-
-              {/* Cockpit — slender visor glazing far forward */}
-              <path d="M300,168 C306,168 309,174 310,186 L308,204 C303,199 297,199 292,204 L290,186 C291,174 294,168 300,168 Z" fill="url(#jp-glass)" />
-              <path d="M294,172 L305,170 L300,190 L292,192 Z" fill="#DCE9F4" opacity="0.45" />
-              <line x1="300" y1="170" x2="300" y2="200" stroke="#E9ECEF" strokeWidth="1.2" opacity="0.85" />
-
-              {/* Cabin door */}
-              <rect x="287" y="236" width="9" height="34" rx="4" fill="none" stroke="rgba(20,23,26,0.22)" strokeWidth="1.2" />
-
-              {/* Tiny supersonic cabin windows */}
-              {Array.from({ length: 15 }).map((_, i) => (
-                <g key={i}>
-                  <circle cx="288.5" cy={320 + i * 38} r="2.4" fill="#C9CBCA" />
-                  <circle cx="288.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
-                  <circle cx="311.5" cy={320 + i * 38} r="2.4" fill="#BEC0BF" />
-                  <circle cx="311.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
-                </g>
-              ))}
+                <rect
+                  x="0" y="0" width="600" height="1400"
+                  filter="url(#jp-grain)"
+                  clipPath="url(#jp-clip)"
+                  opacity="0.45"
+                  style={{ mixBlendMode: 'overlay' }}
+                />
+                <rect x="299" y="6" width="2" height="22" rx="1" fill="#7E8082" />
+                <path d="M288,160 C286,420 285,800 291,1240 L286,1240 C280,800 281,420 283,160 Z" fill="#1E2124" opacity="0.10" filter="url(#jp-soft)" />
+                <path d="M312,160 C314,420 315,800 309,1240 L314,1240 C320,800 319,420 317,160 Z" fill="#1E2124" opacity="0.15" filter="url(#jp-soft)" />
+                <path d="M294,110 C291,420 291,800 295,1230" stroke="#FFFFFF" strokeWidth="5" opacity="0.6" fill="none" filter="url(#jp-soft)" />
+                <path d="M306,130 C309,420 309,760 305,1180" stroke="#A8C4DB" strokeWidth="6" opacity="0.22" fill="none" filter="url(#jp-soft)" />
+                <line x1="291" y1="150" x2="309" y2="150" stroke="rgba(20,23,26,0.18)" strokeWidth="1.2" />
+                <ellipse cx="298" cy="70" rx="10" ry="34" fill="url(#jp-nose)" />
+                <path d="M289,180 L285,440 L285,1000 C285,1090 289,1180 293,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.8" />
+                <path d="M311,180 L315,440 L315,1000 C315,1090 311,1180 307,1246" fill="none" stroke={LP.gold} strokeWidth="1.8" opacity="0.7" />
+                {[260, 420, 620, 830, 1010].map((y) => (
+                  <g key={y}>
+                    <line x1="286" y1={y} x2="314" y2={y} stroke="rgba(255,255,255,0.5)" strokeWidth="0.9" />
+                    <line x1="286" y1={y + 2} x2="314" y2={y + 2} stroke="rgba(20,23,26,0.13)" strokeWidth="1" />
+                  </g>
+                ))}
+                <path d="M300,168 C306,168 309,174 310,186 L308,204 C303,199 297,199 292,204 L290,186 C291,174 294,168 300,168 Z" fill="url(#jp-glass)" />
+                <path d="M294,172 L305,170 L300,190 L292,192 Z" fill="#DCE9F4" opacity="0.45" />
+                <line x1="300" y1="170" x2="300" y2="200" stroke="#E9ECEF" strokeWidth="1.2" opacity="0.85" />
+                <rect x="287" y="236" width="9" height="34" rx="4" fill="none" stroke="rgba(20,23,26,0.22)" strokeWidth="1.2" />
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <g key={i}>
+                    <circle cx="288.5" cy={320 + i * 38} r="2.4" fill="#C9CBCA" />
+                    <circle cx="288.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
+                    <circle cx="311.5" cy={320 + i * 38} r="2.4" fill="#BEC0BF" />
+                    <circle cx="311.5" cy={320 + i * 38} r="1.7" fill="#161B21" />
+                  </g>
+                ))}
+              </g>
             </svg>
           </div>
         </div>
