@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { terminalHeaders } from '@/lib/terminalConfig';
 
 const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alpaca-connector`;
 
@@ -16,18 +16,8 @@ export function setTradingEnv(env: TradingEnv) {
   try { localStorage.setItem(ENV_KEY, env); } catch { /* ignore */ }
 }
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-  return {
-    Authorization: `Bearer ${session.access_token}`,
-    'Content-Type': 'application/json',
-    Apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-  };
-}
-
 async function alpacaFetch<T>(path: string, params?: Record<string, string>, method = 'GET', body?: unknown): Promise<T> {
-  const headers = await getAuthHeaders();
+  const headers = terminalHeaders();
   const qs = new URLSearchParams({ env: getTradingEnv(), ...params });
   const url = `${FUNC_URL}/${path}?${qs}`;
   const res = await fetch(url, {

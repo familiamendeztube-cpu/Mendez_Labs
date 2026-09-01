@@ -4,8 +4,15 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey",
+    "Content-Type, Authorization, X-Client-Info, Apikey, x-terminal-key",
 };
+
+// Single-user terminal — access gated by one shared code in the x-terminal-key
+// header, checked against the TERMINAL_ACCESS_KEY secret.
+function terminalAuthorized(req: Request): boolean {
+  const expected = Deno.env.get("TERMINAL_ACCESS_KEY") ?? "312593";
+  return req.headers.get("x-terminal-key") === expected;
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -48,22 +55,9 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const supabase = createClient(
-      envOrThrow("SUPABASE_URL"),
-      envOrThrow("SUPABASE_ANON_KEY"),
-      {
-        global: {
-          headers: {
-            Authorization: req.headers.get("Authorization") ?? "",
-          },
-        },
-      }
-    );
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return jsonResponse({ error: "Unauthorized" }, 401);
+    if (!terminalAuthorized(req)) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
 
     if (req.method !== "POST") {
       return jsonResponse({ error: "POST required" }, 405);

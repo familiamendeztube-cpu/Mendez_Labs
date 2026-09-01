@@ -1,18 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { alpaca, getTradingEnv, type AlpacaAccount, type AlpacaPosition, type AlpacaOrder, type AlpacaBar } from '@/services/alpaca';
 import type { EquityPoint, DailyPnlPoint } from '@/types/models';
-import { supabase } from '@/lib/supabase';
+import { terminalHeaders } from '@/lib/terminalConfig';
 
 const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alpaca-connector`;
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-  return {
-    Authorization: `Bearer ${session.access_token}`,
-    'Content-Type': 'application/json',
-    Apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-  };
+function getAuthHeaders(): Record<string, string> {
+  return terminalHeaders();
 }
 
 export interface PortfolioHistoryPoint {
@@ -23,7 +17,7 @@ export interface PortfolioHistoryPoint {
 }
 
 async function fetchPortfolioHistory(period = '1M', timeframe = '1D'): Promise<PortfolioHistoryPoint[]> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const qs = new URLSearchParams({ env: getTradingEnv(), period, timeframe });
   const res = await fetch(`${FUNC_URL}/portfolio-history?${qs}`, { headers });
   if (!res.ok) return [];
@@ -38,7 +32,7 @@ async function fetchPortfolioHistory(period = '1M', timeframe = '1D'): Promise<P
 }
 
 async function cancelAllOrders(): Promise<{ cancelled: number }> {
-  const headers = await getAuthHeaders();
+  const headers = getAuthHeaders();
   const qs = new URLSearchParams({ env: getTradingEnv() });
   const res = await fetch(`${FUNC_URL}/orders?${qs}`, { method: 'DELETE', headers });
   if (!res.ok) {

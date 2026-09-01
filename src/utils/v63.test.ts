@@ -237,9 +237,10 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(src.includes('env !== "paper"'), 'edge fn has paper-only guard');
   ok(src.includes('Live orders disabled'), 'edge fn returns 403 for live orders');
 
-  // Auth check
-  ok(src.includes('getUser'), 'edge fn checks auth with getUser');
-  ok(src.includes('Unauthorized'), 'edge fn returns 401 for unauthenticated');
+  // Auth check — single-user shared-code model (no accounts / JWTs)
+  ok(src.includes('x-terminal-key'), 'edge fn checks the x-terminal-key header');
+  ok(src.includes('TERMINAL_ACCESS_KEY'), 'edge fn compares against TERMINAL_ACCESS_KEY secret');
+  ok(src.includes('Unauthorized'), 'edge fn returns 401 for a bad code');
 
   // No hardcoded API keys — uses envOrThrow
   ok(src.includes('envOrThrow("ALPACA_PAPER_KEY_ID")'), 'uses envOrThrow for paper key');
@@ -299,12 +300,15 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
 {
   const src = read('supabase/config.toml');
   ok(src.includes('[functions.alpaca-connector]'), 'config has [functions.alpaca-connector]');
-  ok(src.includes('verify_jwt = true'), 'alpaca-connector has verify_jwt = true');
 
-  // Verify the verify_jwt = true belongs to alpaca-connector specifically
+  // Single-user terminal: the function does its own x-terminal-key check, so
+  // Supabase JWT verification is off for both trading functions.
   const section = src.slice(src.indexOf('[functions.alpaca-connector]'));
   const firstVerify = section.indexOf('verify_jwt');
-  ok(section.slice(firstVerify).startsWith('verify_jwt = true'), 'alpaca-connector verify_jwt is specifically true');
+  ok(section.slice(firstVerify).startsWith('verify_jwt = false'), 'alpaca-connector verify_jwt is false');
+
+  const aiSection = src.slice(src.indexOf('[functions.ai-analysis]'));
+  ok(aiSection.slice(aiSection.indexOf('verify_jwt')).startsWith('verify_jwt = false'), 'ai-analysis verify_jwt is false');
 }
 
 console.log(`✓ v63: ${N} assertions passed`);

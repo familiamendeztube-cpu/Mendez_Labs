@@ -29,7 +29,7 @@ import {
   type AppSettings,
   type PersistedState,
 } from '@/utils/migration';
-import { useAuth } from '@/lib/useAuth';
+import { MASTER_CODE, MASTER_KEY } from '@/lib/terminalConfig';
 
 export type { AppSettings } from '@/utils/migration';
 export { DEFAULT_SETTINGS } from '@/utils/migration';
@@ -37,10 +37,6 @@ export { DEFAULT_SETTINGS } from '@/utils/migration';
 interface StoreContextValue {
   authenticated: boolean;
   authLoading: boolean;
-  authError: string | null;
-  clearAuthError: () => void;
-  signUp: (email: string, password: string) => Promise<unknown>;
-  signIn: (email: string, password: string) => Promise<unknown>;
   signOut: () => Promise<void>;
   userEmail: string | null;
   masterMode: boolean;
@@ -140,16 +136,8 @@ function generateTodayPickFive(): PickFiveSet {
   };
 }
 
-// Owner quick-access gate. NOTE: this is a UI unlock only — it grants no
-// Supabase session, so Alpaca/AI features still require a real sign-in.
-// Anyone reading the shipped JS can find this code; it protects the shell,
-// not the data (data is protected by Supabase auth + RLS).
-const MASTER_KEY = 'mlabs-master';
-const MASTER_CODE = '312593';
-
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const persisted = useRef(loadState()).current;
-  const auth = useAuth();
   const [masterMode, setMasterMode] = useState<boolean>(() => {
     try { return localStorage.getItem(MASTER_KEY) === '1'; } catch { return false; }
   });
@@ -164,8 +152,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const signOutAll = useCallback(async () => {
     try { localStorage.removeItem(MASTER_KEY); } catch { /* ignore */ }
     setMasterMode(false);
-    if (auth.authenticated) await auth.signOut();
-  }, [auth]);
+  }, []);
 
   useEffect(() => {
     if (persisted && 'demoHistory' in persisted) {
@@ -201,7 +188,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     saveState({
-      authenticated: auth.authenticated,
+      authenticated: masterMode,
       bets,
       riskSettings,
       settings,
@@ -211,7 +198,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       pickFiveToday,
       demoHistory: settledHistory as unknown as PersistedState['demoHistory'],
     } as unknown as PersistedState);
-  }, [auth.authenticated, bets, riskSettings, settings, watchlist, logs, balance, pickFiveToday, settledHistory]);
+  }, [masterMode, bets, riskSettings, settings, watchlist, logs, balance, pickFiveToday, settledHistory]);
 
   const refreshFeed = useCallback(async () => {
     setFeedLoading(true);
@@ -246,10 +233,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (auth.authenticated || masterMode) {
+    if (masterMode) {
       refreshFeed();
     }
-  }, [auth.authenticated, masterMode, refreshFeed]);
+  }, [masterMode, refreshFeed]);
 
   const addLog = useCallback((entry: Omit<SystemLogEntry, 'id' | 'timestamp'>) => {
     setLogs((prev) => [
@@ -495,11 +482,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [pickFiveToday]);
 
   useEffect(() => {
-    if (!auth.authenticated && !masterMode) return;
+    if (!masterMode) return;
     settlePendingPicks();
     const interval = setInterval(settlePendingPicks, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [auth.authenticated, masterMode, settlePendingPicks]);
+  }, [masterMode, settlePendingPicks]);
 
   const addBetSlipLeg = useCallback((pick: RankedPick) => {
     setBetSlipLegs((prev) => {
@@ -557,14 +544,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [bets, balance, riskSettings, rankedPicks]);
 
   const value: StoreContextValue = {
-    authenticated: auth.authenticated || masterMode,
-    authLoading: auth.loading,
-    authError: auth.error,
-    clearAuthError: auth.clearError,
-    signUp: auth.signUp,
-    signIn: auth.signIn,
+    authenticated: masterMode,
+    authLoading: false,
     signOut: signOutAll,
-    userEmail: auth.user?.email ?? (masterMode ? 'admin (master code)' : null),
+    userEmail: masterMode ? 'Terminal — master access' : null,
     masterMode,
     unlockWithCode,
     bets,

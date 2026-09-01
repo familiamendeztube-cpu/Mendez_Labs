@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { getTradingEnv, setTradingEnv, type TradingEnv } from '@/services/alpaca';
 import { OrderTicket } from '@/components/OrderTicket';
-import { useStore } from '@/store/StoreContext';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import { fmtCurrency } from '@/utils/format';
 import {
@@ -42,7 +41,6 @@ function sessionNow(s: typeof SESSIONS[number]) {
 
 export function TradingDashboard() {
   const live = useLiveTrading();
-  const { masterMode, signOut } = useStore();
   const [env, setEnvState] = useState<TradingEnv>(getTradingEnv());
   const [confirmLive, setConfirmLive] = useState(false);
 
@@ -104,9 +102,9 @@ export function TradingDashboard() {
             Trading Command Center
           </h1>
           <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-            {masterMode && !live.connected
-              ? 'View-only preview — sign in with email for live trading data.'
-              : live.connected ? 'Connected to Alpaca. Live market data active.' : 'Connecting to Alpaca...'}
+            {live.connected
+              ? `Connected to your ${env} Alpaca account. Live market data active.`
+              : live.error ? 'Alpaca not reachable — check your server keys below.' : 'Connecting to Alpaca...'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -173,30 +171,21 @@ export function TradingDashboard() {
       )}
 
       {/* Connection banners */}
-      {live.error && masterMode && (
+      {live.error && (
         <div className="rounded-2xl p-5" style={{ background: amberAlpha(0.05), border: `1px solid ${amberAlpha(0.22)}` }}>
           <div className="flex items-start gap-3">
-            <Lock className="mt-0.5 h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
+            <WifiOff className="mt-0.5 h-5 w-5 shrink-0" style={{ color: tv.statusAmber }} />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>View-only preview</p>
+              <p className="text-sm font-semibold" style={{ color: tv.statusAmber }}>Alpaca not connected</p>
+              <p className="mt-1 text-xs leading-relaxed" style={{ color: tv.textMuted }}>{live.error}</p>
               <p className="mt-1 text-xs leading-relaxed" style={{ color: tv.textMuted }}>
-                The access code opens the terminal without a brokerage session — balances,
-                positions, charts and orders stay locked for your protection. One click below
-                takes you to the email sign-in that unlocks live account data.
+                {env === 'live'
+                  ? 'LIVE mode reads your real account. Set ALPACA_LIVE_KEY_ID and ALPACA_LIVE_SECRET as Supabase edge-function secrets (and ALPACA_LIVE_ORDERS_ENABLED=true to place real orders). Switch to PAPER to trade the paper account.'
+                  : 'Set ALPACA_PAPER_KEY_ID and ALPACA_PAPER_SECRET as Supabase edge-function secrets on the alpaca-connector function. The dashboard retries automatically.'}
               </p>
             </div>
-            <button
-              onClick={() => {
-                try { sessionStorage.setItem('lp-open-auth', '1'); } catch { /* ignore */ }
-                signOut();
-              }}
-              className="shrink-0 rounded-lg px-4 py-2 text-xs font-bold tracking-wide"
-              style={{ background: accentAlpha(0.15), color: tv.accent, border: `1px solid ${accentAlpha(0.3)}` }}
-            >
-              Sign in with email
-            </button>
           </div>
-          {/* Live market sessions — real data, no auth needed */}
+          {/* Live market sessions — real data, no brokerage needed */}
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
             {SESSIONS.map((s) => {
               const { time, isOpen } = sessionNow(s);
@@ -217,20 +206,6 @@ export function TradingDashboard() {
                 </div>
               );
             })}
-          </div>
-        </div>
-      )}
-      {live.error && !masterMode && (
-        <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: redAlpha(0.06), border: `1px solid ${redAlpha(0.15)}` }}>
-          <WifiOff className="h-5 w-5 shrink-0" style={{ color: tv.statusRed }} />
-          <div>
-            <p className="text-sm font-semibold" style={{ color: tv.statusRed }}>Alpaca connection failed</p>
-            <p className="text-xs" style={{ color: tv.textMuted }}>{live.error}</p>
-            <p className="mt-1 text-xs" style={{ color: tv.textMuted }}>
-              {env === 'live'
-                ? 'LIVE mode needs ALPACA_LIVE_KEY_ID and ALPACA_LIVE_SECRET set as Supabase edge-function secrets. Switch to PAPER to use the paper account.'
-                : 'Make sure your Alpaca API keys are configured. The dashboard will retry automatically.'}
-            </p>
           </div>
         </div>
       )}

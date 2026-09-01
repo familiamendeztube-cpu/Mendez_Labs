@@ -8,7 +8,7 @@ import { plainEnglishBet } from '@/utils/pickFive';
 import { quarterKellyStake } from '@/utils/valueEngine';
 import { autoSelectBestFive } from '@/utils/autoSelect';
 import { tv, accentAlpha, redAlpha, mutedAlpha, amberAlpha } from '@/lib/themeVars';
-import { supabase } from '@/lib/supabase';
+import { terminalHeaders } from '@/lib/terminalConfig';
 import type { RankedPick } from '@/services/liveData';
 
 interface AIResearch {
@@ -84,15 +84,9 @@ export function PickFive() {
     setAiLoading(true);
     setAiError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
       const res = await fetch(FUNC_URL, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-          Apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
+        headers: terminalHeaders(),
         body: JSON.stringify({
           picks: picks.map((p) => ({
             id: p.opportunityId,

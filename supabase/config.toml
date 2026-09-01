@@ -13,8 +13,10 @@ verify_jwt = false
 [functions.analysis-engine]
 verify_jwt = false
 
+# Single-user terminal: no accounts, no JWTs. Both functions do their own
+# shared-code check on the x-terminal-key header (see TERMINAL_ACCESS_KEY).
 [functions.alpaca-connector]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-analysis]
-verify_jwt = true
+verify_jwt = false
