@@ -70,6 +70,15 @@ function diversify(
 }
 
 export function autoSelectBestFive(rankedPicks: RankedPick[], bankroll: number): AutoSelectResult {
+  if (rankedPicks.length === 0) {
+    return {
+      selected: [],
+      tier: 'none',
+      explanation:
+        "Today's board hasn't loaded yet — the odds feed is catching up. Hit Refresh in a moment and try again.",
+    };
+  }
+
   // Tier 1 — picks that pass every Elo qualification gate.
   const modelEligible = rankedPicks
     .filter((p) => p.qualified && p.pFinal !== null && p.evPercent !== null)

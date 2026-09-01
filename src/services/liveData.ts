@@ -170,17 +170,31 @@ export async function fetchLiveFeed(): Promise<FeedResult> {
   }
 
   // Then the analysis-engine (server-side independent model predictions).
+  // The engine does a lot of work per call (odds cache + completed-game
+  // history + Elo), so a cold invocation occasionally times out or 5xxs.
+  // Retry twice with backoff before giving up on it.
   try {
-    const engineResponse = await fetch(`${SUPABASE_URL}/functions/v1/analysis-engine`, {
-      headers: {
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    let engineData: { predictions?: Array<Record<string, unknown>>; model?: ModelHealth } | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const engineResponse = await fetch(`${SUPABASE_URL}/functions/v1/analysis-engine`, {
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (engineResponse.ok) {
+          const parsed = await engineResponse.json();
+          if (parsed?.predictions?.length > 0) { engineData = parsed; break; }
+        }
+      } catch {
+        // transient — retry
+      }
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+    }
 
-    if (engineResponse.ok) {
-      const engineData = await engineResponse.json();
-      if (engineData.predictions && engineData.predictions.length > 0) {
+    if (engineData && engineData.predictions && engineData.predictions.length > 0) {
+      {
         const allPicks = engineData.predictions
           .map(convertEnginePrediction)
           .filter((p: RankedPick | null): p is RankedPick => p !== null);

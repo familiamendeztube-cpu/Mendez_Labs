@@ -1,0 +1,11 @@
+Copilot face
+============
+
+Save the photo you want as the assistant's face in this folder, named exactly:
+
+    copilot-face.jpg
+
+It will appear immediately in the Copilot button, header, and every reply —
+cropped to a circle. Square images (roughly 400x400 or larger) look best.
+
+If no file is here, the Copilot falls back to a drawn geometric character.
