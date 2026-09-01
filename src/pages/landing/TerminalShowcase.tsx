@@ -15,13 +15,14 @@ const SPECS: Array<[string, string]> = [
 // Decorative price action — product art, deliberately unlabeled so nothing
 // reads as a performance claim. Deterministic jagged walk with pullbacks.
 const PRICE_Y = [
-  150, 146, 149, 141, 136, 139, 129, 133, 124, 128, 118, 122, 112, 117, 107,
-  111, 101, 106, 96, 101, 108, 98, 91, 95, 85, 90, 79, 84, 73, 78, 68, 74,
-  62, 67, 56, 62, 50, 56, 45, 50, 40,
+  152, 149, 151, 145, 147, 140, 143, 136, 138, 131, 133, 127, 130, 121, 125,
+  118, 121, 113, 116, 108, 111, 104, 108, 113, 105, 100, 103, 95, 98, 90, 94,
+  86, 89, 96, 88, 82, 85, 77, 80, 72, 75, 68, 71, 63, 66, 58, 61, 54, 57,
+  49, 52, 45, 48, 41, 44, 38, 41, 35, 38, 40,
 ];
-const PRICE_PTS = PRICE_Y.map((y, i) => `${i * 12},${y}`);
+const PRICE_PTS = PRICE_Y.map((y, i) => `${(i * 480) / (PRICE_Y.length - 1)},${y}`);
 const PRICE_PATH = `M${PRICE_PTS.join(' L')}`;
-const AREA_PATH = `${PRICE_PATH} L480,200 L0,200 Z`;
+const AREA_PATH = `${PRICE_PATH} L480,210 L0,210 Z`;
 // Smoother benchmark underneath, always trailing the price.
 const BENCH_PATH = 'M0,158 C60,152 110,146 170,138 S290,118 350,106 S440,86 480,78';
 // Volume bars: [height, direction] — direction picks the bar tint.
@@ -52,9 +53,13 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         scrollTrigger: { trigger: '[data-term-frame]', start: 'top 82%' },
       });
       gsap.from('[data-term-curve]', {
-        strokeDashoffset: 700, duration: 1,
+        strokeDashoffset: 720, duration: 1,
         ease: 'none',
         scrollTrigger: { trigger: '[data-term-frame]', start: 'top 75%', end: 'top 30%', scrub: true },
+      });
+      gsap.to('[data-term-cross]', {
+        attr: { x1: 150, x2: 150 }, duration: 6, ease: 'sine.inOut',
+        repeat: -1, yoyo: true,
       });
       gsap.from('[data-term-area]', {
         opacity: 0, ease: 'none',
@@ -150,17 +155,25 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
             ))}
           </span>
         </div>
-        <div className="p-6 pb-4">
-          <svg viewBox="0 0 480 200" className="w-full" aria-hidden="true">
+        <div className="relative p-6 pb-4">
+          {/* Top inner light on the panel */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{ background: 'linear-gradient(180deg, rgba(237,229,213,0.05), transparent)' }} />
+          <svg viewBox="0 0 480 210" className="w-full" aria-hidden="true">
             <defs>
+              <linearGradient id="term-stroke" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#B58A3A" />
+                <stop offset="55%" stopColor="#D6B77A" />
+                <stop offset="100%" stopColor="#F1DDAE" />
+              </linearGradient>
               <linearGradient id="term-area" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={LP.champagne} stopOpacity="0.28" />
-                <stop offset="70%" stopColor={LP.champagne} stopOpacity="0.04" />
+                <stop offset="0%" stopColor={LP.champagne} stopOpacity="0.34" />
+                <stop offset="55%" stopColor={LP.champagne} stopOpacity="0.08" />
                 <stop offset="100%" stopColor={LP.champagne} stopOpacity="0" />
               </linearGradient>
-              <filter id="term-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="b" />
+              <filter id="term-glow" x="-20%" y="-20%" width="140%" height="160%">
+                <feGaussianBlur stdDeviation="4.5" result="b" />
                 <feMerge>
+                  <feMergeNode in="b" />
                   <feMergeNode in="b" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
@@ -168,15 +181,14 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
             </defs>
 
             {/* Grid */}
-            {[40, 80, 120, 160].map((y) => (
-              <line key={y} x1="0" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.06)" strokeWidth="1" />
+            {[36, 76, 116, 156].map((y) => (
+              <line key={y} x1="0" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.055)" strokeWidth="1" />
             ))}
-            {[96, 192, 288, 384].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="165" stroke="rgba(237,229,213,0.045)" strokeWidth="1" />
+            {[80, 160, 240, 320, 400].map((x) => (
+              <line key={x} x1={x} y1="0" x2={x} y2="176" stroke="rgba(237,229,213,0.04)" strokeWidth="1" />
             ))}
-            {/* Unlabeled axis ticks */}
-            {[40, 80, 120, 160].map((y) => (
-              <line key={y} x1="474" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.2)" strokeWidth="1.4" />
+            {[36, 76, 116, 156].map((y) => (
+              <line key={y} x1="472" y1={y} x2="480" y2={y} stroke="rgba(237,229,213,0.22)" strokeWidth="1.4" />
             ))}
 
             {/* Volume bars */}
@@ -185,38 +197,45 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
                 <rect
                   key={i}
                   x={4 + i * 14}
-                  y={198 - h}
+                  y={208 - h}
                   width="8"
                   height={h}
                   rx="1.5"
-                  fill={up ? 'rgba(214,183,122,0.35)' : 'rgba(156,144,131,0.22)'}
+                  fill={up ? 'rgba(214,183,122,0.38)' : 'rgba(156,144,131,0.20)'}
                 />
               ))}
             </g>
 
-            {/* Benchmark line (muted, beneath) */}
-            <path d={BENCH_PATH} fill="none" stroke="rgba(237,229,213,0.22)" strokeWidth="1.6" strokeDasharray="3 5" />
+            {/* Benchmark line beneath */}
+            <path d={BENCH_PATH} fill="none" stroke="rgba(237,229,213,0.20)" strokeWidth="1.5" strokeDasharray="2 6" strokeLinecap="round" />
 
-            {/* Area fill under price */}
+            {/* Area fill */}
             <path data-term-area d={AREA_PATH} fill="url(#term-area)" />
 
-            {/* Price action */}
+            {/* Soft under-glow of the price line */}
+            <path d={PRICE_PATH} fill="none" stroke={LP.champagne} strokeWidth="7" strokeOpacity="0.16" strokeLinejoin="round" strokeLinecap="round" filter="url(#term-glow)" />
+
+            {/* Price action — gradient stroke */}
             <path
               data-term-curve
               d={PRICE_PATH}
               fill="none"
-              stroke={LP.champagne}
-              strokeWidth="2.4"
+              stroke="url(#term-stroke)"
+              strokeWidth="2.6"
               strokeLinejoin="round"
               strokeLinecap="round"
-              strokeDasharray="700"
-              filter="url(#term-glow)"
+              strokeDasharray="720"
             />
 
-            {/* Last-price marker: dashed level + pulsing dot */}
-            <line x1="0" y1="40" x2="474" y2="40" stroke="rgba(214,183,122,0.28)" strokeWidth="1" strokeDasharray="4 5" />
-            <circle data-term-dot cx="480" cy="40" r="7" fill={LP.champagne} opacity="0.25" />
-            <circle cx="480" cy="40" r="3.4" fill={LP.champagne} />
+            {/* Crosshair — vertical guide + level, with a tag pill (no digits) */}
+            <line data-term-cross x1="360" y1="0" x2="360" y2="176" stroke="rgba(237,229,213,0.22)" strokeWidth="1" strokeDasharray="3 4" />
+            <line x1="0" y1="44" x2="472" y2="44" stroke="rgba(214,183,122,0.3)" strokeWidth="1" strokeDasharray="4 5" />
+            <rect x="452" y="37" width="28" height="14" rx="3" fill={LP.champagne} opacity="0.9" />
+            <rect x="457" y="42" width="18" height="4" rx="2" fill={LP.carbon} opacity="0.55" />
+
+            {/* Live endpoint */}
+            <circle data-term-dot cx="480" cy="40" r="8" fill={LP.champagne} opacity="0.22" />
+            <circle cx="480" cy="40" r="3.6" fill="#F1DDAE" />
           </svg>
         </div>
       </div>
