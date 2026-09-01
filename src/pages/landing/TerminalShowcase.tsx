@@ -79,20 +79,42 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
   return (
     <section
       ref={ref}
+      id="terminal"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
       style={{ background: LP.ivory }}
     >
-      <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
-        02 — THE TERMINAL
-      </p>
-      <h2
-        data-term-head
-        className="mb-14 max-w-5xl font-semibold"
-        style={{ color: LP.inkOnIvory, fontFamily: LP.displayHero, fontSize: 'clamp(2.2rem, 5.8vw, 5.8rem)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
-      >
-        One cockpit for every position you hold
-      </h2>
+      {/* Editorial split header — small brand word, huge model name left;
+          category + intro paragraph right */}
+      <div className="mb-16 grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <div>
+          <p className="mb-2 text-lg font-semibold" style={{ color: LP.inkOnIvory, fontFamily: LP.display, letterSpacing: '-0.01em' }}>
+            Mendez
+          </p>
+          <h2
+            data-term-head
+            className="font-semibold"
+            style={{ color: LP.inkOnIvory, fontFamily: LP.displayHero, fontSize: 'clamp(3rem, 9vw, 9.5rem)', lineHeight: 0.95, letterSpacing: '-0.01em' }}
+          >
+            ALPHA-1
+          </h2>
+        </div>
+        <div className="lg:pl-[12%] lg:pt-2">
+          <h3 className="mb-8 font-semibold" style={{ color: LP.inkOnIvory, fontFamily: LP.display, fontSize: 'clamp(1.4rem, 2.4vw, 2rem)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            Always-on trading cockpit
+          </h3>
+          <div className="mb-6 border-t pt-4" style={{ borderColor: LP.borderLight }}>
+            <p className="text-[11px] font-bold tracking-[0.2em]" style={{ color: LP.inkOnIvory, fontFamily: LP.mono }}>
+              DIRECT ACCESS TO<br />LIVE MARKETS
+            </p>
+          </div>
+          <p className="max-w-md text-base leading-relaxed lg:text-lg" style={{ color: LP.mutedOnIvory, fontFamily: LP.display }}>
+            One cockpit for every position you hold — your account, the
+            tape, and the risk engine on a single pane of glass, awake in
+            every session you trade.
+          </p>
+        </div>
+      </div>
 
       {/* Framed terminal preview */}
       <div
@@ -199,21 +221,22 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
         </div>
       </div>
 
-      {/* Editorial spec grid — Jesko's aircraft-spec table */}
-      <div data-spec-grid className="mx-auto grid max-w-4xl grid-cols-1 gap-x-12 sm:grid-cols-2">
+      {/* Editorial spec sheet — stacked label-over-value, two columns,
+          anchored left like an aircraft data plate */}
+      <div data-spec-grid className="grid max-w-2xl grid-cols-1 gap-x-10 sm:grid-cols-2">
         {SPECS.map(([label, value]) => (
           <div
             key={label}
             data-spec-row
-            className="flex items-baseline justify-between py-5"
+            className="py-4"
             style={{ borderTop: `1px solid ${LP.borderLight}` }}
           >
-            <span className="text-xs tracking-[0.25em]" style={{ color: LP.mutedOnIvory, fontFamily: LP.mono }}>
+            <p className="mb-1 text-[11px] font-bold tracking-[0.15em]" style={{ color: LP.mutedOnIvory, fontFamily: LP.mono }}>
               {label}
-            </span>
-            <span className="text-right text-base font-bold" style={{ color: LP.inkOnIvory, fontFamily: LP.display }}>
+            </p>
+            <p className="text-sm font-bold uppercase tracking-wide" style={{ color: LP.inkOnIvory, fontFamily: LP.display }}>
               {value}
-            </span>
+            </p>
           </div>
         ))}
       </div>

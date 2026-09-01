@@ -61,6 +61,7 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
   return (
     <section
       ref={ref}
+      id="markets"
       data-lp-theme="dark"
       className="relative overflow-hidden px-[6vw] pt-[16vh]"
       style={{ background: `linear-gradient(180deg, #241D17 0%, ${LP.carbon} 25%, ${LP.carbon} 100%)` }}

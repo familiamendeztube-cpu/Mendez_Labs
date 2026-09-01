@@ -36,6 +36,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
   return (
     <section
       ref={ref}
+      id="sports-lab"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
       style={{ background: LP.ivory }}

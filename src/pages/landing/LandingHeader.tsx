@@ -20,25 +20,32 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
     return () => ctx.revert();
   }, [reduced]);
 
+  const NAV: Array<[string, string]> = [
+    ['Philosophy', 'philosophy'],
+    ['Terminal', 'terminal'],
+    ['Markets', 'markets'],
+    ['Sports Lab', 'sports-lab'],
+  ];
+
   return (
     <div
       ref={ref}
       className="pointer-events-none fixed inset-x-0 top-0 z-[70] flex items-center justify-between px-4 py-4 lg:px-8 lg:py-5"
     >
-      {/* Left spacer chip keeps the wordmark optically centered */}
-      <span
-        data-hd-item
-        className="pointer-events-auto hidden rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.3em] sm:inline-block"
-        style={{
-          color: LP.gold,
-          border: '1px solid rgba(181,138,58,0.35)',
-          background: 'rgba(27,21,17,0.35)',
-          backdropFilter: 'blur(8px)',
-          fontFamily: LP.mono,
-        }}
-      >
-        PRIVATE
-      </span>
+      {/* Left: editorial nav — scrolls to chapters */}
+      <nav className="pointer-events-auto hidden items-center gap-6 lg:flex" style={{ mixBlendMode: 'difference' }}>
+        {NAV.map(([label, id]) => (
+          <button
+            key={id}
+            data-hd-item
+            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
+            className="text-xs font-bold tracking-wide transition-opacity hover:opacity-70"
+            style={{ color: LP.bone, fontFamily: LP.display }}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
 
       <span
         data-hd-item
@@ -48,6 +55,20 @@ export function LandingHeader({ reduced }: { reduced: boolean }) {
         Mendez Labs
       </span>
 
+      <span
+        data-hd-item
+        className="pointer-events-auto mr-3 hidden rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.3em] sm:inline-block"
+        style={{
+          color: LP.gold,
+          border: '1px solid rgba(181,138,58,0.35)',
+          background: 'rgba(27,21,17,0.35)',
+          backdropFilter: 'blur(8px)',
+          fontFamily: LP.mono,
+          marginLeft: 'auto',
+        }}
+      >
+        PRIVATE
+      </span>
       <button
         data-hd-item
         aria-label="Open sign in"

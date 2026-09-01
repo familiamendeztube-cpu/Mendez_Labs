@@ -38,6 +38,7 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
   return (
     <section
       ref={ref}
+      id="philosophy"
       data-lp-theme="sky"
       className="relative flex min-h-[140vh] items-center overflow-hidden px-[6vw] py-[24vh]"
       style={{
