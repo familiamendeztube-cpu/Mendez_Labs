@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { TopBar } from '@/components/TopBar';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { SportsSubNav } from '@/components/SportsSubNav';
-import { DataRainBackground } from '@/components/DataRainBackground';
+import { AppBackdrop } from '@/components/AppBackdrop';
 import { tv } from '@/lib/themeVars';
 
 // Route-split: the chart-heavy pages pull recharts (~170 KB gzip). Lazy
@@ -45,7 +45,7 @@ function AppLayout() {
 
   return (
     <div className="relative min-h-screen grain-overlay">
-      <DataRainBackground />
+      <AppBackdrop />
       <div className="relative z-10 flex min-h-screen">
         <Sidebar
           collapsed={collapsed}

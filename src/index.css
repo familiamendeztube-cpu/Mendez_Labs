@@ -306,6 +306,11 @@ html { scrollbar-width: thin; scrollbar-color: rgba(237,229,213,0.25) #1B1511; }
   from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
   to   { opacity: 1; transform: none; filter: blur(0); }
 }
+@keyframes app-backdrop-drift {
+  0%, 100% { transform: translate(-50%, 0) scale(1); opacity: 0.5; }
+  50%      { transform: translate(-46%, 6%) scale(1.12); opacity: 0.85; }
+}
+.app-backdrop-drift { animation: app-backdrop-drift 24s ease-in-out infinite; }
 [data-stagger-visible] > * {
   opacity: 0;
   animation: stagger-in 0.72s cubic-bezier(0.16,1,0.3,1) forwards;
