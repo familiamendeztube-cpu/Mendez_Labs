@@ -5,6 +5,8 @@ import { emptySignalMetrics } from '@/utils/tradingCalc';
 import { DEFAULT_UNIVERSE } from '@/utils/tradingAnalysis';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { useLiveTrading, type LiveTicker } from '@/services/tradingLive';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 import { tv, accentAlpha, mutedAlpha } from '@/lib/themeVars';
 
 type StatusFilter = 'All' | 'Qualified' | 'Excluded';
@@ -23,27 +25,25 @@ export function Signals() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-8" data-stagger-visible>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-            Trade Signals
-          </h1>
-          <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-            {hasLiveData
-              ? `Live quotes for ${tickers.length} symbols. ${DEFAULT_UNIVERSE.length} in research universe.`
-              : `Candidates ranked by expected value after costs. ${DEFAULT_UNIVERSE.length} symbols in research universe.`}
-          </p>
-        </div>
-        <button
-          onClick={live.refresh}
-          disabled={live.loading}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold"
-          style={{ background: accentAlpha(0.08), color: tv.accent, minHeight: '44px', opacity: live.loading ? 0.5 : 1 }}
-        >
-          <RefreshCw className={`h-4 w-4 ${live.loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
-      </div>
+      <PageHero
+        image={APP_IMAGES.candles}
+        eyebrow="Trading"
+        title="Trade Signals"
+        subtitle={hasLiveData
+          ? `Live quotes for ${tickers.length} symbols. ${DEFAULT_UNIVERSE.length} in research universe.`
+          : `Candidates ranked by expected value after costs. ${DEFAULT_UNIVERSE.length} symbols in research universe.`}
+        action={
+          <button
+            onClick={live.refresh}
+            disabled={live.loading}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold"
+            style={{ background: accentAlpha(0.12), color: tv.accent, minHeight: '44px', opacity: live.loading ? 0.5 : 1, backdropFilter: 'blur(4px)' }}
+          >
+            <RefreshCw className={`h-4 w-4 ${live.loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         <SigMetric label="Scanned" value={hasLiveData ? tickers.length : sigMetrics.symbolsScanned} accent={tv.accent} />

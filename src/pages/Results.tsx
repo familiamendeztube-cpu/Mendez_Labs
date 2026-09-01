@@ -5,6 +5,8 @@ import { fmtOdds, fmtCurrency, fmtSignedCurrency } from '@/utils/format';
 import { fmtCostaRicaDateTime } from '@/services/liveData';
 import { plainEnglishBet } from '@/utils/pickFive';
 import { tv, accentAlpha, mutedAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { SPORTS_IMAGES } from '@/data/sportsImages';
 import {
   countByResult,
   winPercent,
@@ -61,15 +63,12 @@ export function Results() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-8">
-      {/* Header */}
-      <div>
-        <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-          Results
-        </h1>
-        <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-          Did the picks win? Paper-tracked scorecard from verified final scores.
-        </p>
-      </div>
+      <PageHero
+        image={SPORTS_IMAGES.entranceHero}
+        eyebrow="Sports Lab"
+        title="Results"
+        subtitle="Did the picks win? Paper-tracked scorecard from verified final scores."
+      />
 
       {/* Tabs — always visible */}
       <div className="flex gap-1.5">

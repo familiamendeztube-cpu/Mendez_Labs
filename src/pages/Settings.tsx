@@ -10,6 +10,8 @@ import {
   type ConnectionCard,
 } from '@/utils/tradingCalc';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 import { useTheme } from '@/lib/useTheme';
 import { THEMES } from '@/lib/themes';
 
@@ -28,15 +30,13 @@ export function Settings() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-          Settings
-        </h1>
-        <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-          Connections, readiness, and display preferences.
-        </p>
-      </div>
+      <PageHero
+        image={APP_IMAGES.skyline}
+        eyebrow="Terminal"
+        title="Settings"
+        subtitle="Connections, readiness, and display preferences."
+        height="sm"
+      />
 
       {/* ── Theme Picker ─────────────────────────────────────────────── */}
       <div className="rounded-2xl p-5" style={{ background: tv.bgSurface, border: `1px solid ${tv.borderBase}` }}>

@@ -5,6 +5,8 @@ import { ChartContainer } from '@/components/ChartContainer';
 import { ExposurePieChart, EquityCurveChart } from '@/components/Charts';
 import { useLiveTrading } from '@/services/tradingLive';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 
 export function PaperPortfolio() {
   const live = useLiveTrading(30_000);
@@ -41,22 +43,21 @@ export function PaperPortfolio() {
 
   return (
     <div data-stagger-visible style={{ maxWidth: 960, margin: '0 auto', padding: '0 16px 48px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 400, color: tv.textPrimary, letterSpacing: '-0.03em', margin: 0 }}>Paper Portfolio</h1>
-          <p style={{ marginTop: 4, fontSize: 15, color: tv.textMuted }}>
-            {live.connected ? 'Live Alpaca paper positions, orders, and fills.' : 'Connecting to Alpaca paper account...'}
-          </p>
-        </div>
-        <button
-          onClick={live.refresh}
-          disabled={live.loading}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 8, padding: '8px 12px', fontSize: 12, fontWeight: 600, background: accentAlpha(0.08), color: tv.accent, border: 'none', cursor: 'pointer', minHeight: 44, opacity: live.loading ? 0.5 : 1 }}
-        >
-          <RefreshCw size={14} className={live.loading ? 'animate-spin' : ''} /> Refresh
-        </button>
-      </div>
+      <PageHero
+        image={APP_IMAGES.ledger}
+        eyebrow="Trading"
+        title="Paper Portfolio"
+        subtitle={live.connected ? 'Live Alpaca paper positions, orders, and fills.' : 'Connecting to Alpaca paper account...'}
+        action={
+          <button
+            onClick={live.refresh}
+            disabled={live.loading}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 8, padding: '8px 12px', fontSize: 12, fontWeight: 600, background: accentAlpha(0.14), color: tv.accent, border: 'none', cursor: 'pointer', minHeight: 44, opacity: live.loading ? 0.5 : 1, backdropFilter: 'blur(4px)' }}
+          >
+            <RefreshCw size={14} className={live.loading ? 'animate-spin' : ''} /> Refresh
+          </button>
+        }
+      />
 
       {/* Kill result banner */}
       {killResult && (

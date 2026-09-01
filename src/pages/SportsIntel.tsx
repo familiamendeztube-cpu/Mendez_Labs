@@ -15,6 +15,8 @@ import {
 } from 'recharts';
 import { RefreshCw, Activity } from 'lucide-react';
 import { useStore } from '@/store/StoreContext';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 import { tv, accentAlpha, mutedAlpha } from '@/lib/themeVars';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 
@@ -137,25 +139,25 @@ export function SportsIntel() {
 
   return (
     <div ref={revealRef} className="mx-auto max-w-5xl space-y-5 pb-8">
-      <div className="flex items-start justify-between gap-4" data-reveal>
-        <div>
-          <h1 className="serif text-[2.25rem] font-semibold leading-[1.05]" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-            Sports Intelligence
-          </h1>
-          <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-            {hasData
-              ? `Live from the Elo engine — ${rankedPicks.length} predictions across ${leagues.length} leagues, ${qualified.length} qualified.`
-              : 'Live model diagnostics. Charts populate from the analysis engine feed.'}
-          </p>
-        </div>
-        <button
-          onClick={refreshFeed}
-          disabled={feedLoading}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold"
-          style={{ background: accentAlpha(0.08), color: tv.accent, minHeight: 44, opacity: feedLoading ? 0.5 : 1 }}
-        >
-          <RefreshCw className={`h-4 w-4 ${feedLoading ? 'animate-spin' : ''}`} /> Refresh
-        </button>
+      <div data-reveal>
+        <PageHero
+          image={APP_IMAGES.analytics}
+          eyebrow="Sports Lab"
+          title="Sports Intelligence"
+          subtitle={hasData
+            ? `Live from the Elo engine — ${rankedPicks.length} predictions across ${leagues.length} leagues, ${qualified.length} qualified.`
+            : 'Live model diagnostics. Charts populate from the analysis engine feed.'}
+          action={
+            <button
+              onClick={refreshFeed}
+              disabled={feedLoading}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold"
+              style={{ background: accentAlpha(0.12), color: tv.accent, minHeight: 44, opacity: feedLoading ? 0.5 : 1, backdropFilter: 'blur(4px)' }}
+            >
+              <RefreshCw className={`h-4 w-4 ${feedLoading ? 'animate-spin' : ''}`} /> Refresh
+            </button>
+          }
+        />
       </div>
 
       {/* Model status strip */}

@@ -4,6 +4,8 @@ import { ChartContainer } from '@/components/ChartContainer';
 import { EquityCurveChart, DailyPnlChart, DrawdownChart } from '@/components/Charts';
 import { useLiveTrading } from '@/services/tradingLive';
 import { tv, accentAlpha, amberAlpha, mutedAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 
 type Period = 'today' | '7d' | '30d' | 'all';
 const PERIODS: { key: Period; label: string }[] = [
@@ -35,12 +37,12 @@ export function Performance() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-8" data-stagger-visible>
-      <div>
-        <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>Performance</h1>
-        <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-          {hasData ? 'Live trading scorecard from your Alpaca paper account.' : 'Trading scorecard from paper fills. Charts populate after your first trading day.'}
-        </p>
-      </div>
+      <PageHero
+        image={APP_IMAGES.analytics}
+        eyebrow="Trading"
+        title="Performance"
+        subtitle={hasData ? 'Live trading scorecard from your Alpaca paper account.' : 'Trading scorecard from paper fills. Charts populate after your first trading day.'}
+      />
 
       <div className="flex gap-1.5">
         {PERIODS.map(({ key, label }) => (

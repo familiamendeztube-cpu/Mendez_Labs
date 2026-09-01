@@ -21,6 +21,8 @@ import { EquityCurveChart, DailyPnlChart, MarketPriceChart, ExposurePieChart } f
 import { useLiveTrading, type LiveTicker } from '@/services/tradingLive';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 
 // Real market-session clocks (view-only data that needs no brokerage auth).
 const SESSIONS = [
@@ -96,23 +98,23 @@ export function TradingDashboard() {
   return (
     <div ref={revealRef} className="mx-auto max-w-5xl space-y-5 pb-8">
       {/* HEADER */}
-      <div className="flex items-start justify-between gap-4" data-reveal>
-        <div>
-          <h1 className="serif text-[2.5rem] font-semibold leading-[1.02]" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-            Trading Command Center
-          </h1>
-          <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-            {live.connected
-              ? `Connected to your ${env} Alpaca account. Live market data active.`
-              : live.error ? 'Alpaca not reachable — check your server keys below.' : 'Connecting to Alpaca...'}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={live.refresh} disabled={live.loading} className="rounded-full p-2 transition-colors" style={{ background: mutedAlpha(0.06), border: `1px solid ${tv.borderBase}`, color: tv.textMuted, minHeight: 44, minWidth: 44 }} aria-label="Refresh data">
-            <RefreshCw className={`h-4 w-4 ${live.loading ? 'animate-spin' : ''}`} />
-          </button>
-          <MarketStatusBadge connected={live.connected} />
-        </div>
+      <div data-reveal>
+        <PageHero
+          image={APP_IMAGES.desk}
+          eyebrow="Trading"
+          title="Trading Command Center"
+          subtitle={live.connected
+            ? `Connected to your ${env} Alpaca account. Live market data active.`
+            : live.error ? 'Alpaca not reachable — check your server keys below.' : 'Connecting to Alpaca...'}
+          action={
+            <div className="flex items-center gap-2">
+              <button onClick={live.refresh} disabled={live.loading} className="rounded-full p-2 transition-colors" style={{ background: mutedAlpha(0.1), border: `1px solid ${tv.borderBase}`, color: tv.textSecondary, minHeight: 44, minWidth: 44, backdropFilter: 'blur(4px)' }} aria-label="Refresh data">
+                <RefreshCw className={`h-4 w-4 ${live.loading ? 'animate-spin' : ''}`} />
+              </button>
+              <MarketStatusBadge connected={live.connected} />
+            </div>
+          }
+        />
       </div>
 
       {/* Paper / Live toggle */}

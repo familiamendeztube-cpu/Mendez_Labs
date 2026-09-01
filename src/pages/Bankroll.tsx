@@ -10,6 +10,8 @@ import {
   totalDrawdownPct,
 } from '@/utils/bankrollCalc';
 import { tv, accentAlpha, redAlpha, mutedAlpha, amberAlpha } from '@/lib/themeVars';
+import { PageHero } from '@/components/PageHero';
+import { APP_IMAGES } from '@/data/appImages';
 
 // ── Component ───────────────────────────────────────────────────────────────
 
@@ -32,15 +34,12 @@ export function Bankroll() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 pb-8">
-      {/* Header */}
-      <div>
-        <h1 className="serif text-3xl font-normal" style={{ color: tv.textPrimary, letterSpacing: '-0.03em' }}>
-          Bankroll
-        </h1>
-        <p className="mt-1 text-base" style={{ color: tv.textMuted }}>
-          Paper bankroll, risk controls, and planned live accounts.
-        </p>
-      </div>
+      <PageHero
+        image={APP_IMAGES.vault}
+        eyebrow="Sports Lab"
+        title="Bankroll"
+        subtitle="Paper bankroll, risk controls, and planned live accounts."
+      />
 
       {/* Disclosure */}
       <div
