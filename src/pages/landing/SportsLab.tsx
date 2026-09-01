@@ -39,7 +39,7 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
       id="sports-lab"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
-      style={{ background: LP.ivory }}
+      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #F1E8D6 60%, #ECE2CC 100%)` }}
     >
       <p className="mb-6 text-xs tracking-[0.4em]" style={{ color: LP.gold, fontFamily: LP.mono }}>
         04 — THE SPORTS LAB
@@ -75,9 +75,9 @@ export function SportsLab({ reduced }: { reduced: boolean }) {
           espresso footer. */}
       <div
         aria-hidden="true"
-        className="-mx-[6vw] mt-[12vh] h-[38vh]"
+        className="-mx-[6vw] mt-[12vh] h-[62vh]"
         style={{
-          background: `linear-gradient(180deg, ${LP.ivory} 0%, #C9B592 45%, #5C4B34 78%, ${LP.carbon} 100%)`,
+          background: `linear-gradient(180deg, #ECE2CC 0%, #DFCFA9 26%, #C9B592 44%, #9C8560 60%, #6E5A41 76%, #3E3223 90%, ${LP.carbon} 100%)`,
         }}
       />
     </section>

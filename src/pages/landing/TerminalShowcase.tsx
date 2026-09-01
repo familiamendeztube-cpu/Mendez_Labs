@@ -87,7 +87,7 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
       id="terminal"
       data-lp-theme="light"
       className="relative px-[6vw] pt-[14vh]"
-      style={{ background: LP.ivory }}
+      style={{ background: `linear-gradient(180deg, ${LP.ivory} 0%, #F1E8D6 55%, #ECE2CC 100%)` }}
     >
       {/* Editorial split header — small brand word, huge model name left;
           category + intro paragraph right */}
@@ -264,9 +264,9 @@ export function TerminalShowcase({ reduced }: { reduced: boolean }) {
           markets chapter — no card edge, no color step. */}
       <div
         aria-hidden="true"
-        className="-mx-[6vw] mt-[12vh] h-[42vh]"
+        className="-mx-[6vw] mt-[12vh] h-[64vh]"
         style={{
-          background: `linear-gradient(180deg, ${LP.ivory} 0%, #C9B592 45%, #6E5A41 75%, #241D17 100%)`,
+          background: `linear-gradient(180deg, #ECE2CC 0%, #DFCFA9 28%, #C9B592 46%, #9C8560 62%, #6E5A41 78%, #3E3223 90%, #241D17 100%)`,
         }}
       />
     </section>

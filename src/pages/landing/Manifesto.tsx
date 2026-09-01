@@ -42,9 +42,12 @@ export function Manifesto({ reduced }: { reduced: boolean }) {
       data-lp-theme="sky"
       className="relative flex min-h-[140vh] items-center overflow-hidden px-[6vw] py-[24vh]"
       style={{
-        // One continuous atmosphere: sky deepens through the text zone, then
-        // warms into the cream of the jet chapter — no card seam.
-        background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 48%, #AAB5BC 72%, #D6CFBF 90%, #E9E2D0 100%)`,
+        // One continuous atmosphere. Opens on the hero's exact carbon so the
+        // section boundary vanishes, climbs through dawn tones into full sky
+        // across the top padding zone, then warms all the way to the cream
+        // the jet chapter opens with — the color never stops moving.
+        background:
+          `linear-gradient(180deg, ${LP.carbon} 0%, #2E3138 7%, #4E5D6E 13%, #6E8BA6 20%, ${LP.skyTop} 30%, ${LP.skyBottom} 50%, #9FAEB8 68%, #C3BCAC 84%, #E9E2D0 100%)`,
       }}
     >
       <FloatingChips

@@ -64,7 +64,7 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
       id="markets"
       data-lp-theme="dark"
       className="relative overflow-hidden px-[6vw] pt-[16vh]"
-      style={{ background: `linear-gradient(180deg, #241D17 0%, ${LP.carbon} 25%, ${LP.carbon} 100%)` }}
+      style={{ background: `linear-gradient(180deg, #241D17 0%, ${LP.carbon} 22%, #191410 60%, ${LP.carbon} 100%)` }}
     >
       {/* Ghost type */}
       <div
@@ -146,9 +146,9 @@ export function MarketSessions({ reduced }: { reduced: boolean }) {
           sports chapter. */}
       <div
         aria-hidden="true"
-        className="-mx-[6vw] mt-[14vh] h-[40vh]"
+        className="-mx-[6vw] mt-[14vh] h-[60vh]"
         style={{
-          background: `linear-gradient(180deg, ${LP.carbon} 0%, #55452F 50%, #BBA680 78%, ${LP.ivory} 100%)`,
+          background: `linear-gradient(180deg, ${LP.carbon} 0%, #3E3223 14%, #6E5A41 34%, #9C8560 52%, #C9B592 70%, #E4D8BE 86%, ${LP.ivory} 100%)`,
         }}
       />
     </section>

@@ -57,16 +57,13 @@ export function Hero({ reduced }: { reduced: boolean }) {
         { scale: 1 },
         { scale: 1.9, ease: 'none', duration: 0.6 }, 0)
         .to(windowRef.current,
-          { scale: 4.2, opacity: 0, filter: 'blur(6px)', ease: 'power2.in', duration: 0.4 }, 0.6)
-        // The sky blooms over the whole frame as the camera passes through
-        // the glass — a smooth fade into the next chapter, no hard split.
-        .fromTo('[data-hero-skyfade]',
-          { opacity: 0 },
-          { opacity: 1, ease: 'none', duration: 0.38 }, 0.55)
+          { scale: 4.4, opacity: 0, filter: 'blur(7px)', ease: 'power2.in', duration: 0.4 }, 0.6)
+        // The hero stays dark on the way out; the manifesto's own gradient
+        // opens on this exact carbon and climbs to sky — one direction, no
+        // sky→dark→sky valley.
         .to('[data-hero-mark]', { opacity: 0, ease: 'none', duration: 0.25 }, 0.35)
         .to('[data-hero-upper]', { xPercent: -18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
-        .to('[data-hero-lower]', { xPercent: 18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
-        .to('[data-hero-mark]', { opacity: 0, ease: 'none', duration: 0.2 }, 0.2);
+        .to('[data-hero-lower]', { xPercent: 18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25);
     }, trackRef);
     return () => ctx.revert();
   }, [reduced]);
@@ -76,13 +73,6 @@ export function Hero({ reduced }: { reduced: boolean }) {
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         <HeroBackdrop reduced={reduced} />
 
-        {/* Sky bloom — fades the whole frame into the next chapter */}
-        <div
-          data-hero-skyfade
-          className="pointer-events-none absolute inset-0 z-[15] opacity-0"
-          aria-hidden="true"
-          style={{ background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 100%)` }}
-        />
 
         {/* ── The cabin window ── */}
         <div
