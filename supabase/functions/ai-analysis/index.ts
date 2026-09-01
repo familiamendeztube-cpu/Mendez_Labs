@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
+            model: "claude-sonnet-5",
             max_tokens: 1024,
             messages: [{ role: "user", content: prompt }],
           }),
@@ -143,7 +143,6 @@ Deno.serve(async (req: Request) => {
       // Cache result
       await serviceClient.from("ai_research").insert({
         pick_id: pick.id,
-        user_id: user.id,
         matchup: pick.matchup,
         league: pick.league,
         market: pick.market,

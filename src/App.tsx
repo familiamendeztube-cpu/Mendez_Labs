@@ -5,6 +5,7 @@ import { Landing } from '@/pages/landing/Landing';
 import { Sidebar } from '@/components/Sidebar';
 import { TopBar } from '@/components/TopBar';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
+import { Copilot } from '@/components/Copilot';
 import { SportsSubNav } from '@/components/SportsSubNav';
 import { AppBackdrop } from '@/components/AppBackdrop';
 import { tv } from '@/lib/themeVars';
@@ -20,6 +21,7 @@ const Today = lazy(() => import('@/pages/Today').then((m) => ({ default: m.Today
 const PickFive = lazy(() => import('@/pages/PickFive').then((m) => ({ default: m.PickFive })));
 const Results = lazy(() => import('@/pages/Results').then((m) => ({ default: m.Results })));
 const Bankroll = lazy(() => import('@/pages/Bankroll').then((m) => ({ default: m.Bankroll })));
+const SportsIntel = lazy(() => import('@/pages/SportsIntel').then((m) => ({ default: m.SportsIntel })));
 const Settings = lazy(() => import('@/pages/Settings').then((m) => ({ default: m.Settings })));
 
 function RouteFallback() {
@@ -70,6 +72,7 @@ function AppLayout() {
               <Route path="/sports/pick-five" element={<PickFive />} />
               <Route path="/sports/results" element={<Results />} />
               <Route path="/sports/bankroll" element={<Bankroll />} />
+              <Route path="/sports/intel" element={<SportsIntel />} />
               <Route path="/sports" element={<Navigate to="/sports/today" replace />} />
 
               {/* Settings */}
@@ -90,6 +93,7 @@ function AppLayout() {
         </div>
       </div>
       <MobileBottomNav />
+      <Copilot />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   CalendarDays,
   BarChart3,
   Wallet,
+  Brain,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -35,6 +36,7 @@ export const NAV_ITEMS: NavItem[] = [
     children: [
       { path: '/sports/today', label: 'Today', icon: CalendarDays },
       { path: '/sports/pick-five', label: 'Top Five', icon: Trophy },
+      { path: '/sports/intel', label: 'Intelligence', icon: Brain },
       { path: '/sports/results', label: 'Results', icon: BarChart3 },
       { path: '/sports/bankroll', label: 'Bankroll', icon: Wallet },
     ],
