@@ -5,48 +5,49 @@ import { introAlreadySeen } from './Preloader';
 import { HeroBackdrop } from './HeroBackdrop';
 import { LP } from './theme';
 
+/**
+ * Hero: the cabin-window moment. A dark cabin wall around an airplane
+ * window looking out on sky; the brand sits across the glass, the split
+ * headline around it. Scrolling pushes the camera into the window until
+ * the sky takes over and hands off to the next chapter.
+ */
 export function Hero({ reduced }: { reduced: boolean }) {
   const trackRef = useRef<HTMLElement>(null);
-  const dialRef = useRef<HTMLDivElement>(null);
+  const windowRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (reduced) return;
     registerMotion();
     const delay = introAlreadySeen() ? 0.3 : 2.6;
     const ctx = gsap.context(() => {
-      // ── Entrance (plays once after preloader) ──
+      // ── Entrance ──
       const upper = trackRef.current!.querySelector('[data-hero-upper]')!;
       const lower = trackRef.current!.querySelector('[data-hero-lower]')!;
       revealWords(upper, { delay });
       revealWords(lower, { delay: delay + 0.2 });
-      gsap.from(dialRef.current, {
-        opacity: 0, scale: 0.88, duration: 1.8, ease: 'lux', delay: delay - 0.3,
+      gsap.from(windowRef.current, {
+        opacity: 0, scale: 0.92, duration: 1.8, ease: 'lux', delay: delay - 0.3,
       });
-      gsap.from('[data-hero-ring]', {
-        scale: 0.7, opacity: 0, stagger: 0.12, duration: 1.4, ease: 'lux', delay,
-        transformOrigin: '50% 50%',
+      gsap.from('[data-hero-mark]', {
+        opacity: 0, letterSpacing: '0.6em', duration: 1.6, ease: 'lux', delay: delay + 0.4,
       });
       gsap.from('[data-hero-sub]', {
         opacity: 0, y: 14, duration: 0.8, ease: 'lux', delay: delay + 0.6,
       });
-      // The pill lives outside this section — query the document, not the
-      // scoped context, and pass the element so gsap.context doesn't rescope it.
       const pill = document.querySelector('[data-lp-pill]');
       if (pill) {
         gsap.from(pill, { y: 90, duration: 1, ease: 'lux', delay: delay + 0.8 });
       }
 
-      // ── Continuous instrument motion (idle, not scroll-bound) ──
-      gsap.to('[data-hero-ticks]', {
-        rotation: 360, duration: 90, ease: 'none', repeat: -1,
-        transformOrigin: '50% 50%',
+      // ── Idle: clouds drift past the window ──
+      gsap.to('[data-hero-cloud-a]', {
+        xPercent: 60, duration: 26, ease: 'none', repeat: -1, yoyo: true,
       });
-      gsap.to('[data-hero-arc]', {
-        rotation: -360, duration: 45, ease: 'none', repeat: -1,
-        transformOrigin: '50% 50%',
+      gsap.to('[data-hero-cloud-b]', {
+        xPercent: -45, duration: 34, ease: 'none', repeat: -1, yoyo: true,
       });
 
-      // ── Scroll-driven push-through (scrubbed over the 300vh track) ──
+      // ── Scroll: camera pushes into the window until sky takes over ──
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: trackRef.current,
@@ -55,14 +56,14 @@ export function Hero({ reduced }: { reduced: boolean }) {
           scrub: 1,
         },
       });
-      tl.fromTo(dialRef.current,
-        { scale: 1, yPercent: 0 },
-        { scale: 1.6, yPercent: -6, ease: 'none', duration: 0.6 }, 0)
-        .to(dialRef.current,
-          { scale: 3.2, opacity: 0, filter: 'blur(8px)', ease: 'power2.in', duration: 0.4 }, 0.6)
+      tl.fromTo(windowRef.current,
+        { scale: 1 },
+        { scale: 1.9, ease: 'none', duration: 0.6 }, 0)
+        .to(windowRef.current,
+          { scale: 4.2, opacity: 0, filter: 'blur(6px)', ease: 'power2.in', duration: 0.4 }, 0.6)
+        .to('[data-hero-mark]', { opacity: 0, ease: 'none', duration: 0.25 }, 0.35)
         .to('[data-hero-upper]', { xPercent: -18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
         .to('[data-hero-lower]', { xPercent: 18, opacity: 0, ease: 'none', duration: 0.5 }, 0.25)
-        .to('[data-hero-glow]', { scale: 2.2, opacity: 0, ease: 'none', duration: 0.5 }, 0.5)
         .to('[data-hero-sub]', { opacity: 0, ease: 'none', duration: 0.2 }, 0.2);
     }, trackRef);
     return () => ctx.revert();
@@ -72,65 +73,81 @@ export function Hero({ reduced }: { reduced: boolean }) {
     <section ref={trackRef} data-lp-theme="dark" style={{ height: '300vh' }}>
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         <HeroBackdrop reduced={reduced} />
-        {/* Ambient glow */}
-        <div
-          data-hero-glow
-          className="absolute left-1/2 top-1/2 h-[95vmin] w-[95vmin] -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(214,183,122,0.10) 0%, rgba(214,183,122,0.03) 40%, transparent 68%)',
-          }}
-        />
 
-        {/* Instrument dial — the porthole of the terminal */}
-        <div ref={dialRef} className="relative z-10 h-[78vmin] w-[78vmin]">
-          <svg viewBox="0 0 600 600" className="h-full w-full" aria-hidden="true">
-            {/* Outer bezel */}
-            <circle data-hero-ring cx="300" cy="300" r="292" fill="none"
-              stroke="rgba(232,226,214,0.14)" strokeWidth="1.5" />
-            <circle data-hero-ring cx="300" cy="300" r="272" fill="none"
-              stroke="rgba(232,226,214,0.07)" strokeWidth="22" />
-            {/* Rotating minute ticks */}
-            <g data-hero-ticks>
-              <circle cx="300" cy="300" r="246" fill="none"
-                stroke="rgba(232,226,214,0.35)" strokeWidth="12"
-                strokeDasharray="1.5 23.5" />
-            </g>
-            {/* Counter-rotating champagne arc */}
-            <g data-hero-arc>
-              <circle cx="300" cy="300" r="218" fill="none"
-                stroke={LP.champagne} strokeWidth="2.5" strokeLinecap="round"
-                strokeDasharray="240 1130" opacity="0.9" />
-            </g>
-            {/* Gold accent arc */}
-            <g data-hero-ticks>
-              <circle cx="300" cy="300" r="194" fill="none"
-                stroke={LP.gold} strokeWidth="1.5" strokeLinecap="round"
-                strokeDasharray="60 1160" opacity="0.8" />
-            </g>
-            {/* Inner rings */}
-            <circle data-hero-ring cx="300" cy="300" r="168" fill="none"
-              stroke="rgba(232,226,214,0.10)" strokeWidth="1" />
-            <circle data-hero-ring cx="300" cy="300" r="120" fill="none"
-              stroke="rgba(232,226,214,0.06)" strokeWidth="1" />
-            {/* Crosshair center */}
-            <line x1="300" y1="288" x2="300" y2="312" stroke="rgba(232,226,214,0.4)" strokeWidth="1" />
-            <line x1="288" y1="300" x2="312" y2="300" stroke="rgba(232,226,214,0.4)" strokeWidth="1" />
-          </svg>
-          {/* Center label */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-[36%]">
-            <span
-              className="text-[10px] tracking-[0.5em]"
-              style={{ color: LP.mutedOnDark, fontFamily: LP.mono }}
-            >
-              MENDEZ LABS
-            </span>
-            <span
-              className="text-[9px] tracking-[0.45em]"
-              style={{ color: 'rgba(138,143,138,0.6)', fontFamily: LP.mono }}
-            >
-              INTELLIGENCE TERMINAL
-            </span>
+        {/* ── The cabin window ── */}
+        <div
+          ref={windowRef}
+          className="relative z-10 flex items-center justify-center"
+          style={{ height: '74vmin', width: '56vmin' }}
+        >
+          {/* Outer surround — bone cabin lining with soft depth */}
+          <div
+            className="absolute inset-0"
+            style={{
+              borderRadius: '28vmin',
+              background: `linear-gradient(145deg, ${LP.bone} 0%, #CFC8B8 55%, #A79F8D 100%)`,
+              boxShadow: '0 0 120px rgba(232,226,214,0.08), inset 0 6px 24px rgba(255,255,255,0.5), inset 0 -14px 34px rgba(16,19,18,0.35)',
+            }}
+          />
+          {/* Bevel crease */}
+          <div
+            className="absolute"
+            style={{
+              inset: '5.5%',
+              borderRadius: '24vmin',
+              background: 'linear-gradient(160deg, #8F8875 0%, #C8C1B0 45%, #EFEADD 100%)',
+              boxShadow: 'inset 0 4px 14px rgba(16,19,18,0.4)',
+            }}
+          />
+          {/* Sky pane */}
+          <div
+            className="absolute overflow-hidden"
+            style={{
+              inset: '9%',
+              borderRadius: '20vmin',
+              background: `linear-gradient(180deg, ${LP.skyTop} 0%, ${LP.skyBottom} 70%, #A9C2D8 100%)`,
+              boxShadow: 'inset 0 10px 30px rgba(16,19,18,0.35)',
+            }}
+          >
+            {/* Drifting clouds */}
+            <div
+              data-hero-cloud-a
+              className="absolute left-[-30%] top-[30%] h-[22%] w-[90%]"
+              style={{
+                background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 70%)',
+                filter: 'blur(6px)',
+              }}
+            />
+            <div
+              data-hero-cloud-b
+              className="absolute left-[10%] top-[62%] h-[16%] w-[70%]"
+              style={{
+                background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)',
+                filter: 'blur(8px)',
+              }}
+            />
+            {/* Glass reflection streak */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(115deg, transparent 38%, rgba(255,255,255,0.28) 46%, rgba(255,255,255,0.06) 55%, transparent 62%)',
+              }}
+            />
           </div>
+          {/* Brand across the glass */}
+          <span
+            data-hero-mark
+            className="relative z-10 text-center font-semibold"
+            style={{
+              color: 'rgba(250,252,254,0.92)',
+              fontFamily: LP.displayHero,
+              fontSize: 'clamp(1.4rem, 4.2vmin, 2.6rem)',
+              letterSpacing: '0.22em',
+              textShadow: '0 2px 18px rgba(30,43,56,0.35)',
+            }}
+          >
+            Mendez Labs
+          </span>
         </div>
 
         {/* Split headline */}
