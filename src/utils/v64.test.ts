@@ -202,4 +202,46 @@ function ok(cond: boolean, msg: string) { assert(cond, msg); N++; }
   ok(settings.includes('<SystemStatus />'), 'SystemStatus rendered on the Settings page');
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 9: Capital.com venue (CFDs — card funding, demo environment)
+// ═══════════════════════════════════════════════════════════════════════════════
+{
+  const fn = 'supabase/functions/capital-connector/index.ts';
+  ok(fs.existsSync(path.join(ROOT, fn)), 'capital-connector/index.ts exists');
+  const src = read(fn);
+
+  ok(src.includes('terminalAuthorized') && src.includes('rateLimited'), 'capital-connector uses the shared gate + rate limit');
+  ok(src.includes('X-CAP-API-KEY') && src.includes('X-SECURITY-TOKEN') && src.includes('CST'), 'implements the CST / security-token session scheme');
+  ok(src.includes('demo-api-capital.backend-capital.com') && src.includes('api-capital.backend-capital.com'), 'has both demo and live base URLs');
+  ok(src.includes('CAPITAL_API_KEY') && src.includes('CAPITAL_IDENTIFIER') && src.includes('CAPITAL_PASSWORD'), 'reads its three credentials server-side');
+  ok(src.includes('CAPITAL_ORDERS_ENABLED'), 'live orders are gated by a server flag');
+  ok(src.includes('SESSION_TTL_MS') && src.includes('sessions.delete'), 'caches the session and recovers from expiry');
+  // Same route vocabulary as the other connectors.
+  for (const route of ['account', 'positions', 'quotes', 'bars', 'orders', 'portfolio-history']) {
+    ok(src.includes(`path === "${route}"`), `capital-connector serves the ${route} route`);
+  }
+
+  const cfg = read('supabase/config.toml');
+  ok(cfg.includes('[functions.capital-connector]'), 'config has capital-connector');
+  const sec = cfg.slice(cfg.indexOf('[functions.capital-connector]'));
+  ok(sec.slice(sec.indexOf('verify_jwt')).startsWith('verify_jwt = false'), 'capital-connector verify_jwt is false');
+
+  const brokers = read('src/services/brokers.ts');
+  ok(brokers.includes("'capital-demo'") && brokers.includes("'capital-live'"), 'both Capital.com venues registered');
+  ok(brokers.includes('warning?: string'), 'venues can carry a risk disclosure');
+  ok(/79\.58% of retail accounts lose money/.test(brokers), "Capital.com's own retail-loss disclosure is surfaced, not hidden");
+  ok(brokers.includes('getBroker(id).realMoney'), 'legacy paper/live flag follows realMoney, not a hardcoded id');
+
+  const picker = read('src/components/BrokerPicker.tsx');
+  ok(picker.includes('current.warning') && picker.includes('getBroker(confirm).warning'), 'the warning shows on selection and in the confirm dialog');
+
+  const status = read('src/services/systemStatus.ts');
+  ok(status.includes("slug: 'capital-connector'"), 'system status probes capital-connector');
+
+  const deploy = read('scripts/deploy-backend.sh');
+  ok(deploy.includes('capital-connector'), 'deploy script deploys capital-connector');
+  ok(deploy.includes('CAPITAL_API_KEY'), 'deploy script forwards the Capital.com secrets');
+}
+
 console.log(`✓ v64: ${N} assertions passed`);

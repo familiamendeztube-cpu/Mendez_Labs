@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Wallet, ExternalLink, ShieldCheck, Zap, CreditCard, X, Check, AlertTriangle } from 'lucide-react';
 import { BROKERS, getBroker, type BrokerId } from '@/services/brokers';
-import { tv, accentAlpha, amberAlpha, mutedAlpha } from '@/lib/themeVars';
+import { tv, accentAlpha, amberAlpha, redAlpha, mutedAlpha } from '@/lib/themeVars';
 
 /**
  * Venue selector. One click switches which account the whole terminal reads and
@@ -65,6 +65,12 @@ export function BrokerPicker({
         {current.tagline}
         {current.realMoney && ' · Real money at risk.'}
       </p>
+      {current.warning && (
+        <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-relaxed" style={{ color: tv.statusAmber }}>
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          {current.warning}
+        </p>
+      )}
 
       {/* ── Real-money switch confirmation ─────────────────────────────── */}
       {confirm && (
@@ -91,6 +97,12 @@ export function BrokerPicker({
               <strong style={{ color: tv.statusAmber }}> real-money orders</strong>. Orders also require the
               server-side enable flag — without it the server refuses them even in this mode.
             </p>
+            {getBroker(confirm).warning && (
+              <p className="mt-3 rounded-lg px-3 py-2 text-xs leading-relaxed"
+                style={{ background: redAlpha(0.08), border: `1px solid ${redAlpha(0.25)}`, color: tv.statusRed }}>
+                {getBroker(confirm).warning}
+              </p>
+            )}
             <button
               onClick={() => { onSelect(confirm); setConfirm(null); }}
               className="mt-4 w-full rounded-lg py-2.5 text-sm font-bold"
@@ -188,6 +200,10 @@ export function BrokerPicker({
                       </ul>
                     </div>
                   </div>
+
+                  {b.warning && (
+                    <p className="mt-2.5 text-[11px] leading-relaxed" style={{ color: tv.statusAmber }}>{b.warning}</p>
+                  )}
 
                   <details className="mt-3">
                     <summary className="cursor-pointer text-[11px]" style={{ color: tv.textMuted }}>

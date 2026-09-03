@@ -56,6 +56,7 @@ interface Probe {
 const PROBES: Probe[] = [
   { slug: 'alpaca-connector', label: 'Alpaca connector', powers: 'Stock account, positions, quotes, orders', secrets: ['ALPACA_PAPER_KEY_ID', 'ALPACA_PAPER_SECRET'], path: 'account?env=paper', required: true, auth: 'terminal' },
   { slug: 'kraken-connector', label: 'Kraken connector', powers: 'Crypto account, balances, orders', secrets: ['KRAKEN_API_KEY', 'KRAKEN_API_SECRET'], path: 'account', required: false, auth: 'terminal' },
+  { slug: 'capital-connector', label: 'Capital.com connector', powers: 'CFD account, positions, quotes, orders', secrets: ['CAPITAL_API_KEY', 'CAPITAL_IDENTIFIER', 'CAPITAL_PASSWORD'], path: 'account?env=demo', required: false, auth: 'terminal' },
   { slug: 'analysis-engine', label: 'Analysis engine', powers: "Today's sports predictions", secrets: ['ODDS_API_KEY'], path: '', required: true, auth: 'anon' },
   { slug: 'sports-feed', label: 'Sports feed', powers: 'Odds cache warm-up', secrets: ['ODDS_API_KEY'], path: '', required: true, auth: 'anon' },
   { slug: 'settle-picks', label: 'Settlement', powers: 'Grading locked picks', secrets: ['ODDS_API_KEY'], path: '', required: false, auth: 'anon' },

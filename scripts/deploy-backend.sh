@@ -59,11 +59,15 @@ SECRET_ARGS=(
 [[ -n "${KRAKEN_API_KEY:-}"          ]] && SECRET_ARGS+=( "KRAKEN_API_KEY=${KRAKEN_API_KEY}" )
 [[ -n "${KRAKEN_API_SECRET:-}"       ]] && SECRET_ARGS+=( "KRAKEN_API_SECRET=${KRAKEN_API_SECRET}" )
 [[ -n "${KRAKEN_ORDERS_ENABLED:-}"   ]] && SECRET_ARGS+=( "KRAKEN_ORDERS_ENABLED=${KRAKEN_ORDERS_ENABLED}" )
+[[ -n "${CAPITAL_API_KEY:-}"         ]] && SECRET_ARGS+=( "CAPITAL_API_KEY=${CAPITAL_API_KEY}" )
+[[ -n "${CAPITAL_IDENTIFIER:-}"      ]] && SECRET_ARGS+=( "CAPITAL_IDENTIFIER=${CAPITAL_IDENTIFIER}" )
+[[ -n "${CAPITAL_PASSWORD:-}"        ]] && SECRET_ARGS+=( "CAPITAL_PASSWORD=${CAPITAL_PASSWORD}" )
+[[ -n "${CAPITAL_ORDERS_ENABLED:-}"  ]] && SECRET_ARGS+=( "CAPITAL_ORDERS_ENABLED=${CAPITAL_ORDERS_ENABLED}" )
 
 $SB secrets set "${SECRET_ARGS[@]}" --project-ref "$PROJECT_REF"
 
 echo "→ Deploying functions"
-for fn in alpaca-connector kraken-connector ai-analysis ai-copilot ai-picks analysis-engine sports-feed sports-odds settle-picks; do
+for fn in alpaca-connector kraken-connector capital-connector ai-analysis ai-copilot ai-picks analysis-engine sports-feed sports-odds settle-picks; do
   echo "   • $fn"
   $SB functions deploy "$fn" --project-ref "$PROJECT_REF"
 done

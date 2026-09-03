@@ -6,7 +6,7 @@ import { terminalHeaders } from '@/lib/terminalConfig';
  * money out. The rest of the app reads this instead of hard-coding Alpaca.
  */
 
-export type BrokerId = 'alpaca-paper' | 'alpaca-live' | 'kraken';
+export type BrokerId = 'alpaca-paper' | 'alpaca-live' | 'kraken' | 'capital-demo' | 'capital-live';
 
 export interface BrokerDef {
   id: BrokerId;
@@ -15,11 +15,11 @@ export interface BrokerDef {
   /** One-line description of what this account is. */
   tagline: string;
   /** Edge function slug this broker's requests go to. */
-  fn: 'alpaca-connector' | 'kraken-connector';
+  fn: 'alpaca-connector' | 'kraken-connector' | 'capital-connector';
   /** Extra query params appended to every call (Alpaca needs env=paper|live). */
   query: Record<string, string>;
   /** What you can trade here. */
-  asset: 'US stocks & ETFs' | 'Crypto';
+  asset: 'US stocks & ETFs' | 'Crypto' | 'CFDs — shares, indices, FX';
   /** Is real money at risk on this venue? */
   realMoney: boolean;
   /** How you put money in. */
@@ -36,6 +36,11 @@ export interface BrokerDef {
   fundingSpeed: string;
   /** Available to a Costa Rica resident? */
   costaRica: 'yes' | 'limited';
+  /**
+   * Shown wherever the venue is selected. CFD venues carry a legally-required
+   * retail-loss disclosure; surfacing it is the honest thing to do.
+   */
+  warning?: string;
 }
 
 export const BROKERS: BrokerDef[] = [
@@ -87,6 +92,39 @@ export const BROKERS: BrokerDef[] = [
     fundingSpeed: 'Card: minutes',
     costaRica: 'yes',
   },
+  {
+    id: 'capital-demo',
+    name: 'Capital.com Demo',
+    tagline: 'Simulated CFD trading. No funding, no risk.',
+    fn: 'capital-connector',
+    query: { env: 'demo' },
+    asset: 'CFDs — shares, indices, FX',
+    realMoney: false,
+    funding: ['Nothing to fund — demo balance is provided'],
+    withdrawal: ['N/A — simulated'],
+    depositUrl: 'https://capital.com/trading/platform/',
+    apiKeysUrl: 'https://capital.com/trading/platform/settings/api',
+    secrets: ['CAPITAL_API_KEY', 'CAPITAL_IDENTIFIER', 'CAPITAL_PASSWORD'],
+    fundingSpeed: 'Instant — no money required',
+    costaRica: 'yes',
+  },
+  {
+    id: 'capital-live',
+    name: 'Capital.com Live',
+    tagline: 'Real CFD trading. Fund with a debit card in minutes.',
+    fn: 'capital-connector',
+    query: { env: 'live' },
+    asset: 'CFDs — shares, indices, FX',
+    realMoney: true,
+    funding: ['Debit / credit card', 'PayPal', 'Bank transfer'],
+    withdrawal: ['Back to the funding method', 'PayPal', 'Bank transfer'],
+    depositUrl: 'https://capital.com/trading/platform/',
+    apiKeysUrl: 'https://capital.com/trading/platform/settings/api',
+    secrets: ['CAPITAL_API_KEY', 'CAPITAL_IDENTIFIER', 'CAPITAL_PASSWORD', 'CAPITAL_ORDERS_ENABLED'],
+    fundingSpeed: 'Card: minutes',
+    costaRica: 'yes',
+    warning: 'CFDs are leveraged and you never own the underlying asset. Capital.com discloses that 79.58% of retail accounts lose money trading CFDs with them.',
+  },
 ];
 
 export function getBroker(id: BrokerId): BrokerDef {
@@ -113,7 +151,7 @@ export function setActiveBrokerId(id: BrokerId) {
   try {
     localStorage.setItem(BROKER_KEY, id);
     // Keep the legacy key in sync so anything still reading it stays correct.
-    localStorage.setItem('mlabs-trading-env', id === 'alpaca-live' ? 'live' : 'paper');
+    localStorage.setItem('mlabs-trading-env', getBroker(id).realMoney ? 'live' : 'paper');
   } catch { /* ignore */ }
 }
 
